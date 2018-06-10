@@ -1,0 +1,121 @@
+package gg.miner.agpr;
+
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.text.serializer.TextSerializers;
+
+import com.google.common.collect.Lists;
+import com.nickimpact.impactor.api.logger.Logger;
+import com.nickimpact.impactor.api.plugins.PluginInfo;
+
+public class AGPReduxInfo implements PluginInfo {
+
+  public static final String ID = "agpredux";
+
+  public static final String NAME = "AGP REdux";
+  public static final String VERSION = "S7.1-0.1.0-indev";
+  public static final String DESCRIPTION = "A Sponge Representation of the Pokemon Daycare";
+
+  public static final Text PREFIX =
+      Text.of(TextColors.YELLOW, "Daycare ", TextColors.GRAY, "\u00bb ", TextColors.DARK_AQUA);
+  public static final Text ERROR_PREFIX = Text.of(TextColors.RED, "Daycare ", TextColors.GRAY, "(",
+      TextColors.RED, "Error", TextColors.GRAY, ") ", TextColors.DARK_RED);
+  public static final Text DEBUG_PREFIX = Text.of(TextColors.YELLOW, "Daycare ", TextColors.GRAY,
+      "(", TextColors.RED, "Debug", TextColors.GRAY, ") ", TextColors.DARK_AQUA);
+
+  @Override
+  public String getID() {
+    return ID;
+  }
+
+  @Override
+  public String getName() {
+    return NAME;
+  }
+
+  @Override
+  public String getVersion() {
+    return VERSION;
+  }
+
+  @Override
+  public String getDescription() {
+    return DESCRIPTION;
+  }
+
+  @Override
+  public Text prefix() {
+    return PREFIX;
+  }
+
+  @Override
+  public Text error() {
+    return ERROR_PREFIX;
+  }
+
+  @Override
+  public Text warning() {
+    return ERROR_PREFIX;
+  }
+
+  @Override
+  public Text debug() {
+    return DEBUG_PREFIX;
+  }
+
+  public enum Dependencies {
+    Pixelmon("pixelmon", "6.x.x+");
+
+    private String dependency;
+    private String version;
+
+    private Dependencies(String dependency, String version) {
+      this.dependency = dependency;
+      this.version = version;
+    }
+
+    public String getDependency() {
+      return dependency;
+    }
+
+    public String getVersion() {
+      return version;
+    }
+  }
+
+  static void startup() {
+    List<String> banner = Lists.newArrayList(StringUtils.center("&eDaycare", 50),
+        StringUtils.center("&eRise of the Doof Edition", 50),
+        StringUtils.center("&aVersion: " + VERSION, 50),
+        StringUtils.center("&aAuthor: NickImpact", 50), "",
+        StringUtils.center("Now attempting to load internal components...", 50));
+
+    for (String s : banner)
+      AGPRedux.getInstance().getLogger().send(Logger.Prefixes.NONE,
+          TextSerializers.FORMATTING_CODE.deserialize(s));
+
+    AGPRedux.getInstance().getLogger().send(Logger.Prefixes.NONE, Text.EMPTY);
+  }
+
+  static boolean dependencyCheck() {
+    boolean valid = true;
+
+    for (Dependencies dependency : Dependencies.values()) {
+      if (!Sponge.getPluginManager().isLoaded(dependency.getDependency())) {
+        AGPRedux.getInstance().getLogger()
+            .error(Text.of(TextColors.DARK_RED, "==== Missing Dependency ===="));
+        AGPRedux.getInstance().getLogger().error(
+            Text.of(TextColors.DARK_RED, "  Dependency: ", TextColors.RED, dependency.name()));
+        AGPRedux.getInstance().getLogger().error(
+            Text.of(TextColors.DARK_RED, "  Version: ", TextColors.RED, dependency.getVersion()));
+
+        valid = false;
+      }
+    }
+    return valid;
+  }
+}
