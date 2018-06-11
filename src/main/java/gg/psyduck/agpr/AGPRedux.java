@@ -30,6 +30,7 @@ import com.nickimpact.impactor.api.configuration.ConfigBase;
 import com.nickimpact.impactor.api.logger.Logger;
 import com.nickimpact.impactor.api.plugins.ConfigurableSpongePlugin;
 import com.nickimpact.impactor.api.plugins.PluginInfo;
+import com.nickimpact.impactor.api.storage.Storage;
 import com.nickimpact.impactor.configuration.ConfigKeys;
 import com.nickimpact.impactor.logging.ConsoleLogger;
 import com.nickimpact.impactor.logging.SpongeLogger;
@@ -56,6 +57,8 @@ public class AGPRedux extends ConfigurableSpongePlugin {
   @Inject
   @ConfigDir(sharedRoot = false)
   private Path configDir;
+
+  private Storage storage;
 
   public static final Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
 

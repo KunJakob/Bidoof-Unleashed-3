@@ -16,15 +16,15 @@ public class AGPReduxInfo implements PluginInfo {
 
   public static final String ID = "agpredux";
 
-  public static final String NAME = "AGP REdux";
+  public static final String NAME = "AGP Redux";
   public static final String VERSION = "S7.1-0.1.0-indev";
   public static final String DESCRIPTION = "A Sponge Representation of the Pokemon Daycare";
 
   public static final Text PREFIX =
-      Text.of(TextColors.YELLOW, "Daycare ", TextColors.GRAY, "\u00bb ", TextColors.DARK_AQUA);
-  public static final Text ERROR_PREFIX = Text.of(TextColors.RED, "Daycare ", TextColors.GRAY, "(",
-      TextColors.RED, "Error", TextColors.GRAY, ") ", TextColors.DARK_RED);
-  public static final Text DEBUG_PREFIX = Text.of(TextColors.YELLOW, "Daycare ", TextColors.GRAY,
+      Text.of(TextColors.YELLOW, "AGP Redux ", TextColors.GRAY, "\u00bb ", TextColors.DARK_AQUA);
+  public static final Text ERROR_PREFIX = Text.of(TextColors.RED, "AGP Redux ", TextColors.GRAY,
+      "(", TextColors.RED, "Error", TextColors.GRAY, ") ", TextColors.DARK_RED);
+  public static final Text DEBUG_PREFIX = Text.of(TextColors.YELLOW, "AGP Redux ", TextColors.GRAY,
       "(", TextColors.RED, "Debug", TextColors.GRAY, ") ", TextColors.DARK_AQUA);
 
   @Override
@@ -88,10 +88,10 @@ public class AGPReduxInfo implements PluginInfo {
   }
 
   static void startup() {
-    List<String> banner = Lists.newArrayList(StringUtils.center("&eDaycare", 50),
-        StringUtils.center("&eRise of the Doof Edition", 50),
+    List<String> banner = Lists.newArrayList(StringUtils.center("&eAGP Redux", 50),
+        StringUtils.center("&eRise of the Duck Edition", 50),
         StringUtils.center("&aVersion: " + VERSION, 50),
-        StringUtils.center("&aAuthor: NickImpact", 50), "",
+        StringUtils.center("&aAuthor: NickImpact & Smackzter", 50), "",
         StringUtils.center("Now attempting to load internal components...", 50));
 
     for (String s : banner)
