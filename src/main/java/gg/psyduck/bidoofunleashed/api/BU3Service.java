@@ -1,5 +1,6 @@
 package gg.psyduck.bidoofunleashed.api;
 
+import gg.psyduck.bidoofunleashed.api.enums.EnumLeaderType;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
 
 import java.util.List;
@@ -31,9 +32,24 @@ public interface BU3Service {
 	 *
 	 * @return A mapping of leaders, by UUID, to their respective gyms.
 	 */
-	Map<Gym, UUID> getAllLeaders();
+	Map<Gym, Map<UUID, EnumLeaderType>> getAllLeaders();
 
-	List<UUID> getLeadersForGym(String id);
+	/**
+	 * Fetches the set of leaders, by their UUID, for a gym with the specified name.
+	 * If the gym doesn't exist, the call to this method will return an empty
+	 * Optional. Otherwise, all leaders, listed by their UUID, shall be listed.
+	 *
+	 * @param name The name of the gym
+	 * @return A mapping containing leader UUIDs, along with their roles. If the gym
+	 * specified doesn't exist, however, an empty Optional.
+	 */
+	Optional<Map<UUID, EnumLeaderType>> getLeadersForGym(String name);
 
-	List<UUID> getLeadersForGym(Gym gym);
+	/**
+	 * Fetches the set of leaders, by their UUID, for the specified gym.
+	 *
+	 * @param gym The gym to fetch against
+	 * @return A mapping containing leader UUIDs, along with their roles.
+	 */
+	Map<UUID, EnumLeaderType> getLeadersForGym(Gym gym);
 }

@@ -2,6 +2,7 @@ package gg.psyduck.bidoofunleashed.gyms;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.nickimpact.impactor.api.rewards.Reward;
 import com.pixelmonmod.pixelmon.battles.controller.BattleControllerBase;
 import com.pixelmonmod.pixelmon.battles.controller.participants.BattleParticipant;
@@ -10,8 +11,8 @@ import com.pixelmonmod.pixelmon.battles.controller.participants.TrainerParticipa
 import com.pixelmonmod.pixelmon.battles.rules.BattleRules;
 import com.pixelmonmod.pixelmon.entities.npcs.NPCTrainer;
 import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
-import com.pixelmonmod.pixelmon.enums.battle.EnumBattleType;
 import com.pixelmonmod.pixelmon.storage.PixelmonStorage;
+import gg.psyduck.bidoofunleashed.api.enums.EnumLeaderType;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,7 +36,7 @@ public class Gym {
 	private Arena arena;
 
 	// Data filled in after creation
-	private List<UUID> leaders = Lists.newArrayList();
+	private Map<UUID, EnumLeaderType> leaders = Maps.newHashMap();
 	private List<BattleRules> battleRules;
 	private transient Queue<UUID> queue = new LinkedList<>();
 
@@ -47,8 +48,8 @@ public class Gym {
 		this.rewards = Lists.newArrayList(rewards);
 	}
 
-	public void addLeader(UUID uuid) {
-		this.leaders.add(uuid);
+	public void addLeader(UUID uuid, EnumLeaderType type) {
+		this.leaders.put(uuid, type);
 	}
 
 	public boolean canChallenge(Player player) {

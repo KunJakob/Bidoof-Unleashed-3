@@ -14,7 +14,6 @@ import gg.psyduck.bidoofunleashed.config.ConfigKeys;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
 import gg.psyduck.bidoofunleashed.data.DataRegistry;
 import gg.psyduck.bidoofunleashed.internal.TextParsingUtils;
-import gg.psyduck.bidoofunleashed.storage.BU3Storage;
 import gg.psyduck.bidoofunleashed.storage.StorageFactory;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;

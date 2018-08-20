@@ -25,49 +25,49 @@ import net.minecraft.util.text.TextComponentTranslation;
 
 public class PixelmonUtilities {
 
-  public static List<String> safePokes = new ArrayList<>();
-  private static Predicate<EntityPixelmon> invalidPokes = poke -> !(poke.getIsShiny()
-      || poke.hasOwner() || poke.isInRanchBlock || poke.isBeingRidden() || poke.isBossPokemon()
-      || poke.battleController != null || EnumPokemon.legendaries.contains(poke.getName())
-      || safePokes.contains(poke.getPokemonName()));
+	public static List<String> safePokes = new ArrayList<>();
+	private static Predicate<EntityPixelmon> invalidPokes = poke -> !(poke.getIsShiny()
+			|| poke.hasOwner() || poke.isInRanchBlock || poke.isBeingRidden() || poke.isBossPokemon()
+			|| poke.battleController != null || EnumPokemon.legendaries.contains(poke.getName())
+			|| safePokes.contains(poke.getPokemonName()));
 
-  public static void openDropInventory(ArrayList<DroppedItem> items, String message, Player p) {
-    EntityPlayerMP mp = (EntityPlayerMP) p;
+	public static void openDropInventory(ArrayList<DroppedItem> items, String message, Player p) {
+		EntityPlayerMP mp = (EntityPlayerMP) p;
 
-    DropItemQuery query = new DropItemQuery(mp.getPositionVector(), p.getUniqueId(), items);
-    DropItemQueryList.queryList.add(query);
-    ItemDropPacket packet =
-        new ItemDropPacket(ItemDropMode.Other, new TextComponentTranslation(message), items);
-    Pixelmon.network.sendTo(packet, mp);
-  }
+		DropItemQuery query = new DropItemQuery(mp.getPositionVector(), p.getUniqueId(), items);
+		DropItemQueryList.queryList.add(query);
+		ItemDropPacket packet =
+				new ItemDropPacket(ItemDropMode.Other, new TextComponentTranslation(message), items);
+		Pixelmon.network.sendTo(packet, mp);
+	}
 
-  public static void sendChatBoxes(Player p, String name, String... strings) {
-    ArrayList<String> stringlist = new ArrayList<>();
-    for (String s : strings) {
-      stringlist.add(s);
-    }
-    sendChatBoxes(p, name, stringlist);
-  }
+	public static void sendChatBoxes(Player p, String name, String... strings) {
+		ArrayList<String> stringlist = new ArrayList<>();
+		for (String s : strings) {
+			stringlist.add(s);
+		}
+		sendChatBoxes(p, name, stringlist);
+	}
 
-  public static void sendChatBoxes(Player p, String name, List<String> strings) {
-    EntityPlayerMP mp = (EntityPlayerMP) p;
-    Pixelmon.network.sendTo(new SetNPCData(name, (ArrayList<String>) strings), mp);
-    mp.openGui(Pixelmon.instance, EnumGui.NPCChat.getIndex(), mp.getEntityWorld(), 0, 0, 0);
-  }
+	public static void sendChatBoxes(Player p, String name, List<String> strings) {
+		EntityPlayerMP mp = (EntityPlayerMP) p;
+		Pixelmon.network.sendTo(new SetNPCData(name, (ArrayList<String>) strings), mp);
+		mp.openGui(Pixelmon.instance, EnumGui.NPCChat.getIndex(), mp.getEntityWorld(), 0, 0, 0);
+	}
 
-  public static int killPokes(World world) {
-    final AtomicInteger killCount = new AtomicInteger();
+	public static int killPokes(World world) {
+		final AtomicInteger killCount = new AtomicInteger();
 
-    Stream<EntityPixelmon> entStream =
-        world.getEntities().stream().filter(ent -> ent instanceof EntityPixelmon)
-            .map(ent -> (EntityPixelmon) ent).filter(invalidPokes);
+		Stream<EntityPixelmon> entStream =
+				world.getEntities().stream().filter(ent -> ent instanceof EntityPixelmon)
+						.map(ent -> (EntityPixelmon) ent).filter(invalidPokes);
 
-    entStream.forEach(poke -> {
-      poke.setDead();
-      killCount.getAndIncrement();
-    });
+		entStream.forEach(poke -> {
+			poke.setDead();
+			killCount.getAndIncrement();
+		});
 
-    return killCount.intValue();
-  }
+		return killCount.intValue();
+	}
 
 }
