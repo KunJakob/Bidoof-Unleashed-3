@@ -54,7 +54,7 @@ public class SqlDao extends AbstractBU3Dao {
 
 		// Init tables
 		if(!tableExists(prefix.apply("{prefix}data"))) {
-			String schemaFileName = "com/nickimpact/bidoofunleashed3/schema/" + provider.getName().toLowerCase() + ".sql";
+			String schemaFileName = "gg/psyduck/bidoofunleashed/schema/" + provider.getName().toLowerCase() + ".sql";
 			try (InputStream is = ((BidoofUnleashed)plugin).getResourceStream(schemaFileName)) {
 				if(is == null) {
 					throw new Exception("Couldn't locate schema file for " + provider.getName());
