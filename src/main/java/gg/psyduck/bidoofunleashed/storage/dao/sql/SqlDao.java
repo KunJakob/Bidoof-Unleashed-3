@@ -53,7 +53,7 @@ public class SqlDao extends AbstractBU3Dao {
 		provider.init();
 
 		// Init tables
-		if(!tableExists(prefix.apply("{prefix}data"))) {
+		if(!tableExists(prefix.apply("{prefix}player_data"))) {
 			String schemaFileName = "gg/psyduck/bidoofunleashed/schema/" + provider.getName().toLowerCase() + ".sql";
 			try (InputStream is = ((BidoofUnleashed)plugin).getResourceStream(schemaFileName)) {
 				if(is == null) {

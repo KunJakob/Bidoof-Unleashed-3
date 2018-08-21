@@ -31,7 +31,6 @@ import org.spongepowered.api.world.Location;
 import java.util.*;
 
 @Getter
-@Builder
 public class Gym {
 
 	private String name;
