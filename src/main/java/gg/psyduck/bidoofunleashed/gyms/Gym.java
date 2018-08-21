@@ -63,7 +63,7 @@ public class Gym {
 
 		this.rules = builder.rules;
 		this.clauses = builder.clauses;
-		this.initialize();
+		//this.initialize();
 	}
 
 	public void addLeader(UUID uuid, EnumLeaderType type) {
@@ -161,7 +161,7 @@ public class Gym {
 		}
 
 		public Builder clause(String clause) {
-			Preconditions.checkArgument(BattleClauseRegistry.getClauseRegistry().hasClause(clause), "Invalid clause: " + clause);
+			//Preconditions.checkArgument(BattleClauseRegistry.getClauseRegistry().hasClause(clause), "Invalid clause: " + clause);
 			this.clauses.add(clause);
 			return this;
 		}

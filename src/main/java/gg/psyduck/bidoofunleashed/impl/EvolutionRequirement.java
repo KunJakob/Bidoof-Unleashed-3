@@ -1,5 +1,6 @@
 package gg.psyduck.bidoofunleashed.impl;
 
+import com.nickimpact.impactor.json.Typing;
 import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
 import com.pixelmonmod.pixelmon.entities.pixelmon.stats.BaseStats;
 import com.pixelmonmod.pixelmon.entities.pixelmon.stats.evolution.types.LevelingEvolution;
@@ -15,12 +16,12 @@ import org.spongepowered.api.entity.living.player.Player;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Typing("evolution")
 public class EvolutionRequirement implements Requirement {
 
 	@Override
 	public boolean apply(Player player, Object... additional) {
 		PlayerStorage storage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) player).get();
-		int levelCap = (int) additional[0];
 		for(NBTTagCompound nbt : storage.partyPokemon) {
 			EnumPokemon species = EnumPokemon.getFromNameAnyCase(nbt.getString(NbtKeys.NAME));
 			int level = nbt.getInteger(NbtKeys.LEVEL);

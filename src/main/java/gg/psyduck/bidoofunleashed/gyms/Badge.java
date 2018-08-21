@@ -2,7 +2,6 @@ package gg.psyduck.bidoofunleashed.gyms;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.spongepowered.api.item.ItemType;
 
 import java.util.Date;
 import java.util.List;
@@ -15,8 +14,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class Badge {
 
+	/** The name of the badge */
+	 private final String name;
+
 	/** The item type for the badge */
-	private final ItemType badge;
+	private final String badge;
 
 	/** The name of the leader the badge was won from */
 	private final UUID leader;
@@ -28,6 +30,6 @@ public class Badge {
 	private final List<String> team;
 
 	public Badge fill(UUID leader, Date obtained, List<String> team) {
-		return new Badge(this.badge, leader, obtained, team);
+		return new Badge(this.name, this.badge, leader, obtained, team);
 	}
 }
