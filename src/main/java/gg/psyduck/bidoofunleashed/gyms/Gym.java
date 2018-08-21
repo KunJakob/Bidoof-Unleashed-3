@@ -10,7 +10,6 @@ import com.pixelmonmod.pixelmon.battles.controller.participants.BattleParticipan
 import com.pixelmonmod.pixelmon.battles.controller.participants.PlayerParticipant;
 import com.pixelmonmod.pixelmon.battles.controller.participants.TrainerParticipant;
 import com.pixelmonmod.pixelmon.battles.rules.BattleRules;
-import com.pixelmonmod.pixelmon.battles.rules.clauses.BattleClause;
 import com.pixelmonmod.pixelmon.battles.rules.clauses.BattleClauseRegistry;
 import com.pixelmonmod.pixelmon.config.PixelmonConfig;
 import com.pixelmonmod.pixelmon.entities.npcs.NPCTrainer;
@@ -19,9 +18,7 @@ import com.pixelmonmod.pixelmon.storage.PixelmonStorage;
 import gg.psyduck.bidoofunleashed.api.enums.EnumLeaderType;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.World;
 import org.spongepowered.api.entity.Entity;
@@ -46,12 +43,14 @@ public class Gym {
 	private transient Queue<UUID> queue = new LinkedList<>();
 	private transient boolean open = false;
 
-	public Gym(String name, Badge badge, List<Requirement> requirements, Reward... rewards) {
+	public Gym(String name, Badge badge, Arena arena, List<Requirement> requirements, Reward... rewards) {
 		this.name = name;
 		this.badge = badge;
+		this.arena = arena;
 		this.requirements = requirements;
 		this.rewards = Lists.newArrayList(rewards);
 		this.rules = Lists.newArrayList();
+		this.clauses = Lists.newArrayList();
 	}
 
 	public Gym(Builder builder) {

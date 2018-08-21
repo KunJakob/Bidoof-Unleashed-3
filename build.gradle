@@ -58,6 +58,7 @@ dependencies {
     compile 'reforged:server:6.3.4@Pixelmon-1.12.2-6.3.4-server.jar'
 	compile "org.projectlombok:lombok:1.18.0"
 	compile group: 'com.zaxxer', name: 'HikariCP', version: '2.5.1'
+    testCompile "junit:junit:4.11"
 }
 
 configurations {
