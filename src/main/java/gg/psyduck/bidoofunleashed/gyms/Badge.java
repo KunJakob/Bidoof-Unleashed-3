@@ -26,4 +26,8 @@ public class Badge {
 
 	/** The winning team for the player */
 	private final List<String> team;
+
+	public Badge fill(UUID leader, Date obtained, List<String> team) {
+		return new Badge(this.badge, leader, obtained, team);
+	}
 }

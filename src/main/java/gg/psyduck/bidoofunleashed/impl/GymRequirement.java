@@ -12,7 +12,7 @@ public class GymRequirement implements Requirement {
 	private final Gym requirement;
 
 	@Override
-	public boolean apply(Player player) {
+	public boolean apply(Player player, Object... additional) {
 		return BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(player.getUniqueId()).getBadges().contains(requirement.getBadge());
 	}
 }

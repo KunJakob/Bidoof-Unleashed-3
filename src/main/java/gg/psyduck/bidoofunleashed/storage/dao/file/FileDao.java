@@ -70,7 +70,7 @@ public class FileDao extends AbstractBU3Dao {
 	public List<Gym> fetchGyms() throws Exception {
 		List<Gym> gyms = Lists.newArrayList();
 		for(File gym : Objects.requireNonNull(BASE_PATH_GYMS.listFiles((d, s) -> s.toLowerCase().endsWith(".json")))) {
-			gyms.add(BidoofUnleashed.prettyGson.fromJson(new FileReader(gym), Gym.class));
+			gyms.add(BidoofUnleashed.prettyGson.fromJson(new FileReader(gym), Gym.class).initialize());
 		}
 
 		return gyms;

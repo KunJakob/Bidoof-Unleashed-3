@@ -148,7 +148,7 @@ public class SqlDao extends AbstractBU3Dao {
 			PreparedStatement query = connection.prepareStatement(stmt);
 			ResultSet results = query.executeQuery();
 			while(results.next()) {
-				gyms.add(BidoofUnleashed.prettyGson.fromJson(results.getString("data"), Gym.class));
+				gyms.add(BidoofUnleashed.prettyGson.fromJson(results.getString("data"), Gym.class).initialize());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

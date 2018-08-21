@@ -10,9 +10,12 @@ import com.nickimpact.impactor.api.commands.SpongeCommand;
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
 import com.nickimpact.impactor.api.services.plan.PlanData;
 import com.nickimpact.impactor.api.storage.StorageType;
+import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
+import gg.psyduck.bidoofunleashed.api.gyms.json.RequirementAdapter;
 import gg.psyduck.bidoofunleashed.config.ConfigKeys;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
 import gg.psyduck.bidoofunleashed.data.DataRegistry;
+import gg.psyduck.bidoofunleashed.impl.EvolutionRequirement;
 import gg.psyduck.bidoofunleashed.internal.TextParsingUtils;
 import gg.psyduck.bidoofunleashed.storage.StorageFactory;
 import org.spongepowered.api.Sponge;
@@ -70,7 +73,7 @@ public class BidoofUnleashed extends SpongePlugin {
 	@Inject @AsynchronousExecutor
 	private SpongeExecutorService asyncExecutorService;
 
-    public static final Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
+    public static Gson prettyGson;
 
     private ConfigBase config;
     private ConfigBase msgConfig;
@@ -92,9 +95,17 @@ public class BidoofUnleashed extends SpongePlugin {
 	@Listener
     public void onInit(GameInitializationEvent e) {
         instance = this;
+        prettyGson = new GsonBuilder()
+				.registerTypeAdapter(Requirement.class, new RequirementAdapter(this))
+				.setPrettyPrinting()
+				.create();
         this.logger = new ConsoleLogger(this, new SpongeLogger(this, fallback));
 
 	    BidoofInfo.startup();
+
+	    try {
+		    RequirementAdapter.requirementRegistry.register(EvolutionRequirement.class);
+	    } catch (Exception ignored) {}
 
 	    try {
 		    this.logger.info(Text.of(TextColors.GRAY, "Now entering the init phase..."));
