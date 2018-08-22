@@ -19,6 +19,8 @@ import java.util.Map;
 @Typing("level")
 public class LevelRequirement implements Requirement {
 
+	private final String type = "level";
+
 	@Override
 	public boolean passes(Gym gym, Player player) {
 		PlayerStorage storage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) player).get();

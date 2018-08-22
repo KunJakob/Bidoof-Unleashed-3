@@ -2,6 +2,7 @@ package gg.psyduck.bidoofunleashed.commands.general;
 
 import com.google.common.collect.Maps;
 import com.nickimpact.impactor.api.commands.SpongeCommand;
+import com.nickimpact.impactor.api.commands.annotations.Aliases;
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
 import gg.psyduck.bidoofunleashed.commands.arguments.GymArg;
@@ -18,6 +19,7 @@ import org.spongepowered.api.text.Text;
 
 import java.util.Map;
 
+@Aliases("challenge")
 public class ChallengeGymCommand extends SpongeCommand {
 
 	private static final Text GYM = Text.of("gym");

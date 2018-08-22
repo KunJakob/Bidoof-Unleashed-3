@@ -17,17 +17,18 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class GymRequirement implements Requirement {
 
-	private final Gym requirement;
+	private final String type = "gym";
+	private final String badgeRequirment;
 
 	@Override
 	public boolean passes(Gym gym, Player player) {
-		return BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(player.getUniqueId()).getBadges().contains(requirement.getBadge());
+		return BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(player.getUniqueId()).getBadges().stream().anyMatch(badge -> badge.getName().equalsIgnoreCase(badgeRequirment));
 	}
 
 	@Override
 	public void onInvalid(Gym gym, Player player) {
 		Map<String, Object> variables = Maps.newHashMap();
-		variables.put("bu3_badge", requirement.getBadge().getName());
+		variables.put("bu3_badge", badgeRequirment);
 		Text parsed = MessageUtils.fetchAndParseMsg(player, MsgConfigKeys.REQUIREMENT_GYM, null, variables);
 		player.sendMessage(parsed);
 	}

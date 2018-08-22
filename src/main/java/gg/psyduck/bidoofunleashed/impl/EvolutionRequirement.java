@@ -22,6 +22,8 @@ import java.util.stream.Collectors;
 @Typing("evolution")
 public class EvolutionRequirement implements Requirement {
 
+	private final String type = "evolution";
+
 	@Override
 	public boolean passes(Gym gym, Player player) {
 		PlayerStorage storage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) player).get();

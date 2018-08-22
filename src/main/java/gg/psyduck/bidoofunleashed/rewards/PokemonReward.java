@@ -2,6 +2,7 @@ package gg.psyduck.bidoofunleashed.rewards;
 
 import com.google.common.collect.Lists;
 import com.nickimpact.impactor.api.rewards.Reward;
+import com.nickimpact.impactor.json.Typing;
 import com.pixelmonmod.pixelmon.api.pokemon.PokemonSpec;
 import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
 import com.pixelmonmod.pixelmon.storage.PixelmonStorage;
@@ -12,8 +13,10 @@ import org.spongepowered.api.entity.living.player.Player;
 
 import java.util.List;
 
+@Typing("pokemon")
 public class PokemonReward implements Reward<List<PokemonSpec>> {
 
+	private final String type = "pokemon";
 	private List<PokemonSpec> pokemon = Lists.newArrayList();
 
 	@Override

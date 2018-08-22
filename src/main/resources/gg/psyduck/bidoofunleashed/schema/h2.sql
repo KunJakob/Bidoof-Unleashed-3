@@ -9,5 +9,5 @@ CREATE TABLE `{prefix}player_data` (
 CREATE TABLE `{prefix}gyms` (
   `name`  VARCHAR(36) NOT NULL,
   `data`  MEDIUMTEXT  NOT NULL,
-  PRIMARY KEY (`uuid`)
+  PRIMARY KEY (`name`)
 );

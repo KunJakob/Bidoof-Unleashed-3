@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import com.nickimpact.impactor.api.commands.SpongeCommand;
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
+import com.nickimpact.impactor.api.rewards.Reward;
 import com.nickimpact.impactor.api.services.plan.PlanData;
 import com.nickimpact.impactor.api.storage.StorageType;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
@@ -17,7 +18,13 @@ import gg.psyduck.bidoofunleashed.config.ConfigKeys;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
 import gg.psyduck.bidoofunleashed.data.DataRegistry;
 import gg.psyduck.bidoofunleashed.impl.EvolutionRequirement;
+import gg.psyduck.bidoofunleashed.impl.GymRequirement;
+import gg.psyduck.bidoofunleashed.impl.LevelRequirement;
 import gg.psyduck.bidoofunleashed.internal.TextParsingUtils;
+import gg.psyduck.bidoofunleashed.rewards.ItemReward;
+import gg.psyduck.bidoofunleashed.rewards.MoneyReward;
+import gg.psyduck.bidoofunleashed.rewards.PokemonReward;
+import gg.psyduck.bidoofunleashed.rewards.json.RewardAdapter;
 import gg.psyduck.bidoofunleashed.storage.StorageFactory;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
@@ -98,14 +105,20 @@ public class BidoofUnleashed extends SpongePlugin {
         instance = this;
         prettyGson = new GsonBuilder()
 				.registerTypeAdapter(Requirement.class, new RequirementAdapter(this))
+		        .registerTypeAdapter(Reward.class, new RewardAdapter(this))
 				.setPrettyPrinting()
 				.create();
         this.logger = new ConsoleLogger(this, new SpongeLogger(this, fallback));
-
 	    BidoofInfo.startup();
 
 	    try {
 		    RequirementAdapter.requirementRegistry.register(EvolutionRequirement.class);
+		    RequirementAdapter.requirementRegistry.register(GymRequirement.class);
+		    RequirementAdapter.requirementRegistry.register(LevelRequirement.class);
+
+		    RewardAdapter.rewardRegistry.register(PokemonReward.class);
+		    RewardAdapter.rewardRegistry.register(ItemReward.class);
+		    RewardAdapter.rewardRegistry.register(MoneyReward.class);
 	    } catch (Exception ignored) {}
 
 	    try {

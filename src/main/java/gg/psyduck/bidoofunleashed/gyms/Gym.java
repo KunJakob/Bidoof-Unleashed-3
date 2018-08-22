@@ -4,6 +4,7 @@ import com.flowpowered.math.vector.Vector3d;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.nickimpact.impactor.api.commands.annotations.Aliases;
 import com.nickimpact.impactor.api.rewards.Reward;
 import com.pixelmonmod.pixelmon.battles.controller.BattleControllerBase;
 import com.pixelmonmod.pixelmon.battles.controller.participants.BattleParticipant;
@@ -130,6 +131,13 @@ public class Gym {
 	public static class LocAndRot {
 		private Vector3d position;
 		private Vector3d rotation;
+	}
+
+	@AllArgsConstructor
+	public static class Coordinates {
+		private double x;
+		private double y;
+		private double z;
 	}
 
 	public static class Builder {

@@ -3,8 +3,6 @@ package gg.psyduck.bidoofunleashed.api.gyms;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
 import org.spongepowered.api.entity.living.player.Player;
 
-import javax.annotation.Nullable;
-
 /**
  * A requirement is a condition which the player must pass before being queued for a gym battle.
  * A gym can have a series of requirements, and it will be up to the player to pass the requirement.
