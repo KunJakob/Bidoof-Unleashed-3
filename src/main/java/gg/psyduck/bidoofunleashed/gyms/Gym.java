@@ -133,13 +133,6 @@ public class Gym {
 		private Vector3d rotation;
 	}
 
-	@AllArgsConstructor
-	public static class Coordinates {
-		private double x;
-		private double y;
-		private double z;
-	}
-
 	public static class Builder {
 		private String name;
 		private Badge badge;
