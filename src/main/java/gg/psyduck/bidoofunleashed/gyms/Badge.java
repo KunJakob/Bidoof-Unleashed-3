@@ -1,5 +1,6 @@
 package gg.psyduck.bidoofunleashed.gyms;
 
+import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -18,7 +19,8 @@ public class Badge {
 	 private final String name;
 
 	/** The item type for the badge */
-	private final String badge;
+	@SerializedName("item-type")
+	private final String itemType;
 
 	/** The name of the leader the badge was won from */
 	private final UUID leader;
@@ -30,6 +32,6 @@ public class Badge {
 	private final List<String> team;
 
 	public Badge fill(UUID leader, Date obtained, List<String> team) {
-		return new Badge(this.name, this.badge, leader, obtained, team);
+		return new Badge(this.name, this.itemType, leader, obtained, team);
 	}
 }

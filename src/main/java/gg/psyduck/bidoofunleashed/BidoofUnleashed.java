@@ -14,6 +14,7 @@ import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
 import gg.psyduck.bidoofunleashed.api.gyms.json.RequirementAdapter;
 import gg.psyduck.bidoofunleashed.commands.AddGymCommand;
 import gg.psyduck.bidoofunleashed.commands.AddGymLeaderCommand;
+import gg.psyduck.bidoofunleashed.commands.BU3Command;
 import gg.psyduck.bidoofunleashed.commands.GymListCommand;
 import gg.psyduck.bidoofunleashed.config.ConfigKeys;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
@@ -126,9 +127,7 @@ public class BidoofUnleashed extends SpongePlugin {
 	    }
 
 	    //commands
-        new GymListCommand(this);
-	    new AddGymCommand(this);
-	    new AddGymLeaderCommand(this);
+        new BU3Command(this).register(this);
     }
 
 	@Listener

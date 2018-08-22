@@ -60,7 +60,7 @@ public class BadgeCaseUI implements PageDisplayable {
 			}
 
 			ItemStack rep = ItemStack.builder()
-					.itemType(Sponge.getRegistry().getType(ItemType.class, badge.getBadge()).orElse(ItemTypes.BARRIER))
+					.itemType(Sponge.getRegistry().getType(ItemType.class, badge.getItemType()).orElse(ItemTypes.BARRIER))
 					.add(Keys.DISPLAY_NAME, Text.of(TextColors.DARK_AQUA, badge.getName()))
 					.add(Keys.ITEM_LORE, lore)
 					.build();
