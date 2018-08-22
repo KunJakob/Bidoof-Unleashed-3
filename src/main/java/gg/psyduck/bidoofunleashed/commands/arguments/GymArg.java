@@ -1,5 +1,6 @@
 package gg.psyduck.bidoofunleashed.commands.arguments;
 
+import com.google.common.collect.Lists;
 import com.nickimpact.impactor.api.commands.elements.BaseCommandElement;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
@@ -31,6 +32,6 @@ public class GymArg extends BaseCommandElement<Gym> {
 
 	@Override
 	public List<String> complete(CommandSource commandSource, CommandArgs commandArgs, CommandContext commandContext) {
-		return null;
+		return Lists.newArrayList();
 	}
 }

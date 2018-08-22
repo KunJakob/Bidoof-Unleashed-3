@@ -1,4 +1,4 @@
-package gg.psyduck.bidoofunleashed.commands;
+package gg.psyduck.bidoofunleashed.commands.general;
 
 import com.google.common.collect.Maps;
 import com.nickimpact.impactor.api.commands.SpongeCommand;

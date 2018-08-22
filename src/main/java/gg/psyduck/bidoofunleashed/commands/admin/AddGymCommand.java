@@ -1,4 +1,4 @@
-package gg.psyduck.bidoofunleashed.commands;
+package gg.psyduck.bidoofunleashed.commands.admin;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.nickimpact.impactor.api.commands.SpongeCommand;
@@ -24,7 +24,6 @@ public class AddGymCommand extends SpongeCommand {
 
     public AddGymCommand(SpongePlugin plugin) {
         super(plugin);
-        this.register(plugin);
     }
 
     @Override

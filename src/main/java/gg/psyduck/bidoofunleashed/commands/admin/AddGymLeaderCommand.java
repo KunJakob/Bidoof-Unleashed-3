@@ -1,4 +1,4 @@
-package gg.psyduck.bidoofunleashed.commands;
+package gg.psyduck.bidoofunleashed.commands.admin;
 
 import com.nickimpact.impactor.api.commands.SpongeCommand;
 import com.nickimpact.impactor.api.commands.annotations.Aliases;
@@ -25,7 +25,6 @@ public class AddGymLeaderCommand extends SpongeCommand {
 
     public AddGymLeaderCommand(SpongePlugin plugin) {
         super(plugin);
-        this.register(plugin);
     }
 
     @Override

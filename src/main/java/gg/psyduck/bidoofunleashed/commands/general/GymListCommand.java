@@ -1,4 +1,4 @@
-package gg.psyduck.bidoofunleashed.commands;
+package gg.psyduck.bidoofunleashed.commands.general;
 
 import com.nickimpact.impactor.api.commands.SpongeCommand;
 import com.nickimpact.impactor.api.commands.annotations.Aliases;
@@ -24,7 +24,6 @@ public class GymListCommand extends SpongeCommand {
 
     public GymListCommand(SpongePlugin plugin) {
         super(plugin);
-        this.register(plugin);
     }
 
     @Override
@@ -82,7 +81,7 @@ public class GymListCommand extends SpongeCommand {
 
 
             Text text = Text.of(
-                    gym.getName(), " ", gym.getBadge().getBadge(), " ", open, " ", requirements, " ", rewards, " ", rules, " ", clauses
+                    gym.getName(), " ", gym.getBadge().getName(), " ", open, " ", requirements, " ", rewards, " ", rules, " ", clauses
             );
             contents.add(text);
         }
