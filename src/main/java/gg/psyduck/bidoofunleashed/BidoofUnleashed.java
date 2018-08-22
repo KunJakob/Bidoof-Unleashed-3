@@ -12,6 +12,9 @@ import com.nickimpact.impactor.api.services.plan.PlanData;
 import com.nickimpact.impactor.api.storage.StorageType;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
 import gg.psyduck.bidoofunleashed.api.gyms.json.RequirementAdapter;
+import gg.psyduck.bidoofunleashed.commands.AddGymCommand;
+import gg.psyduck.bidoofunleashed.commands.AddGymLeaderCommand;
+import gg.psyduck.bidoofunleashed.commands.GymListCommand;
 import gg.psyduck.bidoofunleashed.config.ConfigKeys;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
 import gg.psyduck.bidoofunleashed.data.DataRegistry;
@@ -52,7 +55,7 @@ import lombok.Getter;
 
 @Getter
 @Plugin(id = BidoofInfo.ID, name = BidoofInfo.NAME, version = BidoofInfo.VERSION,
-    description = BidoofInfo.DESCRIPTION, dependencies = @Dependency(id = CoreInfo.ID))
+    description = BidoofInfo.DESCRIPTION, dependencies = {@Dependency(id = CoreInfo.ID), @Dependency(id = "nucleus")})
 public class BidoofUnleashed extends SpongePlugin {
 
     @Getter
@@ -121,6 +124,11 @@ public class BidoofUnleashed extends SpongePlugin {
 		    disable();
 		    exc.printStackTrace();
 	    }
+
+	    //commands
+        new GymListCommand(this);
+	    new AddGymCommand(this);
+	    new AddGymLeaderCommand(this);
     }
 
 	@Listener
