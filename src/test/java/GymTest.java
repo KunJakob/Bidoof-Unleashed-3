@@ -1,4 +1,5 @@
 import com.flowpowered.math.vector.Vector3d;
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.nickimpact.impactor.api.rewards.Reward;
@@ -11,7 +12,7 @@ import gg.psyduck.bidoofunleashed.impl.EvolutionRequirement;
 import gg.psyduck.bidoofunleashed.impl.GymRequirement;
 import gg.psyduck.bidoofunleashed.impl.LevelRequirement;
 import gg.psyduck.bidoofunleashed.rewards.ItemReward;
-import gg.psyduck.bidoofunleashed.rewards.MoneyReward;
+import gg.psyduck.bidoofunleashed.rewards.money.MoneyReward;
 import gg.psyduck.bidoofunleashed.rewards.PokemonReward;
 import gg.psyduck.bidoofunleashed.rewards.json.RewardAdapter;
 import org.junit.Test;
@@ -34,7 +35,7 @@ public class GymTest {
 				.rule("RaiseToCap")
 				.rule("NumPokemon: 3")
 				.clause("bag")
-				.rewards(new PokemonReward(), new PokemonReward())
+				.rewards(new PokemonReward(Lists.newArrayList()), new PokemonReward(Lists.newArrayList()))
 				.leader(UUID.randomUUID(), EnumLeaderType.PLAYER)
 				.leader(UUID.randomUUID(), EnumLeaderType.NPC)
 				.requirements(new EvolutionRequirement(), new GymRequirement("XXX"))
