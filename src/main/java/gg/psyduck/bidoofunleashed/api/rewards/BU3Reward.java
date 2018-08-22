@@ -1,4 +1,4 @@
-package gg.psyduck.bidoofunleashed.rewards;
+package gg.psyduck.bidoofunleashed.api.rewards;
 
 import com.nickimpact.impactor.api.rewards.Reward;
 import lombok.AllArgsConstructor;

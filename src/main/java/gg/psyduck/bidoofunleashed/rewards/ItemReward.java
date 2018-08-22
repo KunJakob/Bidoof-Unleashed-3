@@ -1,6 +1,7 @@
 package gg.psyduck.bidoofunleashed.rewards;
 
 import com.nickimpact.impactor.json.Typing;
+import gg.psyduck.bidoofunleashed.api.rewards.BU3Reward;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.InventoryTransformation;
 import org.spongepowered.api.item.inventory.ItemStack;

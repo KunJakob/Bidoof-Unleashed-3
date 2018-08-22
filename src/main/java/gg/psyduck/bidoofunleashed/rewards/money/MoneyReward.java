@@ -2,7 +2,7 @@ package gg.psyduck.bidoofunleashed.rewards.money;
 
 import com.nickimpact.impactor.json.Typing;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
-import gg.psyduck.bidoofunleashed.rewards.BU3Reward;
+import gg.psyduck.bidoofunleashed.api.rewards.BU3Reward;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.economy.Currency;
