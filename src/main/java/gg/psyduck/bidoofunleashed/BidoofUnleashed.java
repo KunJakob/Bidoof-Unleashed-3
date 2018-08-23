@@ -12,6 +12,8 @@ import com.flowpowered.math.vector.Vector3d;
 import com.nickimpact.impactor.api.commands.SpongeCommand;
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
 import com.nickimpact.impactor.api.rewards.Reward;
+import com.nickimpact.impactor.api.rewards.impl.CommandReward;
+import com.nickimpact.impactor.api.rewards.impl.CommandSeriesReward;
 import com.nickimpact.impactor.api.services.plan.PlanData;
 import com.nickimpact.impactor.api.storage.StorageType;
 import com.pixelmonmod.pixelmon.api.pokemon.PokemonSpec;
@@ -131,6 +133,8 @@ public class BidoofUnleashed extends SpongePlugin {
 		    RewardAdapter.rewardRegistry.register(PokemonReward.class);
 		    RewardAdapter.rewardRegistry.register(ItemReward.class);
 		    RewardAdapter.rewardRegistry.register(MoneyReward.class);
+		    RewardAdapter.rewardRegistry.register(CommandReward.class);
+		    RewardAdapter.rewardRegistry.register(CommandSeriesReward.class);
 	    } catch (Exception ignored) {}
 
 	    try {

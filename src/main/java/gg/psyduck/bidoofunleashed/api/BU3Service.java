@@ -2,6 +2,7 @@ package gg.psyduck.bidoofunleashed.api;
 
 import gg.psyduck.bidoofunleashed.api.enums.EnumLeaderType;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
+import gg.psyduck.bidoofunleashed.players.PlayerData;
 
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,16 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface BU3Service {
+
+	/**
+	 * Attempts to locate and return a {@link PlayerData} instance specific to a player. The method
+	 * will first check against all currently loaded data, falling back to offline data if the player
+	 * is not online. If the data doesn't exist whatsoever, an empty Optional will be returned.
+	 *
+	 * @param uuid The uuid of the target
+	 * @return An optionally wrapped instance of a {@link PlayerData}, or an empty optional
+	 */
+	Optional<PlayerData> getPlayerData(UUID uuid);
 
 	/**
 	 * Returns a list of {@link Gym}s registered into the current instance of AGP.
