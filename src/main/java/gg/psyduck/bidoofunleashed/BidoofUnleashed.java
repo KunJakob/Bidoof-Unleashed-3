@@ -19,6 +19,7 @@ import gg.psyduck.bidoofunleashed.api.enums.EnumLeaderType;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
 import gg.psyduck.bidoofunleashed.api.gyms.json.RequirementAdapter;
 import gg.psyduck.bidoofunleashed.commands.BU3Command;
+import gg.psyduck.bidoofunleashed.commands.general.CheckBadgeCommand;
 import gg.psyduck.bidoofunleashed.config.ConfigKeys;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
 import gg.psyduck.bidoofunleashed.data.DataRegistry;
@@ -97,7 +98,7 @@ public class BidoofUnleashed extends SpongePlugin {
     private ConfigBase config;
     private ConfigBase msgConfig;
 
-    private Storage storage;
+    private BU3Storage storage;
 
     /**
      * Used to keep track of any potential start up issues which will prevent the plugin from
@@ -149,6 +150,7 @@ public class BidoofUnleashed extends SpongePlugin {
 
 	    //commands
         new BU3Command(this).register(this);
+	    new CheckBadgeCommand(this).register(this);
     }
 
 	@Listener
@@ -156,22 +158,6 @@ public class BidoofUnleashed extends SpongePlugin {
 		if(e.getService().equals(EconomyService.class)) {
 			this.economy = (EconomyService) e.getNewProviderRegistration().getProvider();
 		}
-	}
-
-	@Listener
-    public void onJoin(ClientConnectionEvent.Join event, @org.spongepowered.api.event.filter.Getter("getTargetEntity") Player player)
-            throws Exception {
-        BU3Storage storage = (BU3Storage) this.getStorage();
-        if (!this.getDataRegistry().getPlayerData().containsKey(player.getUniqueId())) {
-            PlayerData playerData;
-            if (!storage.getPlayerData(player.getUniqueId()).get().isPresent()) {
-                playerData = new PlayerData(player.getUniqueId());
-                storage.addOrUpdatePlayerData(playerData);
-            } else {
-                playerData = storage.getPlayerData(player.getUniqueId()).get().get();
-            }
-            this.getDataRegistry().getPlayerData().put(player.getUniqueId(), playerData);
-        }
 	}
 
     private void disable() {

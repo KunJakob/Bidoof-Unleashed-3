@@ -1,6 +1,7 @@
 package gg.psyduck.bidoofunleashed.players;
 
 import com.google.common.collect.Lists;
+import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import gg.psyduck.bidoofunleashed.gyms.Badge;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +10,6 @@ import java.util.List;
 import java.util.UUID;
 
 @Getter
-@RequiredArgsConstructor
 public class PlayerData {
 
 	private final UUID uuid;
@@ -17,6 +17,15 @@ public class PlayerData {
 	private List<Badge> badges = Lists.newArrayList();
 
 	private Roles role = Roles.NONE;
+
+	private PlayerData(UUID uuid) {
+		this.uuid = uuid;
+		BidoofUnleashed.getInstance().getStorage().addOrUpdatePlayerData(this);
+	}
+
+	public static PlayerData createFor(UUID uuid) {
+		return new PlayerData(uuid);
+	}
 
 	public void awardBadge(Badge badge) {
 		this.badges.add(badge);

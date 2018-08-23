@@ -14,7 +14,7 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 
-@Aliases("checkbadge")
+@Aliases("badges")
 public class CheckBadgeCommand extends SpongeCommand {
 
     public CheckBadgeCommand(SpongePlugin plugin) {
@@ -33,7 +33,7 @@ public class CheckBadgeCommand extends SpongeCommand {
 
     @Override
     public Text getUsage() {
-        return Text.of("/checkbadge");
+        return Text.of("/badges");
     }
 
     @Override

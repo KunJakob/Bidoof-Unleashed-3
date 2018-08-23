@@ -34,7 +34,7 @@ public class StorageFactory {
 		return st;
 	}
 
-	public static Storage getInstance(SpongePlugin plugin, StorageType defaultMethod) throws Exception {
+	public static BU3Storage getInstance(SpongePlugin plugin, StorageType defaultMethod) throws Exception {
 		String method = plugin.getConfig().get(ConfigKeys.STORAGE_METHOD);
 		StorageType type = StorageType.parse(method);
 		if (type == null) {
@@ -46,12 +46,12 @@ public class StorageFactory {
 		Map<String, Function<CommandSource, Optional<Text>>> tokens = Maps.newHashMap();
 		tokens.put("storage_type", src -> Optional.of(Text.of(declared.getName())));
 		plugin.getLogger().info(MessageUtils.fetchAndParseMsg(null, MsgConfigKeys.STARTUP_STORAGE_PROVIDER, tokens, null));
-		Storage storage = makeInstance(declared, plugin);
+		BU3Storage storage = makeInstance(declared, plugin);
 		storage.init();
 		return storage;
 	}
 
-	private static Storage makeInstance(StorageType type, SpongePlugin plugin) {
+	private static BU3Storage makeInstance(StorageType type, SpongePlugin plugin) {
 		return AbstractBU3Storage.create(makeDao(type, plugin));
 	}
 

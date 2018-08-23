@@ -48,7 +48,6 @@ public class BU3Command extends SpongeCommand {
 				new GymListCommand(plugin),
                 new GiveBadgeCommand(plugin),
                 new RemoveBadgeCommand(plugin),
-                new CheckBadgeCommand(plugin)
 		};
 	}
 
