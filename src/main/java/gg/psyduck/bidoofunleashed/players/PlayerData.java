@@ -22,6 +22,16 @@ public class PlayerData {
 		this.badges.add(badge);
 	}
 
+	public boolean hasBadge(Badge badge) {
+	    return this.badges.stream().anyMatch(b -> b.getName().equals(badge.getName()) && b.getItemType().equals(badge.getItemType()));
+    }
+
+	public void removeBadge(Badge badge) {
+	    if (this.hasBadge(badge)) {
+	        this.badges.remove(badge);
+        }
+    }
+
 	public void setRole(Roles role) {
 		this.role = role;
 	}

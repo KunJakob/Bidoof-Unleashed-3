@@ -6,7 +6,10 @@ import com.nickimpact.impactor.api.plugins.SpongePlugin;
 import gg.psyduck.bidoofunleashed.commands.admin.AddGymCommand;
 import gg.psyduck.bidoofunleashed.commands.admin.AddGymLeaderCommand;
 import gg.psyduck.bidoofunleashed.commands.general.ChallengeGymCommand;
+import gg.psyduck.bidoofunleashed.commands.general.CheckBadgeCommand;
+import gg.psyduck.bidoofunleashed.commands.general.GiveBadgeCommand;
 import gg.psyduck.bidoofunleashed.commands.general.GymListCommand;
+import gg.psyduck.bidoofunleashed.commands.general.RemoveBadgeCommand;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -42,7 +45,10 @@ public class BU3Command extends SpongeCommand {
 				new AddGymCommand(plugin),
 				new AddGymLeaderCommand(plugin),
 				new ChallengeGymCommand(plugin),
-				new GymListCommand(plugin)
+				new GymListCommand(plugin),
+                new GiveBadgeCommand(plugin),
+                new RemoveBadgeCommand(plugin),
+                new CheckBadgeCommand(plugin)
 		};
 	}
 

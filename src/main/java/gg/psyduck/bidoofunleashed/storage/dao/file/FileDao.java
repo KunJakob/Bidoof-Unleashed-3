@@ -32,7 +32,7 @@ public class FileDao extends AbstractBU3Dao {
 
 	@Override
 	public void addOrUpdatePlayerData(PlayerData data) throws Exception {
-		File target = new File(BASE_PATH_PLAYERS, data.getUuid().toString().substring(0, 2) + "/" + data.getUuid().toString());
+		File target = new File(BASE_PATH_PLAYERS, data.getUuid().toString().substring(0, 2) + "/" + data.getUuid().toString() + ".json");
 		if(!target.exists()) {
 			target.getParentFile().mkdirs();
 			target.createNewFile();
@@ -45,7 +45,7 @@ public class FileDao extends AbstractBU3Dao {
 
 	@Override
 	public Optional<PlayerData> getPlayerData(UUID uuid) throws Exception {
-		File target = new File(BASE_PATH_PLAYERS, uuid.toString().substring(0, 2) + "/" + uuid.toString());
+		File target = new File(BASE_PATH_PLAYERS, uuid.toString().substring(0, 2) + "/" + uuid.toString() + ".json");
 		if(!target.exists()) {
 			return Optional.empty();
 		}
@@ -64,15 +64,10 @@ public class FileDao extends AbstractBU3Dao {
 		FileWriter writer = new FileWriter(target);
 		writer.write(BidoofUnleashed.prettyGson.toJson(gym));
 		writer.close();
-		BidoofUnleashed.getInstance().getDataRegistry().getGyms().add(gym);
 	}
 
 	@Override
 	public List<Gym> fetchGyms() throws Exception {
-	    if(!BidoofUnleashed.getInstance().getDataRegistry().getGyms().isEmpty()) {
-	        return BidoofUnleashed.getInstance().getDataRegistry().getGyms();
-        }
-
 		List<Gym> gyms = Lists.newArrayList();
 		for(File gym : Objects.requireNonNull(BASE_PATH_GYMS.listFiles((d, s) -> s.toLowerCase().endsWith(".json")))) {
 			gyms.add(BidoofUnleashed.prettyGson.fromJson(new FileReader(gym), Gym.class).initialize());

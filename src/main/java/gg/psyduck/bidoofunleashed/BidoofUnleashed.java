@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.nickimpact.impactor.api.commands.SpongeCommand;
@@ -27,16 +28,20 @@ import gg.psyduck.bidoofunleashed.impl.EvolutionRequirement;
 import gg.psyduck.bidoofunleashed.impl.GymRequirement;
 import gg.psyduck.bidoofunleashed.impl.LevelRequirement;
 import gg.psyduck.bidoofunleashed.internal.TextParsingUtils;
+import gg.psyduck.bidoofunleashed.players.PlayerData;
 import gg.psyduck.bidoofunleashed.rewards.ItemReward;
 import gg.psyduck.bidoofunleashed.rewards.money.MoneyReward;
 import gg.psyduck.bidoofunleashed.rewards.PokemonReward;
 import gg.psyduck.bidoofunleashed.rewards.json.RewardAdapter;
+import gg.psyduck.bidoofunleashed.storage.BU3Storage;
 import gg.psyduck.bidoofunleashed.storage.StorageFactory;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
+import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.event.service.ChangeServiceProviderEvent;
 import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
@@ -151,6 +156,22 @@ public class BidoofUnleashed extends SpongePlugin {
 		if(e.getService().equals(EconomyService.class)) {
 			this.economy = (EconomyService) e.getNewProviderRegistration().getProvider();
 		}
+	}
+
+	@Listener
+    public void onJoin(ClientConnectionEvent.Join event, @org.spongepowered.api.event.filter.Getter("getTargetEntity") Player player)
+            throws Exception {
+        BU3Storage storage = (BU3Storage) this.getStorage();
+        if (!this.getDataRegistry().getPlayerData().containsKey(player.getUniqueId())) {
+            PlayerData playerData;
+            if (!storage.getPlayerData(player.getUniqueId()).get().isPresent()) {
+                playerData = new PlayerData(player.getUniqueId());
+                storage.addOrUpdatePlayerData(playerData);
+            } else {
+                playerData = storage.getPlayerData(player.getUniqueId()).get().get();
+            }
+            this.getDataRegistry().getPlayerData().put(player.getUniqueId(), playerData);
+        }
 	}
 
     private void disable() {
