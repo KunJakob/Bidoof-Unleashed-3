@@ -86,7 +86,7 @@ public class GiveBadgeCommand extends SpongeCommand {
             team.add(name);
         }
 
-        Badge badge = gym.getBadge().fill(player.getUniqueId(), Date.from(Instant.now()), team);
+        Badge badge = gym.getBadge().fill(player.getUniqueId(), team);
         BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(target.getUniqueId()).awardBadge(badge);
 
         Map<String, Object> variables = Maps.newHashMap();

@@ -54,11 +54,15 @@ public class ChallengeGymCommand extends SpongeCommand {
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 		if(src instanceof Player) {
 			Gym gym = args.<Gym>getOne(GYM).get();
-			for (Requirement requirement : gym.getRequirements()) {
-				if (!requirement.passes(gym, (Player) src)) {
-					requirement.onInvalid(gym, (Player) src);
-					return CommandResult.empty();
+			try {
+				for (Requirement requirement : gym.getRequirements()) {
+					if (!requirement.passes(gym, (Player) src)) {
+						requirement.onInvalid(gym, (Player) src);
+						return CommandResult.empty();
+					}
 				}
+			} catch (Exception e) {
+				throw new CommandException(Text.of("An error occurred whilst processing your information, please inform a staff member..."));
 			}
 
 			gym.getQueue().add(((Player) src).getUniqueId());

@@ -58,11 +58,11 @@ public class AddGymCommand extends SpongeCommand {
         ItemType badge = (ItemType) args.getOne("badge-type").get();
         String badgeName = (String) args.getOne("badge-name").get();
 
-        BU3Storage storage = (BU3Storage) BidoofUnleashed.getInstance().getStorage();
+        BU3Storage storage = BidoofUnleashed.getInstance().getStorage();
 
         Gym gym = Gym.builder()
                 .name(name)
-                .badge(new Badge(badgeName, badge.getName(), null, null, null))
+                .badge(new Badge(badgeName, badge.getName()))
                 .arena(new Gym.Arena(
                         new Gym.LocAndRot(new Vector3d(), new Vector3d()),
                         new Gym.LocAndRot(new Vector3d(), new Vector3d()),
@@ -71,11 +71,7 @@ public class AddGymCommand extends SpongeCommand {
                 .levelCap(lvlCap)
                 .build();
 
-        try {
-            storage.addOrUpdateGym(gym).get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
+        storage.addOrUpdateGym(gym);
         return CommandResult.success();
     }
 }

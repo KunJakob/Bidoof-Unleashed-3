@@ -16,7 +16,7 @@ public interface Requirement {
 	 * @param player The player attempting to challenge the gym
 	 * @return True if the player passes, false otherwise
 	 */
-	boolean passes(Gym gym, Player player);
+	boolean passes(Gym gym, Player player) throws Exception;
 
 	/**
 	 * A method which should act as a informative bridge to the player, specifying

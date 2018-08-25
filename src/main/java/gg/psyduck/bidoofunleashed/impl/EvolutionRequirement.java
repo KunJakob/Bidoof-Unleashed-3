@@ -25,8 +25,8 @@ public class EvolutionRequirement implements Requirement {
 	private final String type = "evolution";
 
 	@Override
-	public boolean passes(Gym gym, Player player) {
-		PlayerStorage storage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) player).get();
+	public boolean passes(Gym gym, Player player) throws Exception {
+		PlayerStorage storage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) player).orElseThrow(() -> new Exception("Missing player storage data for " + player.getName()));
 		for(NBTTagCompound nbt : storage.partyPokemon) {
 			EnumPokemon species = EnumPokemon.getFromNameAnyCase(nbt.getString(NbtKeys.NAME));
 			int level = nbt.getInteger(NbtKeys.LEVEL);

@@ -22,8 +22,8 @@ public class LevelRequirement implements Requirement {
 	private final String type = "level";
 
 	@Override
-	public boolean passes(Gym gym, Player player) {
-		PlayerStorage storage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) player).get();
+	public boolean passes(Gym gym, Player player) throws Exception {
+		PlayerStorage storage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) player).orElseThrow(() -> new Exception("Missing player storage data for " + player.getName()));
 		for(NBTTagCompound nbt : storage.partyPokemon) {
 			if(nbt.getInteger(NbtKeys.LEVEL) > gym.getBattleRules().levelCap) {
 				return false;

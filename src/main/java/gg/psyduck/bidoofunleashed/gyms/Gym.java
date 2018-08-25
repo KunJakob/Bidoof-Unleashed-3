@@ -4,7 +4,7 @@ import com.flowpowered.math.vector.Vector3d;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.nickimpact.impactor.api.rewards.Reward;
+import gg.psyduck.bidoofunleashed.api.rewards.BU3Reward;
 import com.pixelmonmod.pixelmon.battles.controller.BattleControllerBase;
 import com.pixelmonmod.pixelmon.battles.controller.participants.BattleParticipant;
 import com.pixelmonmod.pixelmon.battles.controller.participants.PlayerParticipant;
@@ -15,6 +15,7 @@ import com.pixelmonmod.pixelmon.config.PixelmonConfig;
 import com.pixelmonmod.pixelmon.entities.npcs.NPCTrainer;
 import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
 import com.pixelmonmod.pixelmon.storage.PixelmonStorage;
+import gg.psyduck.bidoofunleashed.api.enums.EnumBattleType;
 import gg.psyduck.bidoofunleashed.api.enums.EnumLeaderType;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
 import lombok.AllArgsConstructor;
@@ -34,24 +35,15 @@ public class Gym {
 	private Badge badge;
 	private Arena arena;
 	private List<Requirement> requirements;
-	private List<Reward> rewards;
+	private Map<EnumBattleType, List<BU3Reward>> rewards;
 	private List<String> rules;
 	private List<String> clauses;
-	private Map<UUID, EnumLeaderType> leaders = Maps.newHashMap();
+	private Map<UUID, EnumLeaderType> leaders;
 
 	private transient BattleRules battleRules;
 	private transient Queue<UUID> queue = new LinkedList<>();
+	private transient Map<Player, Entity> challengers = Maps.newHashMap();
 	private transient boolean open = false;
-
-	public Gym(String name, Badge badge, Arena arena, List<Requirement> requirements, Reward... rewards) {
-		this.name = name;
-		this.badge = badge;
-		this.arena = arena;
-		this.requirements = requirements;
-		this.rewards = Lists.newArrayList(rewards);
-		this.rules = Lists.newArrayList();
-		this.clauses = Lists.newArrayList();
-	}
 
 	public Gym(Builder builder) {
 		this.name = builder.name;
@@ -92,6 +84,8 @@ public class Gym {
 			challenger.setLocationAndRotationSafely(new Location<>(challenger.getWorld(), arena.challenger.position), arena.challenger.rotation);
 			EntityPixelmon starter = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) challenger).get().getFirstAblePokemon((World) challenger.getWorld());
 			new BattleControllerBase(bpL, new PlayerParticipant((EntityPlayerMP) challenger, starter), battleRules);
+
+			this.challengers.put(challenger, leader);
 		}
 	}
 
@@ -138,7 +132,7 @@ public class Gym {
 		private Arena arena;
 
 		private List<Requirement> requirements = Lists.newArrayList();
-		private List<Reward> rewards = Lists.newArrayList();
+		private Map<EnumBattleType, List<BU3Reward>> rewards = Maps.newHashMap();
 
 		private List<String> rules = Lists.newArrayList();
 		private List<String> clauses = Lists.newArrayList();
@@ -188,8 +182,8 @@ public class Gym {
 			return this;
 		}
 
-		public Builder rewards(Reward... rewards) {
-			this.rewards.addAll(Arrays.asList(rewards));
+		public Builder rewards(EnumBattleType type, BU3Reward... rewards) {
+			this.rewards.put(type, Arrays.asList(rewards));
 			return this;
 		}
 

@@ -55,14 +55,7 @@ public class AddGymLeaderCommand extends SpongeCommand {
         String name = (String) args.getOne("gym-name").get();
         User user = (User) args.getOne("user").get();
 
-        BU3Storage storage = (BU3Storage) BidoofUnleashed.getInstance().getStorage();
-        List<Gym> gyms = new ArrayList<>();
-        try {
-            gyms = storage.fetchGyms().get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        Gym gym = gyms.stream().filter(g -> g.getName().equals(name)).findFirst()
+        Gym gym = BidoofUnleashed.getInstance().getDataRegistry().getGyms().stream().filter(g -> g.getName().equals(name)).findFirst()
                 .orElseThrow(() -> new CommandException(Text.of("Invalid gym name")));
         gym.addLeader(user.getUniqueId(), EnumLeaderType.PLAYER);
         return CommandResult.success();

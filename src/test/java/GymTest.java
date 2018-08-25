@@ -3,6 +3,7 @@ import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.nickimpact.impactor.api.rewards.Reward;
+import gg.psyduck.bidoofunleashed.api.enums.EnumBattleType;
 import gg.psyduck.bidoofunleashed.api.enums.EnumLeaderType;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
 import gg.psyduck.bidoofunleashed.api.gyms.json.RequirementAdapter;
@@ -25,7 +26,7 @@ public class GymTest {
 	public void gymBuilder() {
 		Gym gym = Gym.builder()
 				.name("Bidoof Gym")
-				.badge(new Badge("Test Badge", "air", null, null, null))
+				.badge(new Badge("Test Badge", "air"))
 				.arena(new Gym.Arena(
 						new Gym.LocAndRot(new Vector3d(), new Vector3d()),
 						new Gym.LocAndRot(new Vector3d(), new Vector3d()),
@@ -35,7 +36,7 @@ public class GymTest {
 				.rule("RaiseToCap")
 				.rule("NumPokemon: 3")
 				.clause("bag")
-				.rewards(new PokemonReward(Lists.newArrayList()), new PokemonReward(Lists.newArrayList()))
+				.rewards(EnumBattleType.First, new PokemonReward(Lists.newArrayList()), new PokemonReward(Lists.newArrayList()))
 				.leader(UUID.randomUUID(), EnumLeaderType.PLAYER)
 				.leader(UUID.randomUUID(), EnumLeaderType.NPC)
 				.requirements(new EvolutionRequirement(), new GymRequirement("XXX"))

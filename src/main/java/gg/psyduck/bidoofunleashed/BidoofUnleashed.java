@@ -16,6 +16,7 @@ import com.nickimpact.impactor.api.rewards.impl.CommandReward;
 import com.nickimpact.impactor.api.rewards.impl.CommandSeriesReward;
 import com.nickimpact.impactor.api.services.plan.PlanData;
 import com.nickimpact.impactor.api.storage.StorageType;
+import com.pixelmonmod.pixelmon.Pixelmon;
 import com.pixelmonmod.pixelmon.api.pokemon.PokemonSpec;
 import gg.psyduck.bidoofunleashed.api.enums.EnumLeaderType;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
@@ -31,6 +32,8 @@ import gg.psyduck.bidoofunleashed.impl.EvolutionRequirement;
 import gg.psyduck.bidoofunleashed.impl.GymRequirement;
 import gg.psyduck.bidoofunleashed.impl.LevelRequirement;
 import gg.psyduck.bidoofunleashed.internal.TextParsingUtils;
+import gg.psyduck.bidoofunleashed.listeners.BattleListener;
+import gg.psyduck.bidoofunleashed.listeners.ClientListener;
 import gg.psyduck.bidoofunleashed.players.PlayerData;
 import gg.psyduck.bidoofunleashed.rewards.ItemReward;
 import gg.psyduck.bidoofunleashed.rewards.money.MoneyReward;
@@ -66,7 +69,6 @@ import com.nickimpact.impactor.api.configuration.AbstractConfigAdapter;
 import com.nickimpact.impactor.api.configuration.ConfigBase;
 import com.nickimpact.impactor.api.logger.Logger;
 import com.nickimpact.impactor.api.plugins.PluginInfo;
-import com.nickimpact.impactor.api.storage.Storage;
 import com.nickimpact.impactor.logging.ConsoleLogger;
 import com.nickimpact.impactor.logging.SpongeLogger;
 
@@ -145,16 +147,19 @@ public class BidoofUnleashed extends SpongePlugin {
 		    this.msgConfig = new AbstractConfig(this, new AbstractConfigAdapter(this), new MsgConfigKeys(), "lang/en_us.conf");
 		    this.msgConfig.init();
 
+		    Sponge.getEventManager().registerListeners(this, new ClientListener());
+		    Pixelmon.EVENT_BUS.register(new BattleListener());
+
+		    //commands
+		    new BU3Command(this).register(this);
+		    new CheckBadgeCommand(this).register(this);
+
 		    this.storage = StorageFactory.getInstance(this, StorageType.H2);
 	    } catch (Exception exc) {
 		    this.error = exc;
 		    disable();
 		    exc.printStackTrace();
 	    }
-
-	    //commands
-        new BU3Command(this).register(this);
-	    new CheckBadgeCommand(this).register(this);
     }
 
 	@Listener

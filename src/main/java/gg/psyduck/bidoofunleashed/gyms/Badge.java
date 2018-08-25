@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -12,7 +13,6 @@ import java.util.UUID;
  * The data holder for a badge received by a player.
  */
 @Getter
-@RequiredArgsConstructor
 public class Badge {
 
 	/** The name of the badge */
@@ -25,13 +25,47 @@ public class Badge {
 	/** The name of the leader the badge was won from */
 	private final UUID leader;
 
+	/** If the leader is an NPC, specify the NPC's name */
+	private final String npcName;
+
 	/** The date the badge was obtained */
 	private final Date obtained;
 
 	/** The winning team for the player */
 	private final List<String> team;
 
-	public Badge fill(UUID leader, Date obtained, List<String> team) {
-		return new Badge(this.name, this.itemType, leader, obtained, team);
+	public Badge(String name, String itemType) {
+		this.name = name;
+		this.itemType = itemType;
+		this.leader = null;
+		this.npcName = null;
+		this.obtained = null;
+		this.team = null;
+	}
+
+	private Badge(String name, String itemType, UUID leader, List<String> team) {
+		this.name = name;
+		this.itemType = itemType;
+		this.leader = leader;
+		this.npcName = null;
+		this.obtained = Date.from(Instant.now());
+		this.team = team;
+	}
+
+	private Badge(String name, String itemType, String npcName, List<String> team) {
+		this.name = name;
+		this.itemType = itemType;
+		this.leader = null;
+		this.npcName = npcName;
+		this.obtained = Date.from(Instant.now());
+		this.team = team;
+	}
+
+	public Badge fill(UUID leader, List<String> team) {
+		return new Badge(this.name, this.itemType, leader, team);
+	}
+
+	public Badge fill(String npcName, List<String> team) {
+		return new Badge(this.name, this.itemType, npcName, team);
 	}
 }
