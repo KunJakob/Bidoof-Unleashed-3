@@ -38,11 +38,17 @@ repositories {
 }
 
 version = "1.0.0"
-group= "gg.psyduck.anothergymplugin"
-archivesBaseName = "AnotherGymPluginRedux"
+group= "gg.psyduck.bidoofunleashed"
+archivesBaseName = "Bidoof Unleashed"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
+
+ext {
+    pluginversion = '0.10.0-BETA'
+    spongeapiversion = '7.1.0-SNAPSHOT'
+    completeversion = "S${spongeapiversion.substring(0, 5)}-${pluginversion}"
+}
  
 minecraft {
 	version = "1.12.2-14.23.2.2611"
@@ -68,6 +74,11 @@ configurations {
 
 //Fix forges AT breaking everything because the AT checker is stupid
 [tasks.deobfMcMCP, tasks.deobfMcSRG].each { it.failOnAtError = false }
+
+jar {
+    archiveName = "Bidoof Unleashed-${completeversion}.jar"
+}
+
 
 processResources
 {

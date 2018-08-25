@@ -66,7 +66,7 @@ public class StorageFactory {
 			case H2:
 				return new SqlDao(
 						plugin,
-						new H2ConnectionFactory(new File(((BidoofUnleashed) plugin).getDataDirectory(), "daycare-h2")),
+						new H2ConnectionFactory(new File(((BidoofUnleashed) plugin).getDataDirectory(), "sql/bu3-h2")),
 						plugin.getConfig().get(ConfigKeys.SQL_TABLE_PREFIX)
 				);
 			case JSON:
@@ -75,7 +75,7 @@ public class StorageFactory {
 				//return new JsonDao(plugin);
 				return new SqlDao(
 						plugin,
-						new H2ConnectionFactory(new File(((BidoofUnleashed) plugin).getDataDirectory(), "daycare-h2")),
+						new H2ConnectionFactory(new File(((BidoofUnleashed) plugin).getDataDirectory(), "bu3-h2")),
 						plugin.getConfig().get(ConfigKeys.SQL_TABLE_PREFIX)
 				);
 		}

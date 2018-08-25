@@ -68,7 +68,7 @@ public class ChallengeGymCommand extends SpongeCommand {
 			gym.getQueue().add(((Player) src).getUniqueId());
 
 			Map<String, Object> variables = Maps.newHashMap();
-			variables.put("bu3_gym", gym.getName());
+			variables.put("bu3-gym", gym.getName());
 			src.sendMessage(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.COMMANDS_CHALLENGE_QUEUED, null, variables));
 		}
 

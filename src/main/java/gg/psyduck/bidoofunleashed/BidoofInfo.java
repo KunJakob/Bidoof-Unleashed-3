@@ -14,9 +14,9 @@ import com.nickimpact.impactor.api.plugins.PluginInfo;
 
 public class BidoofInfo implements PluginInfo {
 
-    public static final String ID = "agpredux";
-    public static final String NAME = "AGP Redux";
-    public static final String VERSION = "S7.1-0.1.0-DEV";
+    public static final String ID = "bu3";
+    public static final String NAME = "Bidoof Unleashed 3";
+    public static final String VERSION = "S7.1-0.8.0-BETA";
     public static final String DESCRIPTION = "A Sponge Representation of the Pokemon Daycare";
 
     @Override

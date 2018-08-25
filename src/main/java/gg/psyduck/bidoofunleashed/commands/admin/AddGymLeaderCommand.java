@@ -7,6 +7,7 @@ import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import gg.psyduck.bidoofunleashed.api.enums.EnumLeaderType;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
 import gg.psyduck.bidoofunleashed.storage.BU3Storage;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -14,6 +15,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 
 import java.util.ArrayList;
@@ -53,11 +55,12 @@ public class AddGymLeaderCommand extends SpongeCommand {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         String name = (String) args.getOne("gym-name").get();
-        User user = (User) args.getOne("user").get();
+        User user = args.<User>getOne("user").get();
 
         Gym gym = BidoofUnleashed.getInstance().getDataRegistry().getGyms().stream().filter(g -> g.getName().equals(name)).findFirst()
                 .orElseThrow(() -> new CommandException(Text.of("Invalid gym name")));
         gym.addLeader(user.getUniqueId(), EnumLeaderType.PLAYER);
+        BidoofUnleashed.getInstance().getStorage().addOrUpdateGym(gym);
         return CommandResult.success();
     }
 }

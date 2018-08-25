@@ -12,6 +12,7 @@ import gg.psyduck.bidoofunleashed.commands.arguments.GymArg;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
 import gg.psyduck.bidoofunleashed.gyms.Badge;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
+import gg.psyduck.bidoofunleashed.players.PlayerData;
 import gg.psyduck.bidoofunleashed.utils.MessageUtils;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -87,10 +88,12 @@ public class GiveBadgeCommand extends SpongeCommand {
         }
 
         Badge badge = gym.getBadge().fill(player.getUniqueId(), team);
-        BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(target.getUniqueId()).awardBadge(badge);
+        PlayerData data = BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(target.getUniqueId());
+        data.awardBadge(badge);
+        BidoofUnleashed.getInstance().getStorage().addOrUpdatePlayerData(data);
 
         Map<String, Object> variables = Maps.newHashMap();
-        variables.put("bu3_badge", badge.getName());
+        variables.put("bu3-badge", badge.getName());
         variables.put("player", target.getName());
 
         player.sendMessage(MessageUtils.fetchAndParseMsg(player, MsgConfigKeys.COMMANDS_GIVE_BADGE_LEADER, null, variables));

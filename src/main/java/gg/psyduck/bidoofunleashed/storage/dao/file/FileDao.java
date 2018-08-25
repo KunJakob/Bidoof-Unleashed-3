@@ -17,15 +17,23 @@ import java.util.UUID;
 
 public class FileDao extends AbstractBU3Dao {
 
-	private static final File BASE_PATH_PLAYERS = new File("bidoof-unleashed-3/players/");
-	private static final File BASE_PATH_GYMS = new File("bidoof-unleashed-3/gyms/");
+	private static final File BASE_PATH_PLAYERS = new File("bidoof-unleashed-3/json/players/");
+	private static final File BASE_PATH_GYMS = new File("bidoof-unleashed-3/json/gyms/");
 
 	public FileDao(SpongePlugin plugin) {
 		super(plugin, "Flatfile");
 	}
 
 	@Override
-	public void init() throws Exception {}
+	public void init() throws Exception {
+		if(!BASE_PATH_PLAYERS.exists()) {
+			BASE_PATH_PLAYERS.mkdirs();
+		}
+
+		if(!BASE_PATH_GYMS.exists()) {
+			BASE_PATH_GYMS.mkdirs();
+		}
+	}
 
 	@Override
 	public void shutdown() throws Exception {}
@@ -55,7 +63,7 @@ public class FileDao extends AbstractBU3Dao {
 
 	@Override
 	public void addOrUpdateGym(Gym gym) throws Exception {
-		File target = new File(BASE_PATH_GYMS, gym.getName() + ".json");
+		File target = new File(BASE_PATH_GYMS, gym.getName() + "/" + gym.getName() + ".json");
 		if(!target.exists()) {
 			target.getParentFile().mkdirs();
 			target.createNewFile();
@@ -69,8 +77,11 @@ public class FileDao extends AbstractBU3Dao {
 	@Override
 	public List<Gym> fetchGyms() throws Exception {
 		List<Gym> gyms = Lists.newArrayList();
-		for(File gym : Objects.requireNonNull(BASE_PATH_GYMS.listFiles((d, s) -> s.toLowerCase().endsWith(".json")))) {
-			gyms.add(BidoofUnleashed.prettyGson.fromJson(new FileReader(gym), Gym.class).initialize());
+		for(File base : Objects.requireNonNull(BASE_PATH_GYMS.listFiles())) {
+			for(File gym : Objects.requireNonNull(base.listFiles((d, s) -> s.toLowerCase().endsWith(".json") && !s.toLowerCase().equals("pool.json")))){
+				BidoofUnleashed.getInstance().getLogger().debug("Reading file: " + gym.getName());
+				gyms.add(BidoofUnleashed.prettyGson.fromJson(new FileReader(gym), Gym.class).initialize());
+			}
 		}
 
 		return gyms;

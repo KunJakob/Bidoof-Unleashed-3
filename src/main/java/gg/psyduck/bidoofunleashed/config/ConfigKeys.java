@@ -16,7 +16,7 @@ import java.util.Map;
 public class ConfigKeys implements IConfigKeys {
 
 	public static final ConfigKey<String> STORAGE_METHOD = StringKey.of("storage.storage-method", "h2");
-	public static final ConfigKey<String> SQL_TABLE_PREFIX = StringKey.of("storage.data.sql-table-prefix", "cosmetics_");
+	public static final ConfigKey<String> SQL_TABLE_PREFIX = StringKey.of("storage.data.sql-table-prefix", "bu3_");
 	public static final ConfigKey<StorageCredentials> DATABASE_VALUES = EnduringKey.wrap(AbstractKey.of(c -> new StorageCredentials(
 			c.getString("storage.data.connection-info.address", "localhost"),
 			c.getString("storage.data.connection-info.database", "database"),

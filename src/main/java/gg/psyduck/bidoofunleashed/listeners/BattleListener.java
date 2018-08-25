@@ -63,7 +63,7 @@ public class BattleListener {
 				}
 			}
 
-			BattleRegistry.register(new Challenge((Entity) trainer, player), g);
+			g.startBattle((Entity) trainer, player);
 		});
 	}
 
