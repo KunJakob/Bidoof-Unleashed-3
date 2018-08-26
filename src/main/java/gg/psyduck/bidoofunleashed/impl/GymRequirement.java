@@ -8,10 +8,13 @@ import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
 import gg.psyduck.bidoofunleashed.utils.MessageUtils;
 import lombok.RequiredArgsConstructor;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 
 @Typing("gym")
 @RequiredArgsConstructor
@@ -27,9 +30,9 @@ public class GymRequirement implements Requirement {
 
 	@Override
 	public void onInvalid(Gym gym, Player player) {
-		Map<String, Object> variables = Maps.newHashMap();
-		variables.put("bu3_badge", badgeRequirment);
-		Text parsed = MessageUtils.fetchAndParseMsg(player, MsgConfigKeys.REQUIREMENT_GYM, null, variables);
+		Map<String, Function<CommandSource, Optional<Text>>> tokens = Maps.newHashMap();
+		tokens.put("bu3_badge", s -> Optional.of(Text.of(badgeRequirment)));
+		Text parsed = MessageUtils.fetchAndParseMsg(player, MsgConfigKeys.REQUIREMENT_GYM, tokens, null);
 		player.sendMessage(parsed);
 	}
 }

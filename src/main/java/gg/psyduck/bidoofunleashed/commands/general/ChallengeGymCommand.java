@@ -18,6 +18,8 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 
 @Aliases("challenge")
 public class ChallengeGymCommand extends SpongeCommand {
@@ -67,9 +69,9 @@ public class ChallengeGymCommand extends SpongeCommand {
 
 			gym.getQueue().add(((Player) src).getUniqueId());
 
-			Map<String, Object> variables = Maps.newHashMap();
-			variables.put("bu3-gym", gym.getName());
-			src.sendMessage(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.COMMANDS_CHALLENGE_QUEUED, null, variables));
+			Map<String, Function<CommandSource, Optional<Text>>> tokens = Maps.newHashMap();
+			tokens.put("bu3_gym", s -> Optional.of(Text.of(gym.getName())));
+			src.sendMessage(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.COMMANDS_CHALLENGE_QUEUED, tokens, null));
 		}
 
 		throw new CommandException(Text.of("Only players can challenge a gym..."));

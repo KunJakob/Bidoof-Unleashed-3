@@ -21,6 +21,7 @@ import org.spongepowered.api.text.Text;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 @Aliases("removebadge")
 public class RemoveBadgeCommand extends SpongeCommand {
@@ -68,12 +69,14 @@ public class RemoveBadgeCommand extends SpongeCommand {
                 .stream().filter(b -> b.getName().equals(gym.getBadge().getName()) && b.getItemType().equals(gym.getBadge().getItemType())).findFirst();
 
         Map<String, Object> variables = Maps.newHashMap();
-        variables.put("bu3_badge", gym.getBadge().getName());
         variables.put("player", target.getName());
 
         if (!optBadge.isPresent()) {
             throw new CommandException(MessageUtils.fetchAndParseMsg(player, MsgConfigKeys.BADGE_NOT_FOUND, null, variables));
         }
+
+	    Map<String, Function<CommandSource, Optional<Text>>> tokens = Maps.newHashMap();
+	    tokens.put("bu3_badge", s -> Optional.of(Text.of(optBadge.get().getName())));
 
         BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(target.getUniqueId()).removeBadge(optBadge.get());
 

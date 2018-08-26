@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 @Aliases("givebadge")
 public class GiveBadgeCommand extends SpongeCommand {
@@ -93,11 +94,13 @@ public class GiveBadgeCommand extends SpongeCommand {
         BidoofUnleashed.getInstance().getStorage().addOrUpdatePlayerData(data);
 
         Map<String, Object> variables = Maps.newHashMap();
-        variables.put("bu3-badge", badge.getName());
         variables.put("player", target.getName());
 
-        player.sendMessage(MessageUtils.fetchAndParseMsg(player, MsgConfigKeys.COMMANDS_GIVE_BADGE_LEADER, null, variables));
-        target.sendMessage(MessageUtils.fetchAndParseMsg(target, MsgConfigKeys.COMMANDS_GIVE_BADGE_CHALLENGER, null, variables));
+	    Map<String, Function<CommandSource, Optional<Text>>> tokens = Maps.newHashMap();
+	    tokens.put("bu3_badge", s -> Optional.of(Text.of(badge.getName())));
+
+        player.sendMessage(MessageUtils.fetchAndParseMsg(player, MsgConfigKeys.COMMANDS_GIVE_BADGE_LEADER, tokens, variables));
+        target.sendMessage(MessageUtils.fetchAndParseMsg(target, MsgConfigKeys.COMMANDS_GIVE_BADGE_CHALLENGER, tokens, variables));
         return CommandResult.success();
     }
 }
