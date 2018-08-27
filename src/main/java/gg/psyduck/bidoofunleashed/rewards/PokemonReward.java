@@ -13,21 +13,19 @@ import org.spongepowered.api.entity.living.player.Player;
 import java.util.List;
 
 @Typing("pokemon")
-public class PokemonReward extends BU3Reward<List<PokemonSpec>> {
+public class PokemonReward extends BU3Reward<PokemonSpec> {
 
 	private final String type = "pokemon";
 
-	public PokemonReward(List<PokemonSpec> reward) {
+	public PokemonReward(PokemonSpec reward) {
 		super(reward);
 	}
 
 	@Override
 	public void give(Player player) throws Exception {
 		PlayerStorage storage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) player).orElseThrow(() -> new Exception("Unable to locate player storage for " + player.getName()));
-		for(PokemonSpec spec : this.reward) {
-			EntityPixelmon poke = spec.create((World) player.getWorld());
-			storage.addToParty(poke);
-		}
+		EntityPixelmon poke = this.reward.create((World) player.getWorld());
+		storage.addToParty(poke);
 		storage.sendUpdatedList();
 	}
 }

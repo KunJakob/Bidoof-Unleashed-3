@@ -32,6 +32,7 @@ public class MsgConfigKeys implements IConfigKeys {
     public static final ConfigKey<String> BADGE_NOT_FOUND = StringKey.of("commands.error.badge-not-present", "{{bu3_error}} {{player}} does not have that badge!");
 
     public static final ConfigKey<String> GYM_TITLE = StringKey.of("ui.team-pool.title", "&3Team Pool &7- &c{{bu3_gym}}");
+    public static final ConfigKey<String> SPECIES_TITLE = StringKey.of("ui.team-pool.species.title", "&3Team Pool &7- &c{{bu3_pokemon}}");
 	public static final ConfigKey<String> EMPTY_GYM_POOL_TITLE = StringKey.of("ui.team-pool.icons.empty.title", "&cEmpty Gym Pool...");
     public static final ConfigKey<List<String>> EMPTY_GYM_POOL_LORE = ListKey.of("ui.team-pool.icons.empty.lore", Lists.newArrayList(
     		"&7Apparently, this gym has no",

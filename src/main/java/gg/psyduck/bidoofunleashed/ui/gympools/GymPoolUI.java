@@ -7,7 +7,6 @@ import com.nickimpact.impactor.gui.v2.Layout;
 import com.nickimpact.impactor.gui.v2.Page;
 import com.nickimpact.impactor.gui.v2.PageDisplayable;
 import com.pixelmonmod.pixelmon.enums.EnumPokemon;
-import com.pixelmonmod.pixelmon.enums.forms.IEnumForm;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import gg.psyduck.bidoofunleashed.api.spec.BU3PokemonSpec;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
@@ -36,11 +35,17 @@ public class GymPoolUI implements PageDisplayable {
 
 	private Player player;
 	private Gym focus;
+	private List<BU3PokemonSpec> chosenTeam;
 	private Page display;
 
 	public GymPoolUI(Player player, Gym gym) {
+		this(player, gym, Lists.newArrayList());
+	}
+
+	GymPoolUI(Player player, Gym gym, List<BU3PokemonSpec> chosenTeam) {
 		this.player = player;
 		this.focus = gym;
+		this.chosenTeam = chosenTeam;
 		this.display = this.build().define(this.forge(), InventoryDimension.of(7, 3), 1, 1);
 	}
 
@@ -60,17 +65,12 @@ public class GymPoolUI implements PageDisplayable {
 			pb.previous(Icon.from(ItemStack.builder()
 					.itemType(Sponge.getRegistry().getType(ItemType.class, "pixelmon:trade_holder_left").orElse(ItemTypes.BARRIER))
 					.build()),
-					48
-			);
-			pb.current(Icon.from(ItemStack.builder()
-							.itemType(Sponge.getRegistry().getType(ItemType.class, "pixelmon:trade_monitor").orElse(ItemTypes.BARRIER))
-							.build()),
-					49
+					52
 			);
 			pb.next(Icon.from(ItemStack.builder()
 							.itemType(Sponge.getRegistry().getType(ItemType.class, "pixelmon:trade_holder_right").orElse(ItemTypes.BARRIER))
 							.build()),
-					50
+					53
 			);
 		}
 
@@ -80,7 +80,8 @@ public class GymPoolUI implements PageDisplayable {
 	private Layout layout() {
 		Layout.Builder lb = Layout.builder();
 		lb.row(Icon.BORDER, 0).row(Icon.BORDER, 4);
-		lb.column(Icon.BORDER, 0).column(Icon.BORDER, 8);
+		lb.column(Icon.BORDER, 0).column(Icon.BORDER, 8).slots(Icon.EMPTY, 45, 53);
+		lb.slot(Icon.BORDER, 51);
 		if(this.focus.getPool().getTeam().isEmpty()) {
 			lb.slot(Icon.from(ItemStack.builder()
 					.itemType(ItemTypes.STAINED_GLASS_PANE)
@@ -88,6 +89,13 @@ public class GymPoolUI implements PageDisplayable {
 					.add(Keys.DISPLAY_NAME, MessageUtils.fetchAndParseMsg(player, MsgConfigKeys.EMPTY_GYM_POOL_TITLE, null, null))
 					.add(Keys.ITEM_LORE, MessageUtils.fetchAndParseMsgs(player, MsgConfigKeys.EMPTY_GYM_POOL_LORE, null, null))
 					.build()), 22);
+		} else {
+			int index = 45;
+			for(BU3PokemonSpec spec : this.chosenTeam) {
+				ItemStack picture = PixelmonIcons.createPicture(EnumPokemon.getFromNameAnyCase(spec.name), spec.shiny != null ? spec.shiny : false, spec.form != null ? spec.form : -1);
+				picture = PixelmonIcons.applySpecDetails(picture, spec);
+				lb.slot(Icon.from(picture), index++);
+			}
 		}
 
 		return lb.build();
@@ -128,6 +136,10 @@ public class GymPoolUI implements PageDisplayable {
 				lore.add(Text.of(TextColors.GRAY, fName.substring(0, 1).toUpperCase() + fName.substring(1) + ": ", TextColors.YELLOW, fEntry.getValue()));
 			}
 			icon.getDisplay().offer(Keys.ITEM_LORE, lore);
+			icon.addListener(clickable -> {
+				this.display.close(player);
+				new SpeciesUI(player, focus, chosenTeam, entry.getKey()).open(player, 1);
+			});
 
 			results.add(icon);
 		}

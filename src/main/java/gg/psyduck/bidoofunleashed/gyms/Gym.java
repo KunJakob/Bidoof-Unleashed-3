@@ -64,7 +64,7 @@ public class Gym {
 
 		this.rules = builder.rules;
 		this.clauses = builder.clauses;
-		this.pool = new GymPool(new File("./" + BASE_PATH_GYMS, this.name + "/pool.json")).importFromShowdownStyle();
+		this.pool = new GymPool(new File("./" + BASE_PATH_GYMS, this.name + "/pool.json")).init();
 		this.initialize();
 	}
 
@@ -105,7 +105,7 @@ public class Gym {
 		this.battleRules = new BattleRules(impTxt);
 
 		this.queue = new LinkedList<>();
-		this.pool.importFromShowdownStyle();
+		this.pool.init();
 		this.pool.getTeam().forEach(member -> BidoofUnleashed.getInstance().getLogger().debug(BidoofUnleashed.prettyGson.toJson(member)));
 		return this;
 	}
