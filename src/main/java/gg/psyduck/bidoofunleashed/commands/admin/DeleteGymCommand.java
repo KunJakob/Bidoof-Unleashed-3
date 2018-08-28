@@ -5,6 +5,7 @@ import com.nickimpact.impactor.api.commands.SpongeCommand;
 import com.nickimpact.impactor.api.commands.annotations.Aliases;
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
+import gg.psyduck.bidoofunleashed.commands.arguments.GymArg;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
 import gg.psyduck.bidoofunleashed.storage.BU3Storage;
@@ -27,17 +28,19 @@ public class DeleteGymCommand extends SpongeCommand {
 
     @Override
     public CommandElement[] getArgs() {
-        return new CommandElement[0];
+        return new CommandElement[] {
+                new GymArg(Text.of("gym"))
+        };
     }
 
     @Override
     public Text getDescription() {
-        return null;
+        return Text.of("Deletes the specified gym");
     }
 
     @Override
     public Text getUsage() {
-        return null;
+        return Text.of("/deletegym <gym>");
     }
 
     @Override

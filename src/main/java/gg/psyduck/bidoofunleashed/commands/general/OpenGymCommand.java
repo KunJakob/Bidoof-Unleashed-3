@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.nickimpact.impactor.api.commands.SpongeCommand;
 import com.nickimpact.impactor.api.commands.annotations.Aliases;
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
+import gg.psyduck.bidoofunleashed.commands.arguments.GymArg;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
 import gg.psyduck.bidoofunleashed.utils.MessageUtils;
@@ -26,17 +27,19 @@ public class OpenGymCommand extends SpongeCommand {
 
     @Override
     public CommandElement[] getArgs() {
-        return new CommandElement[0];
+        return new CommandElement[] {
+                new GymArg(Text.of("Gym"))
+        };
     }
 
     @Override
     public Text getDescription() {
-        return null;
+        return Text.of("Opens the specified gym");
     }
 
     @Override
     public Text getUsage() {
-        return null;
+        return Text.of("/opengym <gym>");
     }
 
     @Override
