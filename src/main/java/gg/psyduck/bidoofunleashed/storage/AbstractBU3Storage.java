@@ -84,4 +84,12 @@ public class AbstractBU3Storage implements BU3Storage {
 	public CompletableFuture<List<Gym>> fetchGyms() {
 		return makeFuture(dao::fetchGyms);
 	}
+
+    @Override
+    public CompletableFuture<Void> removeGym(Gym gym) {
+        return makeFuture(() -> {
+            dao.removeGym(gym);
+            BidoofUnleashed.getInstance().getDataRegistry().getGyms().remove(gym);
+        });
+    }
 }

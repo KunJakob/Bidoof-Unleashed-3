@@ -22,6 +22,9 @@ public class MsgConfigKeys implements IConfigKeys {
     public static final ConfigKey<String> COMMANDS_GIVE_BADGE_CHALLENGER = StringKey.of("commands.give-badge.challenger", "{{bu3_prefix}} &7You've been given the {{bu3_badge}} Badge!");
     public static final ConfigKey<String> COMMANDS_REMOVE_BADGE_LEADER = StringKey.of("commands.remove-badge.leader", "{{bu3_prefix}} &7You've taken the {{bu3_badge}} Badge from {{player}}");
     public static final ConfigKey<String> COMMANDS_REMOVE_BADGE_CHALLENGER = StringKey.of("commands.remove-badge.challenger", "{{bu3_prefix}} &7The {{bu3_badge}} Badge has been taken from you");
+    public static final ConfigKey<String> COMMANDS_DELETE_GYM_SUCCESS = StringKey.of("commands.delete-gym.success", "{{bu3_prefix}} &7You have successfully deleted the {{bu3_gym}} Gym");
+    public static final ConfigKey<String> COMMANDS_OPEN_GYM_SUCCESS = StringKey.of("commands.open-gym.success", "{{bu3_prefix}} &7You have successfully opened the {{bu3_gym}} Gym");
+    public static final ConfigKey<String> COMMANDS_CLOSE_GYM_SUCCESS = StringKey.of("commands.close-gym.success", "{{bu3_prefix}} &7You have successfully closed the {{bu3_gym}} Gym");
 
 	public static final ConfigKey<String> REQUIREMENT_GYM = StringKey.of("requirements.gym", "{{bu3_error}} &7Unfortunately, you can't challenge this gym until you've earned the &e{{bu3_badge}}&7...");
 	public static final ConfigKey<String> REQUIREMENT_LEVELCAP = StringKey.of("requirements.level-cap", "{{bu3_error}} &7Unfortunately, a member of your party exceeds the level cap of &e{{bu3_level_cap}}&7...");

@@ -86,4 +86,12 @@ public class FileDao extends AbstractBU3Dao {
 
 		return gyms;
 	}
+
+    @Override
+    public void removeGym(Gym gym) throws Exception {
+        File target = new File(BASE_PATH_GYMS, gym.getName() + "/" + gym.getName() + ".json");
+        if(target.exists()) {
+            target.delete();
+        }
+    }
 }

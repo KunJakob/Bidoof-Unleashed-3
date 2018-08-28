@@ -47,4 +47,14 @@ public interface BU3Storage extends Storage {
 	 * @return A {@link CompletableFuture}, composed of a List of gyms upon successful completion
 	 */
 	CompletableFuture<List<Gym>> fetchGyms();
+
+    /**
+     * Deletes the specified gym from the registered storage. If the gym has already been deleted,
+     * this will do nothing.
+     *
+     * @param gym The gym to be deleted
+     * @return A {@link CompletableFuture} with a void value
+     */
+
+	CompletableFuture<Void> removeGym(Gym gym);
 }

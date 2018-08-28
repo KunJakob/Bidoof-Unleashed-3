@@ -25,6 +25,7 @@ public class SqlDao extends AbstractBU3Dao {
 	private static final String ADD_OR_UPDATE_GYM = "INSERT INTO `{prefix}gyms` (name, data) VALUES ('%1$s', '%2$s') ON DUPLICATE KEY UPDATE data='%2$s'";
 	private static final String GET_PLAYERDATA = "SELECT * FROM `{prefix}player_data` WHERE UUID='%s'";
 	private static final String GET_GYMS = "SELECT * FROM `{prefix}gyms` WHERE NAME='%s'";
+	private static final String DELETE_GYMS = "DELETE FROM `{prefix}gyms` WHERE NAME=%s";
 
 	@Getter private final AbstractSQLConnectionFactory provider;
 	@Getter private final Function<String, String> prefix;
@@ -156,4 +157,17 @@ public class SqlDao extends AbstractBU3Dao {
 
 		return gyms;
 	}
+
+    @Override
+    public void removeGym(Gym gym) throws Exception {
+        try {
+            Connection connection = provider.getConnection();
+            String stmt = String.format(prefix.apply(DELETE_GYMS), gym.getName(), BidoofUnleashed.prettyGson.toJson(gym));
+
+            PreparedStatement ps = connection.prepareStatement(stmt);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

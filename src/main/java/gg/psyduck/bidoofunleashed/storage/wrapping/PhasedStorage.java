@@ -74,4 +74,14 @@ public class PhasedStorage implements BU3Storage {
 			phaser.arriveAndDeregister();
 		}
 	}
+
+    @Override
+    public CompletableFuture<Void> removeGym(Gym gym) {
+	    phaser.register();
+	    try {
+	        return delegate.removeGym(gym);
+        } finally {
+	        phaser.arriveAndDeregister();
+        }
+    }
 }

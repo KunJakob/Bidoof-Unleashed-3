@@ -28,4 +28,6 @@ public abstract class AbstractBU3Dao {
 	public abstract void addOrUpdateGym(Gym gym) throws Exception;
 
 	public abstract List<Gym> fetchGyms() throws Exception;
+
+	public abstract void removeGym(Gym gym) throws Exception;
 }

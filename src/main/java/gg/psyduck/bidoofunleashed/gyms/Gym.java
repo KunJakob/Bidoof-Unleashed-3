@@ -119,6 +119,10 @@ public class Gym {
 		return builder.toString();
 	}
 
+	public void setOpen(boolean value) {
+	    this.open = value;
+    }
+
 	public static Builder builder() {
 		return new Builder();
 	}
