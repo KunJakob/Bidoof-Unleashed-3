@@ -74,10 +74,7 @@ public class AbstractBU3Storage implements BU3Storage {
 
 	@Override
 	public CompletableFuture<Void> addOrUpdateGym(Gym gym) {
-	    return makeFuture(() -> {
-	       dao.addOrUpdateGym(gym);
-	       BidoofUnleashed.getInstance().getDataRegistry().getGyms().add(gym);
-        });
+	    return makeFuture(() -> dao.addOrUpdateGym(gym));
 	}
 
 	@Override
@@ -87,9 +84,6 @@ public class AbstractBU3Storage implements BU3Storage {
 
     @Override
     public CompletableFuture<Void> removeGym(Gym gym) {
-        return makeFuture(() -> {
-            dao.removeGym(gym);
-            BidoofUnleashed.getInstance().getDataRegistry().getGyms().remove(gym);
-        });
+        return makeFuture(() -> dao.removeGym(gym));
     }
 }

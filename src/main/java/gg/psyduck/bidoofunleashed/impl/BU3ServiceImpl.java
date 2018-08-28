@@ -1,6 +1,5 @@
 package gg.psyduck.bidoofunleashed.impl;
 
-import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
@@ -14,9 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 
 @Getter
@@ -70,29 +66,19 @@ public class BU3ServiceImpl implements BU3Service {
 		return gym.getLeaders();
 	}
 
-	private <T> CompletableFuture<T> makeFuture(Callable<T> supplier) {
-		return CompletableFuture.supplyAsync(() -> {
-			try {
-				return supplier.call();
-			} catch (Exception e) {
-				Throwables.propagateIfPossible(e);
-				throw new CompletionException(e);
-			}
-		}, BidoofUnleashed.getInstance().getAsyncExecutorService());
+	@Override
+	public void addGym(Gym gym) {
+		BidoofUnleashed.getInstance().getDataRegistry().getGyms().add(gym);
+		BidoofUnleashed.getInstance().getStorage().addOrUpdateGym(gym);
 	}
 
-	private CompletableFuture<Void> makeFuture(BU3ServiceImpl.ThrowingRunnable runnable) {
-		return CompletableFuture.runAsync(() -> {
-			try {
-				runnable.run();
-			} catch (Exception e) {
-				Throwables.propagateIfPossible(e);
-				throw new CompletionException(e);
-			}
-		}, BidoofUnleashed.getInstance().getAsyncExecutorService());
-	}
-
-	private interface ThrowingRunnable {
-		void run() throws Exception;
+	@Override
+	public boolean purgeGym(Gym gym) {
+		if(BidoofUnleashed.getInstance().getDataRegistry().getGyms().contains(gym)) {
+			BidoofUnleashed.getInstance().getDataRegistry().getGyms().remove(gym);
+			BidoofUnleashed.getInstance().getStorage().removeGym(gym);
+			return true;
+		}
+		return false;
 	}
 }

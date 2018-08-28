@@ -3,6 +3,7 @@ package gg.psyduck.bidoofunleashed.commands.admin;
 import com.flowpowered.math.vector.Vector3d;
 import com.nickimpact.impactor.api.commands.SpongeCommand;
 import com.nickimpact.impactor.api.commands.annotations.Aliases;
+import com.nickimpact.impactor.api.commands.annotations.Permission;
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import gg.psyduck.bidoofunleashed.gyms.Badge;
@@ -20,6 +21,7 @@ import org.spongepowered.api.text.Text;
 import java.util.concurrent.ExecutionException;
 
 @Aliases("addgym")
+@Permission(admin = true)
 public class AddGymCommand extends SpongeCommand {
 
     public AddGymCommand(SpongePlugin plugin) {
@@ -58,8 +60,6 @@ public class AddGymCommand extends SpongeCommand {
         ItemType badge = (ItemType) args.getOne("badge-type").get();
         String badgeName = (String) args.getOne("badge-name").get();
 
-        BU3Storage storage = BidoofUnleashed.getInstance().getStorage();
-
         Gym gym = Gym.builder()
                 .name(name)
                 .badge(new Badge(badgeName, badge.getName()))
@@ -71,7 +71,7 @@ public class AddGymCommand extends SpongeCommand {
                 .levelCap(lvlCap)
                 .build();
 
-        storage.addOrUpdateGym(gym);
+        BidoofUnleashed.getInstance().getService().addGym(gym);
         return CommandResult.success();
     }
 }

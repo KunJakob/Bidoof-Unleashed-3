@@ -3,6 +3,7 @@ package gg.psyduck.bidoofunleashed.commands.admin;
 import com.google.common.collect.Maps;
 import com.nickimpact.impactor.api.commands.SpongeCommand;
 import com.nickimpact.impactor.api.commands.annotations.Aliases;
+import com.nickimpact.impactor.api.commands.annotations.Permission;
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import gg.psyduck.bidoofunleashed.commands.arguments.GymArg;
@@ -20,6 +21,7 @@ import org.spongepowered.api.text.Text;
 import java.util.Map;
 
 @Aliases("deletegym")
+@Permission(admin = true)
 public class DeleteGymCommand extends SpongeCommand {
 
     public DeleteGymCommand(SpongePlugin plugin) {
@@ -51,8 +53,7 @@ public class DeleteGymCommand extends SpongeCommand {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         Gym gym = args.<Gym>getOne("gym").get();
-        BU3Storage storage = BidoofUnleashed.getInstance().getStorage();
-        storage.removeGym(gym);
+        BidoofUnleashed.getInstance().getService().purgeGym(gym);
 
         Map<String, Object> variables = Maps.newHashMap();
         variables.put("bu3_gym", gym.getName());

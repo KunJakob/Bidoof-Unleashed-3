@@ -79,7 +79,6 @@ public class FileDao extends AbstractBU3Dao {
 		List<Gym> gyms = Lists.newArrayList();
 		for(File base : Objects.requireNonNull(BASE_PATH_GYMS.listFiles())) {
 			for(File gym : Objects.requireNonNull(base.listFiles((d, s) -> s.toLowerCase().endsWith(".json") && !s.toLowerCase().equals("pool.json") && !s.toLowerCase().equals("npc-team.json")))){
-				BidoofUnleashed.getInstance().getLogger().debug("Reading file: " + gym.getName());
 				gyms.add(BidoofUnleashed.prettyGson.fromJson(new FileReader(gym), Gym.class).initialize());
 			}
 		}

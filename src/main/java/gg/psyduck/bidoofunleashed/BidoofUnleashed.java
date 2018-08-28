@@ -5,10 +5,7 @@ import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 
-import com.flowpowered.math.vector.Vector3d;
 import com.nickimpact.impactor.api.commands.SpongeCommand;
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
 import com.nickimpact.impactor.api.rewards.Reward;
@@ -17,8 +14,7 @@ import com.nickimpact.impactor.api.rewards.impl.CommandSeriesReward;
 import com.nickimpact.impactor.api.services.plan.PlanData;
 import com.nickimpact.impactor.api.storage.StorageType;
 import com.pixelmonmod.pixelmon.Pixelmon;
-import com.pixelmonmod.pixelmon.api.pokemon.PokemonSpec;
-import gg.psyduck.bidoofunleashed.api.enums.EnumLeaderType;
+import gg.psyduck.bidoofunleashed.api.BU3Service;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
 import gg.psyduck.bidoofunleashed.api.gyms.json.RequirementAdapter;
 import gg.psyduck.bidoofunleashed.commands.BU3Command;
@@ -26,15 +22,13 @@ import gg.psyduck.bidoofunleashed.commands.general.CheckBadgeCommand;
 import gg.psyduck.bidoofunleashed.config.ConfigKeys;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
 import gg.psyduck.bidoofunleashed.data.DataRegistry;
-import gg.psyduck.bidoofunleashed.gyms.Badge;
-import gg.psyduck.bidoofunleashed.gyms.Gym;
-import gg.psyduck.bidoofunleashed.impl.EvolutionRequirement;
-import gg.psyduck.bidoofunleashed.impl.GymRequirement;
-import gg.psyduck.bidoofunleashed.impl.LevelRequirement;
+import gg.psyduck.bidoofunleashed.impl.BU3ServiceImpl;
+import gg.psyduck.bidoofunleashed.impl.requirements.EvolutionRequirement;
+import gg.psyduck.bidoofunleashed.impl.requirements.GymRequirement;
+import gg.psyduck.bidoofunleashed.impl.requirements.LevelRequirement;
 import gg.psyduck.bidoofunleashed.internal.TextParsingUtils;
 import gg.psyduck.bidoofunleashed.listeners.BattleListener;
 import gg.psyduck.bidoofunleashed.listeners.ClientListener;
-import gg.psyduck.bidoofunleashed.players.PlayerData;
 import gg.psyduck.bidoofunleashed.rewards.ItemReward;
 import gg.psyduck.bidoofunleashed.rewards.money.MoneyReward;
 import gg.psyduck.bidoofunleashed.rewards.PokemonReward;
@@ -43,11 +37,10 @@ import gg.psyduck.bidoofunleashed.storage.BU3Storage;
 import gg.psyduck.bidoofunleashed.storage.StorageFactory;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
+import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
-import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.event.service.ChangeServiceProviderEvent;
 import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
@@ -104,6 +97,8 @@ public class BidoofUnleashed extends SpongePlugin {
 
     private BU3Storage storage;
 
+    private BU3Service service;
+
     /**
      * Used to keep track of any potential start up issues which will prevent the plugin from
      * initializing properly
@@ -117,13 +112,18 @@ public class BidoofUnleashed extends SpongePlugin {
 	private DataRegistry dataRegistry = new DataRegistry();
 
 	@Listener
-    public void onInit(GameInitializationEvent e) {
-        instance = this;
-        prettyGson = new GsonBuilder()
+	public void onPreInit(GamePreInitializationEvent e) {
+		instance = this;
+		prettyGson = new GsonBuilder()
 				.registerTypeAdapter(Requirement.class, new RequirementAdapter(this))
-		        .registerTypeAdapter(Reward.class, new RewardAdapter(this))
+				.registerTypeAdapter(Reward.class, new RewardAdapter(this))
 				.setPrettyPrinting()
 				.create();
+		Sponge.getServiceManager().setProvider(this, BU3Service.class, (service = new BU3ServiceImpl()));
+	}
+
+	@Listener
+    public void onInit(GameInitializationEvent e) {
         this.logger = new ConsoleLogger(this, new SpongeLogger(this, fallback));
 	    BidoofInfo.startup();
 

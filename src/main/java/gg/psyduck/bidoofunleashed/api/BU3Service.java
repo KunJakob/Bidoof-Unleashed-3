@@ -63,4 +63,31 @@ public interface BU3Service {
 	 * @return A mapping containing leader UUIDs, along with their roles.
 	 */
 	Map<UUID, EnumLeaderType> getLeadersForGym(Gym gym);
+
+	/**
+	 * Adds a gym to the Storage Provider, as well as the loaded cache of gyms.
+	 *
+	 * @param gym The gym to register into the system
+	 */
+	void addGym(Gym gym);
+
+	/**
+	 * Removes a gym from the active Storage Provider, if it exists. If it does not, we essentially fire
+	 * a no-op, and just return <code>false</code> to signify no gym was actually removed.
+	 *
+	 * @param name The name of the gym to purge
+	 * @return <code>true</code> on successful gym deletion, <code>false</code> otherwise
+	 */
+	default boolean purgeGym(String name) {
+		return this.getGym(name).filter(this::purgeGym).isPresent();
+	}
+
+	/**
+	 * Removes a gym from the active Storage Provider, if it exists. If it does not, we essentially fire
+	 * a no-op, and just return <code>false</code> to signify no gym was actually removed.
+	 *
+	 * @param gym The gym to purge
+	 * @return <code>true</code> on successful gym deletion, <code>false</code> otherwise
+	 */
+	boolean purgeGym(Gym gym);
 }
