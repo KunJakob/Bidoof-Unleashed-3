@@ -17,7 +17,7 @@ public class BidoofInfo implements PluginInfo {
     public static final String ID = "bu3";
     public static final String NAME = "Bidoof Unleashed 3";
     public static final String VERSION = "S7.1-0.8.0-BETA";
-    public static final String DESCRIPTION = "A Sponge Representation of the Pokemon Daycare";
+    public static final String DESCRIPTION = "Gyms, with a hint of Bidoof";
 
     @Override
     public String getID() {
@@ -61,10 +61,10 @@ public class BidoofInfo implements PluginInfo {
 
     static void startup() {
         List<String> banner = Lists.newArrayList(
-                StringUtils.center("&eAGP Redux", 50),
+                StringUtils.center("&eBidoof Unleashed", 50),
                 StringUtils.center("&eRise of the Duck Edition", 50),
                 StringUtils.center("&aVersion: " + VERSION, 50),
-                StringUtils.center("&aAuthor: NickImpact & Smackzter", 50), "",
+                StringUtils.center("&aAuthor: NickImpact, Smackzter & RysingDragon", 50), "",
                 StringUtils.center("Now attempting to load internal components...", 50)
         );
 

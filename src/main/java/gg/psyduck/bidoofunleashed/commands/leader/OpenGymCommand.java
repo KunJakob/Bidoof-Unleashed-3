@@ -1,12 +1,14 @@
-package gg.psyduck.bidoofunleashed.commands.general;
+package gg.psyduck.bidoofunleashed.commands.leader;
 
 import com.google.common.collect.Maps;
 import com.nickimpact.impactor.api.commands.SpongeCommand;
 import com.nickimpact.impactor.api.commands.annotations.Aliases;
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
+import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import gg.psyduck.bidoofunleashed.commands.arguments.GymArg;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
+import gg.psyduck.bidoofunleashed.players.PlayerData;
 import gg.psyduck.bidoofunleashed.utils.MessageUtils;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -18,10 +20,10 @@ import org.spongepowered.api.text.Text;
 
 import java.util.Map;
 
-@Aliases("closegym")
-public class CloseGymCommand extends SpongeCommand {
+@Aliases("opengym")
+public class OpenGymCommand extends SpongeCommand {
 
-    public CloseGymCommand(SpongePlugin plugin) {
+    public OpenGymCommand(SpongePlugin plugin) {
         super(plugin);
     }
 
@@ -34,12 +36,12 @@ public class CloseGymCommand extends SpongeCommand {
 
     @Override
     public Text getDescription() {
-        return Text.of("Closes the specified gym");
+        return Text.of("Opens the specified gym");
     }
 
     @Override
     public Text getUsage() {
-        return Text.of("/closegym <gym>");
+        return Text.of("/opengym <gym>");
     }
 
     @Override
@@ -60,10 +62,9 @@ public class CloseGymCommand extends SpongeCommand {
             throw new CommandException(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.PLAYER_NOT_LEADER, null, null));
         }
 
-        gym.setOpen(false);
         Map<String, Object> variables = Maps.newHashMap();
         variables.put("bu3_gym", gym.getName());
-        src.sendMessage(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.COMMANDS_CLOSE_GYM_SUCCESS, null, variables));
+        src.sendMessage(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.COMMANDS_OPEN_GYM_SUCCESS, null, variables));
         return CommandResult.success();
     }
 }

@@ -20,7 +20,7 @@ import org.spongepowered.api.text.Text;
 
 import java.util.Map;
 
-@Aliases("deletegym")
+@Aliases({"deletegym", "dg"})
 @Permission(admin = true)
 public class DeleteGymCommand extends SpongeCommand {
 

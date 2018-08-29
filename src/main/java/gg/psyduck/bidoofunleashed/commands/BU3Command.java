@@ -8,12 +8,12 @@ import gg.psyduck.bidoofunleashed.commands.admin.AddGymLeaderCommand;
 import gg.psyduck.bidoofunleashed.commands.admin.CheckGymPoolCmd;
 import gg.psyduck.bidoofunleashed.commands.admin.DeleteGymCommand;
 import gg.psyduck.bidoofunleashed.commands.general.ChallengeGymCommand;
-import gg.psyduck.bidoofunleashed.commands.general.CheckBadgeCommand;
-import gg.psyduck.bidoofunleashed.commands.general.CloseGymCommand;
+import gg.psyduck.bidoofunleashed.commands.leader.AcceptChallenge;
+import gg.psyduck.bidoofunleashed.commands.leader.CloseGymCommand;
 import gg.psyduck.bidoofunleashed.commands.general.GiveBadgeCommand;
 import gg.psyduck.bidoofunleashed.commands.general.GymListCommand;
-import gg.psyduck.bidoofunleashed.commands.general.OpenGymCommand;
-import gg.psyduck.bidoofunleashed.commands.general.RemoveBadgeCommand;
+import gg.psyduck.bidoofunleashed.commands.leader.OpenGymCommand;
+import gg.psyduck.bidoofunleashed.commands.admin.RemoveBadgeCommand;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -56,6 +56,7 @@ public class BU3Command extends SpongeCommand {
 				new CheckGymPoolCmd(plugin),
                 new OpenGymCommand(plugin),
                 new CloseGymCommand(plugin),
+				new AcceptChallenge(plugin)
 		};
 	}
 

@@ -16,6 +16,7 @@ import gg.psyduck.bidoofunleashed.utils.MessageUtils;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.cause.EventContext;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -31,18 +32,25 @@ import java.util.stream.Collectors;
 
 class SpeciesUI implements PageDisplayable {
 
-	private Player player;
+	private Player leader;
+	private Player challenger;
 	private Gym focus;
 	private List<BU3PokemonSpec> chosenTeam;
 	private EnumPokemon species;
 	private Page display;
 
-	SpeciesUI(Player player, Gym gym, List<BU3PokemonSpec> chosenTeam, EnumPokemon species) {
-		this.player = player;
+	SpeciesUI(Player leader, Player challenger, Gym gym, List<BU3PokemonSpec> chosenTeam, EnumPokemon species) {
+		this.leader = leader;
+		this.challenger = challenger;
 		this.focus = gym;
 		this.chosenTeam = chosenTeam;
 		this.species = species;
 		this.display = this.build().define(this.forge(), InventoryDimension.of(7, 3), 1, 1);
+		this.display.getViews().forEach(ui -> ui.setCloseAction((event, player) -> {
+			if(!event.getCause().getContext().equals(EventContext.empty())) {
+				ui.open(player);
+			}
+		}));
 	}
 
 	@Override
@@ -55,7 +63,7 @@ class SpeciesUI implements PageDisplayable {
 		tokens.put("bu3_pokemon", s -> Optional.of(Text.of(species.name)));
 		Page.Builder pb = Page.builder();
 		pb.layout(this.layout());
-		pb.property(InventoryTitle.of(MessageUtils.fetchAndParseMsg(player, MsgConfigKeys.SPECIES_TITLE, tokens, null)));
+		pb.property(InventoryTitle.of(MessageUtils.fetchAndParseMsg(leader, MsgConfigKeys.SPECIES_TITLE, tokens, null)));
 
 		if(this.focus.getPool().getTeam().size() > 21) {
 			pb.previous(Icon.from(ItemStack.builder()
@@ -99,8 +107,8 @@ class SpeciesUI implements PageDisplayable {
 			Icon icon = Icon.from(picture);
 			icon.addListener(clickable -> {
 				this.chosenTeam.add(spec);
-				this.display.close(player);
-				new GymPoolUI(player, focus, this.chosenTeam).open(player, 1);
+				this.display.close(leader);
+				new GymPoolUI(leader, challenger, focus, this.chosenTeam).open(leader, 1);
 			});
 			results.add(icon);
 		}

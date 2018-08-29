@@ -25,6 +25,9 @@ public class MsgConfigKeys implements IConfigKeys {
     public static final ConfigKey<String> COMMANDS_DELETE_GYM_SUCCESS = StringKey.of("commands.delete-gym.success", "{{bu3_prefix}} &7You have successfully deleted the {{bu3_gym}} Gym");
     public static final ConfigKey<String> COMMANDS_OPEN_GYM_SUCCESS = StringKey.of("commands.open-gym.success", "{{bu3_prefix}} &7You have successfully opened the {{bu3_gym}} Gym");
     public static final ConfigKey<String> COMMANDS_CLOSE_GYM_SUCCESS = StringKey.of("commands.close-gym.success", "{{bu3_prefix}} &7You have successfully closed the {{bu3_gym}} Gym");
+	public static final ConfigKey<String> COMMANDS_ACCEPT_LEADER_SELECTING_TEAM = StringKey.of("commands.accept-challenge.challenger.leader-selecting", "{{bu3_prefix}} &7Your challenge has been accepted! Please wait for the leader to select their team...");
+	public static final ConfigKey<String> COMMANDS_ACCEPT_EMPTY_QUEUE = StringKey.of("commands.accept-challenge.leader.empty-queue", "{{bu3_error}} &7No challenges currently await you...");
+	public static final ConfigKey<String> COMMANDS_ACCEPT_NOT_ON_DUTY = StringKey.of("commands.accept-challenge.leader.not-active", "{{bu3_error}} &7You aren't currently on duty...");
 
 	public static final ConfigKey<String> REQUIREMENT_GYM = StringKey.of("requirements.gym", "{{bu3_error}} &7Unfortunately, you can't challenge this gym until you've earned the &e{{bu3_badge}}&7...");
 	public static final ConfigKey<String> REQUIREMENT_LEVELCAP = StringKey.of("requirements.level-cap", "{{bu3_error}} &7Unfortunately, a member of your party exceeds the level cap of &e{{bu3_level_cap}}&7...");
@@ -44,7 +47,10 @@ public class MsgConfigKeys implements IConfigKeys {
 		    "&7add some!"
     ));
 
-    private static Map<String, ConfigKey<?>> KEYS = null;
+	public static final ConfigKey<String> ERRORS_MISSING_PLAYER_STORAGE = StringKey.of("errors.missing-player-storage", "{{bu3_error}} &7A Pixelmon error was encountered, and prevented successful operation...");
+
+
+	private static Map<String, ConfigKey<?>> KEYS = null;
 
 	@Override
 	public Map<String, ConfigKey<?>> getAllKeys() {

@@ -13,6 +13,7 @@ import com.pixelmonmod.pixelmon.storage.PixelmonStorage;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import gg.psyduck.bidoofunleashed.api.enums.EnumBattleType;
 import gg.psyduck.bidoofunleashed.api.enums.EnumLeaderType;
+import gg.psyduck.bidoofunleashed.api.events.GymBattleEndEvent;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
 import gg.psyduck.bidoofunleashed.gyms.temporary.BattleRegistry;
@@ -21,6 +22,7 @@ import gg.psyduck.bidoofunleashed.players.PlayerData;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
@@ -54,12 +56,12 @@ public class BattleListener {
 					if(!requirement.passes(g, player)) {
 						requirement.onInvalid(g, player);
 						event.setCanceled(true);
-						break;
+						return;
 					}
 				} catch (Exception e) {
 					player.sendMessage(Text.of(BidoofUnleashed.getInstance().getPluginInfo().error(), "An error occurred whilst processing your information, please inform a staff member..."));
 					event.setCanceled(true);
-					break;
+					return;
 				}
 			}
 
@@ -88,8 +90,19 @@ public class BattleListener {
 					.findAny()
 					.orElse(null);
 
+			PlayerData data = BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(c.getKey().getLeader().getUniqueId());
+			if(data != null) {
+				PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) c.getKey().getLeader()).ifPresent(storage -> {
+					storage.partyPokemon = data.getTeam();
+					storage.sendUpdatedList();
+				});
+			}
+
 			if(results == BattleResults.VICTORY) {
+				Sponge.getEventManager().post(new GymBattleEndEvent(c.getKey().getChallenger(), c.getKey().getLeader(), c.getValue(), true));
 				this.onVictory(c.getKey(), c.getValue());
+			} else {
+				Sponge.getEventManager().post(new GymBattleEndEvent(c.getKey().getChallenger(), c.getKey().getLeader(), c.getValue(), false));
 			}
 
 			BattleRegistry.deregister(c.getKey());
@@ -101,6 +114,7 @@ public class BattleListener {
 		Optional<Map.Entry<Challenge, Gym>> challenge = BattleRegistry.getBattles().entrySet().stream().filter(entry -> event.player.getName().equalsIgnoreCase(entry.getKey().getChallenger().getName())).findAny();
 
 		challenge.ifPresent(c -> {
+			Sponge.getEventManager().post(new GymBattleEndEvent(c.getKey().getChallenger(), c.getKey().getLeader(), c.getValue(), true));
 			this.onVictory(c.getKey(), c.getValue());
 			BattleRegistry.deregister(c.getKey());
 		});
@@ -113,10 +127,12 @@ public class BattleListener {
 			PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) challenge.getChallenger()).ifPresent(storage -> {
 				List<String> team = Lists.newArrayList();
 				for(NBTTagCompound nbt : storage.partyPokemon) {
-					String name = nbt.getString(NbtKeys.NAME);
-					int level = nbt.getInteger(NbtKeys.LEVEL);
+					if(nbt != null) {
+						String name = nbt.getString(NbtKeys.NAME);
+						int level = nbt.getInteger(NbtKeys.LEVEL);
 
-					team.add("&e" + name + " &7(&a" + level + "&7)");
+						team.add("&e" + name + " &7(&a" + level + "&7)");
+					}
 				}
 
 				if(challenge.getLeader() instanceof Player) {

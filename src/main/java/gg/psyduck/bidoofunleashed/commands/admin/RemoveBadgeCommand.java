@@ -1,8 +1,9 @@
-package gg.psyduck.bidoofunleashed.commands.general;
+package gg.psyduck.bidoofunleashed.commands.admin;
 
 import com.google.common.collect.Maps;
 import com.nickimpact.impactor.api.commands.SpongeCommand;
 import com.nickimpact.impactor.api.commands.annotations.Aliases;
+import com.nickimpact.impactor.api.commands.annotations.Permission;
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import gg.psyduck.bidoofunleashed.commands.arguments.GymArg;
@@ -24,6 +25,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 @Aliases("removebadge")
+@Permission(admin = true)
 public class RemoveBadgeCommand extends SpongeCommand {
 
     public RemoveBadgeCommand(SpongePlugin plugin) {

@@ -1,4 +1,4 @@
-package gg.psyduck.bidoofunleashed.commands.general;
+package gg.psyduck.bidoofunleashed.commands.leader;
 
 import com.google.common.collect.Maps;
 import com.nickimpact.impactor.api.commands.SpongeCommand;
@@ -18,28 +18,28 @@ import org.spongepowered.api.text.Text;
 
 import java.util.Map;
 
-@Aliases("opengym")
-public class OpenGymCommand extends SpongeCommand {
+@Aliases("closegym")
+public class CloseGymCommand extends SpongeCommand {
 
-    public OpenGymCommand(SpongePlugin plugin) {
+    public CloseGymCommand(SpongePlugin plugin) {
         super(plugin);
     }
 
     @Override
     public CommandElement[] getArgs() {
         return new CommandElement[] {
-                new GymArg(Text.of("Gym"))
+                new GymArg(Text.of("gym"))
         };
     }
 
     @Override
     public Text getDescription() {
-        return Text.of("Opens the specified gym");
+        return Text.of("Closes the specified gym");
     }
 
     @Override
     public Text getUsage() {
-        return Text.of("/opengym <gym>");
+        return Text.of("/closegym <gym>");
     }
 
     @Override
@@ -60,10 +60,10 @@ public class OpenGymCommand extends SpongeCommand {
             throw new CommandException(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.PLAYER_NOT_LEADER, null, null));
         }
 
-        gym.setOpen(true);
+        gym.setOpen(false);
         Map<String, Object> variables = Maps.newHashMap();
         variables.put("bu3_gym", gym.getName());
-        src.sendMessage(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.COMMANDS_OPEN_GYM_SUCCESS, null, variables));
+        src.sendMessage(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.COMMANDS_CLOSE_GYM_SUCCESS, null, variables));
         return CommandResult.success();
     }
 }

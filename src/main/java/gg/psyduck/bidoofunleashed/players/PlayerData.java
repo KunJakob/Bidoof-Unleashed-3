@@ -3,8 +3,11 @@ package gg.psyduck.bidoofunleashed.players;
 import com.google.common.collect.Lists;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import gg.psyduck.bidoofunleashed.gyms.Badge;
+import gg.psyduck.bidoofunleashed.gyms.Gym;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.List;
 import java.util.UUID;
@@ -16,7 +19,9 @@ public class PlayerData {
 
 	private List<Badge> badges = Lists.newArrayList();
 
-	private Roles role = Roles.NONE;
+	@Setter private Roles role = Roles.NONE;
+
+	@Setter private transient NBTTagCompound[] team;
 
 	private PlayerData(UUID uuid) {
 		this.uuid = uuid;
@@ -40,8 +45,4 @@ public class PlayerData {
 	        this.badges.remove(badge);
         }
     }
-
-	public void setRole(Roles role) {
-		this.role = role;
-	}
 }

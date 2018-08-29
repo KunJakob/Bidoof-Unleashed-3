@@ -20,7 +20,7 @@ import org.spongepowered.api.text.Text;
 
 import java.util.concurrent.ExecutionException;
 
-@Aliases("addgym")
+@Aliases({"addgym", "ag"})
 @Permission(admin = true)
 public class AddGymCommand extends SpongeCommand {
 

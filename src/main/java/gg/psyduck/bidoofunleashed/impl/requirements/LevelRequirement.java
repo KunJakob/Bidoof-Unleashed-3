@@ -1,4 +1,4 @@
-package gg.psyduck.bidoofunleashed.impl;
+package gg.psyduck.bidoofunleashed.impl.requirements;
 
 
 import com.google.common.collect.Maps;

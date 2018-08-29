@@ -2,6 +2,7 @@ package gg.psyduck.bidoofunleashed.commands.admin;
 
 import com.nickimpact.impactor.api.commands.SpongeCommand;
 import com.nickimpact.impactor.api.commands.annotations.Aliases;
+import com.nickimpact.impactor.api.commands.annotations.Permission;
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
 import gg.psyduck.bidoofunleashed.commands.arguments.GymArg;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
@@ -14,7 +15,12 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 
+/**
+ * It should be noted that this command is actually temporary, and used to help test the
+ * gym pool feature
+ */
 @Aliases({"pool"})
+@Permission(admin = true)
 public class CheckGymPoolCmd extends SpongeCommand {
 
 	private static final Text GYM = Text.of("gym");
@@ -47,7 +53,7 @@ public class CheckGymPoolCmd extends SpongeCommand {
 
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-		new GymPoolUI((Player) src, args.<Gym>getOne(GYM).get()).open((Player) src, 1);
+		new GymPoolUI((Player) src, null, args.<Gym>getOne(GYM).get()).open((Player) src, 1);
 		return CommandResult.success();
 	}
 }

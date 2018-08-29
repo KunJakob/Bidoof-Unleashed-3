@@ -48,13 +48,7 @@ public class GymListCommand extends SpongeCommand {
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-        BU3Storage storage = (BU3Storage) BidoofUnleashed.getInstance().getStorage();
-        List<Gym> gyms = new ArrayList<>();
-        try {
-            gyms = storage.fetchGyms().get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
+        List<Gym> gyms = BidoofUnleashed.getInstance().getDataRegistry().getGyms();
 
         PaginationList.Builder builder = PaginationList.builder()
                 .linesPerPage(10)
