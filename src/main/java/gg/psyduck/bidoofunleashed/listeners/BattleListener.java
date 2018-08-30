@@ -16,6 +16,7 @@ import gg.psyduck.bidoofunleashed.api.enums.EnumLeaderType;
 import gg.psyduck.bidoofunleashed.api.events.GymBattleEndEvent;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
+import gg.psyduck.bidoofunleashed.gyms.e4.E4;
 import gg.psyduck.bidoofunleashed.gyms.temporary.BattleRegistry;
 import gg.psyduck.bidoofunleashed.gyms.temporary.Challenge;
 import gg.psyduck.bidoofunleashed.players.PlayerData;
@@ -103,6 +104,7 @@ public class BattleListener {
 				this.onVictory(c.getKey(), c.getValue());
 			} else {
 				Sponge.getEventManager().post(new GymBattleEndEvent(c.getKey().getChallenger(), c.getKey().getLeader(), c.getValue(), false));
+				this.onDefeat(c.getKey(), c.getValue());
 			}
 
 			BattleRegistry.deregister(c.getKey());
@@ -122,6 +124,13 @@ public class BattleListener {
 
 	private void onVictory(Challenge challenge, Gym gym) {
 		PlayerData data = BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(challenge.getChallenger().getUniqueId());
+
+		if (gym instanceof E4) {
+            data.getBeatenE4().forEach((e4, bool) -> bool = true);
+            BidoofUnleashed.getInstance().getStorage().addOrUpdatePlayerData(data);
+            return;
+        }
+
 		if(!data.hasBadge(gym.getBadge())) {
 			// First battle (before earning badge)
 			PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) challenge.getChallenger()).ifPresent(storage -> {
@@ -159,4 +168,12 @@ public class BattleListener {
 			});
 		}
 	}
+
+	private void onDefeat(Challenge challenge, Gym gym) {
+        PlayerData data = BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(challenge.getChallenger().getUniqueId());
+        if (gym instanceof E4) {
+            data.getBeatenE4().forEach((e4, bool) -> bool = false);
+            BidoofUnleashed.getInstance().getStorage().addOrUpdatePlayerData(data);
+        }
+    }
 }

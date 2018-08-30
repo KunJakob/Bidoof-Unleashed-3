@@ -4,12 +4,14 @@ import com.google.common.collect.Lists;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import gg.psyduck.bidoofunleashed.gyms.Badge;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
+import gg.psyduck.bidoofunleashed.gyms.e4.E4;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Getter
@@ -22,6 +24,8 @@ public class PlayerData {
 	@Setter private Roles role = Roles.NONE;
 
 	@Setter private transient NBTTagCompound[] team;
+
+	private Map<E4, Boolean> beatenE4;
 
 	private PlayerData(UUID uuid) {
 		this.uuid = uuid;
@@ -37,7 +41,7 @@ public class PlayerData {
 	}
 
 	public boolean hasBadge(Badge badge) {
-	    return this.badges.stream().anyMatch(b -> b.getName().equals(badge.getName()) && b.getItemType().equals(badge.getItemType()));
+	    return badge != null && this.badges.stream().anyMatch(b -> b.getName().equals(badge.getName()) && b.getItemType().equals(badge.getItemType()));
     }
 
 	public void removeBadge(Badge badge) {

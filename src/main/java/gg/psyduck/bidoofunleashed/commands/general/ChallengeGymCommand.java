@@ -5,15 +5,18 @@ import com.nickimpact.impactor.api.commands.SpongeCommand;
 import com.nickimpact.impactor.api.commands.annotations.Aliases;
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
+import gg.psyduck.bidoofunleashed.commands.arguments.E4Arg;
 import gg.psyduck.bidoofunleashed.commands.arguments.GymArg;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
+import gg.psyduck.bidoofunleashed.gyms.e4.E4;
 import gg.psyduck.bidoofunleashed.utils.MessageUtils;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
+import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 
@@ -25,6 +28,7 @@ import java.util.function.Function;
 public class ChallengeGymCommand extends SpongeCommand {
 
 	private static final Text GYM = Text.of("gym");
+    private static final Text E4 = Text.of("e4");
 
 	public ChallengeGymCommand(SpongePlugin plugin) {
 		super(plugin);
@@ -33,7 +37,12 @@ public class ChallengeGymCommand extends SpongeCommand {
 	@Override
 	public CommandElement[] getArgs() {
 		return new CommandElement[]{
-				new GymArg(GYM)
+                GenericArguments.onlyOne(
+                        GenericArguments.seq(
+                                new GymArg(GYM),
+                                new E4Arg(E4)
+                        )
+                )
 		};
 	}
 
@@ -55,7 +64,12 @@ public class ChallengeGymCommand extends SpongeCommand {
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 		if(src instanceof Player) {
-			Gym gym = args.<Gym>getOne(GYM).get();
+			Gym gym;
+			if (args.getOne(GYM).isPresent()) {
+			    gym = args.<Gym>getOne(GYM).get();
+            } else {
+			    gym = args.<E4>getOne(E4).get();
+            }
 			try {
 				for (Requirement requirement : gym.getRequirements()) {
 					if (!requirement.passes(gym, (Player) src)) {

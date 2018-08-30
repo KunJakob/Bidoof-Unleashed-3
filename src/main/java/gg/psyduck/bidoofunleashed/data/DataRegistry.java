@@ -3,10 +3,9 @@ package gg.psyduck.bidoofunleashed.data;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
+import gg.psyduck.bidoofunleashed.gyms.e4.E4;
 import gg.psyduck.bidoofunleashed.players.PlayerData;
 import lombok.Getter;
-import lombok.Synchronized;
-import org.spongepowered.api.entity.living.player.Player;
 
 import java.util.List;
 import java.util.Map;
@@ -16,6 +15,7 @@ import java.util.UUID;
 public class DataRegistry {
 
 	private List<Gym> gyms = Lists.newArrayList();
+	private List<E4> e4 = Lists.newArrayList();
 	private Map<UUID, PlayerData> playerData = Maps.newHashMap();
 
 	public PlayerData getPlayerData(UUID uuid) {
