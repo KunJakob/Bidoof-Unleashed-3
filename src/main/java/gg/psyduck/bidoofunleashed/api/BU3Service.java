@@ -1,6 +1,7 @@
 package gg.psyduck.bidoofunleashed.api;
 
 import gg.psyduck.bidoofunleashed.api.enums.EnumLeaderType;
+import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
 import gg.psyduck.bidoofunleashed.players.PlayerData;
 
@@ -90,4 +91,25 @@ public interface BU3Service {
 	 * @return <code>true</code> on successful gym deletion, <code>false</code> otherwise
 	 */
 	boolean purgeGym(Gym gym);
+
+	/**
+	 * Registers a requirement to the system. This method will ensure the game phase is at least before the
+	 * {@link org.spongepowered.api.event.game.state.GameStartedServerEvent}, otherwise, the call will fail.
+	 *
+	 * To specify why this is the case, it's due to the fact that the plugin will need that requirement instance
+	 * in order to deserialize gyms potentially implementing the requirement. Gym deserialization happens during the
+	 * {@link org.spongepowered.api.event.game.state.GameStartedServerEvent}, so they must be present in order to
+	 * successfully deserialize the gym.
+	 *
+	 * @param requirement The class of the requirement to register
+	 */
+	void registerRequirement(Class<? extends Requirement> requirement);
+
+	/**
+	 * Simply fetches and returns a list of all dummy object requirements available to the plugin
+	 * for manipulation.
+	 *
+	 * @return Dummy requirements which don't have any of their information filled, if they support information at all
+	 */
+	List<Requirement> getLoadedRequirements();
 }

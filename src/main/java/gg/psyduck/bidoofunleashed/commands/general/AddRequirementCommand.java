@@ -4,7 +4,9 @@ import com.google.common.collect.Maps;
 import com.nickimpact.impactor.api.commands.SpongeCommand;
 import com.nickimpact.impactor.api.commands.annotations.Aliases;
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
+import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
+import gg.psyduck.bidoofunleashed.commands.arguments.GymArg;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
 import gg.psyduck.bidoofunleashed.impl.requirements.EvolutionRequirement;
@@ -16,9 +18,11 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
+import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Aliases("addrequirement")
 public class AddRequirementCommand extends SpongeCommand {
@@ -29,7 +33,11 @@ public class AddRequirementCommand extends SpongeCommand {
 
     @Override
     public CommandElement[] getArgs() {
-        return new CommandElement[0];
+        return new CommandElement[] {
+        		new GymArg(Text.of("gym")),
+		        GenericArguments.string(Text.of("requirement")),
+		        GenericArguments.optional(GenericArguments.remainingJoinedStrings(Text.of("rest")))
+        };
     }
 
     @Override
@@ -51,20 +59,24 @@ public class AddRequirementCommand extends SpongeCommand {
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         Gym gym = args.<Gym>getOne("gym").get();
         String requirementArg = args.<String>getOne("requirement").get();
-        Requirement requirement;
-        switch (requirementArg) {
-            case "gym":
-                requirement = new GymRequirement();
-                break;
-            case "lvl":
-                requirement = new LevelRequirement();
-                break;
-            case "evo":
-                requirement = new EvolutionRequirement();
-                break;
-            default:
-                throw new CommandException(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.INVALID_REQUIREMENT, null, null));
+        String[] rest = args.<String>getOne("rest").orElse("").split(" ");
+
+        Requirement requirement = null;
+        for(Requirement r : BidoofUnleashed.getInstance().getService().getLoadedRequirements()) {
+        	if(r.id().equalsIgnoreCase(requirementArg)) {
+		        try {
+			        requirement = r.supply(rest);
+		        } catch (Exception e) {
+			        throw new CommandException(Text.of(e.getMessage()));
+		        }
+		        break;
+	        }
         }
+
+        if(requirement == null) {
+        	throw new CommandException(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.INVALID_REQUIREMENT, null, null));
+        }
+
         gym.getRequirements().add(requirement);
         Map<String, Object> variables = Maps.newHashMap();
         variables.put("bu3_gym", gym.getName());

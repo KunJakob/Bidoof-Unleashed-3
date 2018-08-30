@@ -115,7 +115,7 @@ public class GymPoolUI implements PageDisplayable {
 				lb.slot(Icon.from(picture), index++);
 			}
 
-			if(this.chosenTeam.size() > 0) {
+			if(this.chosenTeam.size() > this.focus.getMinPokemon()) {
 				ItemStack confirm = ItemStack.builder().itemType(ItemTypes.DYE).add(Keys.DYE_COLOR, DyeColors.LIME).build();
 				Icon conf = Icon.from(confirm);
 				conf.addListener(clickable -> {
@@ -189,8 +189,10 @@ public class GymPoolUI implements PageDisplayable {
 			}
 			icon.getDisplay().offer(Keys.ITEM_LORE, lore);
 			icon.addListener(clickable -> {
-				this.display.close(leader);
-				new SpeciesUI(leader, challenger, focus, chosenTeam, entry.getKey()).open(leader, 1);
+				if(this.chosenTeam.size() < this.focus.getMaxPokemon()) {
+					this.display.close(leader);
+					new SpeciesUI(leader, challenger, focus, chosenTeam, entry.getKey()).open(leader, 1);
+				}
 			});
 
 			results.add(icon);

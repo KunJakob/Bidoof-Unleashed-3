@@ -117,6 +117,8 @@ public class BattleListener {
 			Sponge.getEventManager().post(new GymBattleEndEvent(c.getKey().getChallenger(), c.getKey().getLeader(), c.getValue(), true));
 			this.onVictory(c.getKey(), c.getValue());
 			BattleRegistry.deregister(c.getKey());
+
+			c.getKey().getChallenger().getCon
 		});
 	}
 
@@ -140,7 +142,7 @@ public class BattleListener {
 				} else {
 					data.awardBadge(gym.getBadge().fill(((NPCTrainer) challenge.getLeader()).getName(), team));
 				}
-				gym.getRewards().get(EnumBattleType.First).forEach(reward -> {
+				gym.getRewards().get(challenge.getChallenger() instanceof Player ? EnumLeaderType.PLAYER : EnumLeaderType.NPC).get(EnumBattleType.First).forEach(reward -> {
 					try {
 						reward.give(challenge.getChallenger());
 					} catch (Exception e) {
@@ -150,7 +152,7 @@ public class BattleListener {
 			});
 		} else {
 			// Rematch battle
-			gym.getRewards().get(EnumBattleType.Rematch).forEach(reward -> {
+			gym.getRewards().get(challenge.getChallenger() instanceof Player ? EnumLeaderType.PLAYER : EnumLeaderType.NPC).get(EnumBattleType.Rematch).forEach(reward -> {
 				try {
 					reward.give(challenge.getChallenger());
 				} catch (Exception e) {

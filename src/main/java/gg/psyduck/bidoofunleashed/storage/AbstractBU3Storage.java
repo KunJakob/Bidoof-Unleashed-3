@@ -54,7 +54,6 @@ public class AbstractBU3Storage implements BU3Storage {
 	@Override
 	public void init() throws Exception {
 		dao.init();
-		BidoofUnleashed.getInstance().getDataRegistry().getGyms().addAll(this.fetchGyms().get());
 	}
 
 	@Override

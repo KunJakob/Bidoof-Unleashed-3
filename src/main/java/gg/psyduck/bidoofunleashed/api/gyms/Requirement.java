@@ -10,6 +10,13 @@ import org.spongepowered.api.entity.living.player.Player;
 public interface Requirement {
 
 	/**
+	 * Represents the ID of the requirement (used for command additions)
+	 *
+	 * @return The requirement's ID
+	 */
+	String id();
+
+	/**
 	 * Specifies whether a player passes a certain requirement.
 	 *
 	 * @param gym The gym specifying the requirement
@@ -26,4 +33,13 @@ public interface Requirement {
 	 * @param player The player attempting to challenge the gym
 	 */
 	void onInvalid(Gym gym, Player player);
+
+	/**
+	 * Given a argument array, supply the requirement with any needed fields. Most requirements will likely
+	 * have this method simply implemented as a no-op.
+	 *
+	 * @param args The args to parse for the requirement
+	 * @throws Exception In the event anything regarding the arguments is invalid
+	 */
+	Requirement supply(String... args) throws Exception;
 }

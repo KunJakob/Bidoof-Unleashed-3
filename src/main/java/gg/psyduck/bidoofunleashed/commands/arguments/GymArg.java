@@ -13,6 +13,7 @@ import org.spongepowered.api.text.Text;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class GymArg extends BaseCommandElement<Gym> {
 
@@ -31,7 +32,12 @@ public class GymArg extends BaseCommandElement<Gym> {
 	}
 
 	@Override
-	public List<String> complete(CommandSource commandSource, CommandArgs commandArgs, CommandContext commandContext) {
-		return Lists.newArrayList();
+	public List<String> complete(CommandSource src, CommandArgs args, CommandContext ctx) {
+		try {
+			String arg = args.peek();
+			return BidoofUnleashed.getInstance().getService().getAllGyms().stream().filter(gym -> gym.getName().toLowerCase().startsWith(arg)).map(Gym::getName).collect(Collectors.toList());
+		} catch (ArgumentParseException e) {
+			return Lists.newArrayList();
+		}
 	}
 }

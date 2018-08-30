@@ -31,6 +31,7 @@ public class AddGymCommand extends SpongeCommand {
     @Override
     public CommandElement[] getArgs() {
         return new CommandElement[] {
+        		GenericArguments.string(Text.of("id")),
                 GenericArguments.string(Text.of("name")),
                 GenericArguments.integer(Text.of("lvl-cap")),
                 GenericArguments.catalogedElement(Text.of("badge-type"), ItemType.class),
@@ -55,12 +56,14 @@ public class AddGymCommand extends SpongeCommand {
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-        String name = (String) args.getOne("name").get();
+        String id = args.<String>getOne("id").get().toLowerCase().replaceAll(" ", "_");
+        String name = args.<String>getOne("name").get();
         int lvlCap = (int) args.getOne("lvl-cap").get();
         ItemType badge = (ItemType) args.getOne("badge-type").get();
         String badgeName = (String) args.getOne("badge-name").get();
 
         Gym gym = Gym.builder()
+		        .id(id)
                 .name(name)
                 .badge(new Badge(badgeName, badge.getName()))
                 .arena(new Gym.Arena(

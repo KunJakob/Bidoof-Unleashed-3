@@ -25,6 +25,11 @@ public class EvolutionRequirement implements Requirement {
 	private final String type = "evolution";
 
 	@Override
+	public String id() {
+		return type;
+	}
+
+	@Override
 	public boolean passes(Gym gym, Player player) throws Exception {
 		PlayerStorage storage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) player).orElseThrow(() -> new Exception("Missing player storage data for " + player.getName()));
 		for(NBTTagCompound nbt : storage.partyPokemon) {
@@ -52,5 +57,10 @@ public class EvolutionRequirement implements Requirement {
 	@Override
 	public void onInvalid(Gym gym, Player player) {
 		player.sendMessage(MessageUtils.fetchAndParseMsg(player, MsgConfigKeys.REQUIREMENT_EVOLUTION, null, null));
+	}
+
+	@Override
+	public EvolutionRequirement supply(String... args) throws Exception {
+		return this;
 	}
 }

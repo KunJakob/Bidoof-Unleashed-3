@@ -27,8 +27,10 @@ import gg.psyduck.bidoofunleashed.impl.requirements.EvolutionRequirement;
 import gg.psyduck.bidoofunleashed.impl.requirements.GymRequirement;
 import gg.psyduck.bidoofunleashed.impl.requirements.LevelRequirement;
 import gg.psyduck.bidoofunleashed.internal.TextParsingUtils;
+import gg.psyduck.bidoofunleashed.internal.nucleus.TokenService;
 import gg.psyduck.bidoofunleashed.listeners.BattleListener;
 import gg.psyduck.bidoofunleashed.listeners.ClientListener;
+import gg.psyduck.bidoofunleashed.rewards.ChancePokemonReward;
 import gg.psyduck.bidoofunleashed.rewards.ItemReward;
 import gg.psyduck.bidoofunleashed.rewards.money.MoneyReward;
 import gg.psyduck.bidoofunleashed.rewards.PokemonReward;
@@ -128,11 +130,12 @@ public class BidoofUnleashed extends SpongePlugin {
 	    BidoofInfo.startup();
 
 	    try {
-		    RequirementAdapter.requirementRegistry.register(EvolutionRequirement.class);
-		    RequirementAdapter.requirementRegistry.register(GymRequirement.class);
-		    RequirementAdapter.requirementRegistry.register(LevelRequirement.class);
+		    this.service.registerRequirement(GymRequirement.class);
+		    this.service.registerRequirement(LevelRequirement.class);
+		    this.service.registerRequirement(EvolutionRequirement.class);
 
 		    RewardAdapter.rewardRegistry.register(PokemonReward.class);
+		    RewardAdapter.rewardRegistry.register(ChancePokemonReward.class);
 		    RewardAdapter.rewardRegistry.register(ItemReward.class);
 		    RewardAdapter.rewardRegistry.register(MoneyReward.class);
 		    RewardAdapter.rewardRegistry.register(CommandReward.class);
@@ -147,6 +150,8 @@ public class BidoofUnleashed extends SpongePlugin {
 		    this.msgConfig = new AbstractConfig(this, new AbstractConfigAdapter(this), new MsgConfigKeys(), "lang/en_us.conf");
 		    this.msgConfig.init();
 
+		    new TokenService();
+
 		    Sponge.getEventManager().registerListeners(this, new ClientListener());
 		    Pixelmon.EVENT_BUS.register(new BattleListener());
 
@@ -160,6 +165,11 @@ public class BidoofUnleashed extends SpongePlugin {
 		    disable();
 		    exc.printStackTrace();
 	    }
+    }
+
+    @Listener
+    public void onServerStart(GameStartedServerEvent e) {
+	    this.storage.fetchGyms().thenAccept(gyms -> gyms.forEach(gym -> this.dataRegistry.getGyms().add(gym)));
     }
 
 	@Listener
