@@ -28,6 +28,7 @@ public class MsgConfigKeys implements IConfigKeys {
 	public static final ConfigKey<String> COMMANDS_ACCEPT_LEADER_SELECTING_TEAM = StringKey.of("commands.accept-challenge.challenger.leader-selecting", "{{bu3_prefix}} &7Your challenge has been accepted! Please wait for the leader to select their team...");
 	public static final ConfigKey<String> COMMANDS_ACCEPT_EMPTY_QUEUE = StringKey.of("commands.accept-challenge.leader.empty-queue", "{{bu3_error}} &7No challenges currently await you...");
 	public static final ConfigKey<String> COMMANDS_ACCEPT_NOT_ON_DUTY = StringKey.of("commands.accept-challenge.leader.not-active", "{{bu3_error}} &7You aren't currently on duty...");
+    public static final ConfigKey<String> COMMANDS_ADD_REQUIREMENT_SUCCESS = StringKey.of("", "{{bu3_error}} &7You have successfully added the requirement {{bu3_requirement}} to the gym {{bu3_gym} Gym");
 
 	public static final ConfigKey<String> REQUIREMENT_GYM = StringKey.of("requirements.gym", "{{bu3_error}} &7Unfortunately, you can't challenge this gym until you've earned the &e{{bu3_badge}}&7...");
 	public static final ConfigKey<String> REQUIREMENT_LEVELCAP = StringKey.of("requirements.level-cap", "{{bu3_error}} &7Unfortunately, a member of your party exceeds the level cap of &e{{bu3_level_cap}}&7...");
@@ -36,6 +37,7 @@ public class MsgConfigKeys implements IConfigKeys {
 	public static final ConfigKey<String> SOURCE_NOT_PLAYER = StringKey.of("commands.error.src-not-player", "{{bu3_error}} &7You must be a player to use this command!");
     public static final ConfigKey<String> PLAYER_NOT_LEADER = StringKey.of("commands.error.player-not-leader", "{{bu3_error}} &7You must be a gym leader to use this command!");
     public static final ConfigKey<String> BADGE_NOT_FOUND = StringKey.of("commands.error.badge-not-present", "{{bu3_error}} {{player}} does not have that badge!");
+    public static final ConfigKey<String> INVALID_REQUIREMENT = StringKey.of("commands.error.invalid-requirement", "{bu3_error}} &7You have specified an invalid requirement");
 
     public static final ConfigKey<String> GYM_TITLE = StringKey.of("ui.team-pool.title", "&3Team Pool &7- &c{{bu3_gym}}");
     public static final ConfigKey<String> SPECIES_TITLE = StringKey.of("ui.team-pool.species.title", "&3Team Pool &7- &c{{bu3_pokemon}}");

@@ -7,6 +7,7 @@ import gg.psyduck.bidoofunleashed.commands.admin.AddGymCommand;
 import gg.psyduck.bidoofunleashed.commands.admin.AddGymLeaderCommand;
 import gg.psyduck.bidoofunleashed.commands.admin.CheckGymPoolCmd;
 import gg.psyduck.bidoofunleashed.commands.admin.DeleteGymCommand;
+import gg.psyduck.bidoofunleashed.commands.general.AddRequirementCommand;
 import gg.psyduck.bidoofunleashed.commands.general.ChallengeGymCommand;
 import gg.psyduck.bidoofunleashed.commands.leader.AcceptChallenge;
 import gg.psyduck.bidoofunleashed.commands.leader.CloseGymCommand;
@@ -56,7 +57,8 @@ public class BU3Command extends SpongeCommand {
 				new CheckGymPoolCmd(plugin),
                 new OpenGymCommand(plugin),
                 new CloseGymCommand(plugin),
-				new AcceptChallenge(plugin)
+				new AcceptChallenge(plugin),
+                new AddRequirementCommand(plugin),
 		};
 	}
 
