@@ -11,9 +11,11 @@ import com.pixelmonmod.pixelmon.enums.EnumPokemon;
 import com.pixelmonmod.pixelmon.storage.PixelmonStorage;
 import com.pixelmonmod.pixelmon.storage.PlayerStorage;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
+import gg.psyduck.bidoofunleashed.api.enums.EnumBattleType;
 import gg.psyduck.bidoofunleashed.api.spec.BU3PokemonSpec;
+import gg.psyduck.bidoofunleashed.config.ConfigKeys;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
-import gg.psyduck.bidoofunleashed.gyms.Gym;
+import gg.psyduck.bidoofunleashed.battles.gyms.Gym;
 import gg.psyduck.bidoofunleashed.ui.icons.PixelmonIcons;
 import gg.psyduck.bidoofunleashed.utils.MessageUtils;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -36,6 +38,8 @@ import org.spongepowered.api.text.format.TextColors;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 public class GymPoolUI implements PageDisplayable {
@@ -43,6 +47,7 @@ public class GymPoolUI implements PageDisplayable {
 	private Player leader;
 	private Player challenger;
 	private Gym focus;
+	private EnumBattleType type;
 	private List<BU3PokemonSpec> chosenTeam;
 	private Page display;
 
@@ -54,6 +59,7 @@ public class GymPoolUI implements PageDisplayable {
 		this.leader = leader;
 		this.challenger = challenger;
 		this.focus = gym;
+		this.type = this.focus.getBattleType(challenger);
 		this.chosenTeam = chosenTeam;
 		this.display = this.build().define(this.forge(), InventoryDimension.of(7, 3), 1, 1);
 		this.display.getViews().forEach(ui -> ui.setCloseAction((event, player) -> {
@@ -75,7 +81,7 @@ public class GymPoolUI implements PageDisplayable {
 		pb.layout(this.layout());
 		pb.property(InventoryTitle.of(MessageUtils.fetchAndParseMsg(leader, MsgConfigKeys.GYM_TITLE, tokens, null)));
 
-		if(this.focus.getPool().getTeam().size() > 21) {
+		if(this.focus.getBattleSettings(type).getPool().getTeam().size() > 21) {
 			pb.previous(Icon.from(ItemStack.builder()
 					.itemType(Sponge.getRegistry().getType(ItemType.class, "pixelmon:trade_holder_left").orElse(ItemTypes.BARRIER))
 					.build()),
@@ -96,7 +102,7 @@ public class GymPoolUI implements PageDisplayable {
 		lb.row(Icon.BORDER, 0).row(Icon.BORDER, 4);
 		lb.column(Icon.BORDER, 0).column(Icon.BORDER, 8).slots(Icon.EMPTY, 17, 26, 35, 45, 53).slots(Icon.BORDER, 16, 25, 34);
 		lb.slot(Icon.BORDER, 51);
-		if(this.focus.getPool().getTeam().isEmpty()) {
+		if(this.focus.getBattleSettings(type).getPool().getTeam().isEmpty()) {
 			lb.slot(Icon.from(ItemStack.builder()
 					.itemType(ItemTypes.STAINED_GLASS_PANE)
 					.add(Keys.DYE_COLOR, DyeColors.RED)
@@ -115,7 +121,10 @@ public class GymPoolUI implements PageDisplayable {
 				lb.slot(Icon.from(picture), index++);
 			}
 
-			if(this.chosenTeam.size() > this.focus.getMinPokemon()) {
+			Map<String, Object> variables = Maps.newHashMap();
+			variables.put("bu3_wait", BidoofUnleashed.getInstance().getConfig().get(ConfigKeys.TELEPORT_WAIT));
+
+			if(this.chosenTeam.size() > this.focus.getBattleSettings(type).getMinPokemon()) {
 				ItemStack confirm = ItemStack.builder().itemType(ItemTypes.DYE).add(Keys.DYE_COLOR, DyeColors.LIME).build();
 				Icon conf = Icon.from(confirm);
 				conf.addListener(clickable -> {
@@ -133,7 +142,9 @@ public class GymPoolUI implements PageDisplayable {
 						storage.sendUpdatedList();
 					});
 
-					this.focus.startBattle(leader, challenger);
+					challenger.sendMessage(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.MISC_CHALLENGE_BEGINNING, null, variables));
+					leader.sendMessage(MessageUtils.fetchAndParseMsg(leader, MsgConfigKeys.MISC_CHALLENGE_BEGINNING_LEADER_SELECTED, null, variables));
+					Sponge.getScheduler().createTaskBuilder().execute(() -> this.focus.startBattle(leader, challenger)).delay(10, TimeUnit.SECONDS).submit(BidoofUnleashed.getInstance());
 				});
 				lb.slot(conf, 17);
 			}
@@ -144,8 +155,43 @@ public class GymPoolUI implements PageDisplayable {
 				this.display.close(leader);
 
 				// Randomly select team
+				Random x = new Random();
 
-				this.focus.startBattle(leader, challenger);
+				int min = this.focus.getBattleSettings(type).getMinPokemon();
+				int max = this.focus.getBattleSettings(type).getMaxPokemon();
+				int size = Math.min(1, Math.max(6, x.nextInt(max - min) + min));
+
+				List<BU3PokemonSpec> team = Lists.newArrayList();
+
+				List<BU3PokemonSpec> specs = this.focus.getBattleSettings(type).getPool().getTeam();
+				if(specs.size() > 0) {
+					for (int i = 0; i < size; i++) {
+						BU3PokemonSpec spec = specs.get(x.nextInt(specs.size()));
+						BU3PokemonSpec y = spec;
+						while (team.stream().anyMatch(s -> s.name.equalsIgnoreCase(y.name))) {
+							spec = specs.get(x.nextInt(specs.size()));
+						}
+
+						team.add(spec);
+					}
+				} else {
+					team.add(new BU3PokemonSpec("bidoof lvl:5"));
+				}
+
+				// Set leader team
+				Optional<PlayerStorage> optStorage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) leader);
+				optStorage.ifPresent(storage -> {
+					storage.partyPokemon = new NBTTagCompound[6];
+					for(BU3PokemonSpec spec : team) {
+						EntityPixelmon pokemon = spec.create((World) leader.getWorld());
+						storage.addToParty(pokemon);
+					}
+					storage.sendUpdatedList();
+				});
+
+				challenger.sendMessage(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.MISC_CHALLENGE_BEGINNING, null, variables));
+				leader.sendMessage(MessageUtils.fetchAndParseMsg(leader, MsgConfigKeys.MISC_CHALLENGE_BEGINNING_LEADER_RANDOM, null, variables));
+				Sponge.getScheduler().createTaskBuilder().execute(() -> this.focus.startBattle(leader, challenger)).delay(10, TimeUnit.SECONDS).submit(BidoofUnleashed.getInstance());
 			});
 			lb.slot(rng, 35);
 		}
@@ -154,7 +200,7 @@ public class GymPoolUI implements PageDisplayable {
 	}
 
 	private List<Icon> forge() {
-		List<BU3PokemonSpec> specs = this.focus.getPool().getTeam();
+		List<BU3PokemonSpec> specs = this.focus.getBattleSettings(type).getPool().getTeam();
 		Map<EnumPokemon, Map<Byte, Integer>> speciesIndex = Maps.newHashMap();
 		List<Icon> results = Lists.newArrayList();
 		for(BU3PokemonSpec spec : specs) {
@@ -189,7 +235,7 @@ public class GymPoolUI implements PageDisplayable {
 			}
 			icon.getDisplay().offer(Keys.ITEM_LORE, lore);
 			icon.addListener(clickable -> {
-				if(this.chosenTeam.size() < this.focus.getMaxPokemon()) {
+				if(this.chosenTeam.size() < this.focus.getBattleSettings(type).getMaxPokemon()) {
 					this.display.close(leader);
 					new SpeciesUI(leader, challenger, focus, chosenTeam, entry.getKey()).open(leader, 1);
 				}

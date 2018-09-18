@@ -1,8 +1,7 @@
-package gg.psyduck.bidoofunleashed.gyms;
+package gg.psyduck.bidoofunleashed.battles.gyms;
 
 import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.time.Instant;
 import java.util.Date;

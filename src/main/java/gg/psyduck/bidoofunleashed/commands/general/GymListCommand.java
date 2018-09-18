@@ -3,21 +3,16 @@ package gg.psyduck.bidoofunleashed.commands.general;
 import com.nickimpact.impactor.api.commands.SpongeCommand;
 import com.nickimpact.impactor.api.commands.annotations.Aliases;
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
-import gg.psyduck.bidoofunleashed.BidoofUnleashed;
-import gg.psyduck.bidoofunleashed.gyms.Gym;
-import gg.psyduck.bidoofunleashed.storage.BU3Storage;
+import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
+import gg.psyduck.bidoofunleashed.ui.GymList;
+import gg.psyduck.bidoofunleashed.utils.MessageUtils;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
-import org.spongepowered.api.service.pagination.PaginationList;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 @Aliases("gymlist")
 public class GymListCommand extends SpongeCommand {
@@ -48,39 +43,11 @@ public class GymListCommand extends SpongeCommand {
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-        List<Gym> gyms = BidoofUnleashed.getInstance().getDataRegistry().getGyms();
-
-        PaginationList.Builder builder = PaginationList.builder()
-                .linesPerPage(10)
-                .title(Text.of("Gyms List"));
-
-        List<Text> contents = new ArrayList<>();
-        for (Gym gym : gyms) {
-            Text open = Text.builder()
-                    .append(gym.isOpen() ? Text.of(TextColors.GREEN, "OPEN") : Text.of(TextColors.RED, "CLOSED"))
-                    .build();
-
-            Text requirements = Text.builder()
-                    .append(Text.of("requirements"))
-                    .build();
-            Text rewards = Text.builder()
-                    .append(Text.of("rewards"))
-                    .build();
-            Text rules = Text.builder()
-                    .append(Text.of("rules"))
-                    .build();
-            Text clauses = Text.builder()
-                    .append(Text.of("clauses"))
-                    .build();
-
-
-            Text text = Text.of(
-                    gym.getName(), " ", gym.getBadge().getName(), " ", open, " ", requirements, " ", rewards, " ", rules, " ", clauses
-            );
-            contents.add(text);
+        if(!(src instanceof Player)) {
+        	throw new CommandException(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.SOURCE_NOT_PLAYER, null, null));
         }
 
-        builder.contents(contents).sendTo(src);
+	    new GymList((Player) src).open((Player) src, 1);
         return CommandResult.success();
     }
 }

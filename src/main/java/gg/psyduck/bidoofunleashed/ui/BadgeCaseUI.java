@@ -6,7 +6,7 @@ import com.nickimpact.impactor.gui.v2.Layout;
 import com.nickimpact.impactor.gui.v2.Page;
 import com.nickimpact.impactor.gui.v2.PageDisplayable;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
-import gg.psyduck.bidoofunleashed.gyms.Badge;
+import gg.psyduck.bidoofunleashed.battles.gyms.Badge;
 import gg.psyduck.bidoofunleashed.players.PlayerData;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
@@ -18,6 +18,7 @@ import org.spongepowered.api.item.inventory.property.InventoryDimension;
 import org.spongepowered.api.item.inventory.property.InventoryTitle;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -33,14 +34,43 @@ public class BadgeCaseUI implements PageDisplayable {
 		this.player = player;
 		this.display = Page.builder()
 				.property(InventoryTitle.of(Text.of(TextColors.DARK_AQUA, "Your Badge Case")))
-				.layout(Layout.builder().border().build())
+				.layout(this.design())
+				.previous(Icon.from(
+						ItemStack.builder()
+								.itemType(Sponge.getRegistry().getType(ItemType.class, "pixelmon:trade_holder_left").orElse(ItemTypes.BARRIER))
+								.build()
+						),
+						48
+				)
+				.current(Icon.from(
+						ItemStack.builder()
+								.itemType(Sponge.getRegistry().getType(ItemType.class, "pixelmon:trade_monitor").orElse(ItemTypes.BARRIER))
+								.build()
+						),
+						49
+				)
+				.next(Icon.from(
+						ItemStack.builder()
+								.itemType(Sponge.getRegistry().getType(ItemType.class, "pixelmon:trade_holder_right").orElse(ItemTypes.BARRIER))
+								.build()
+						),
+						50
+				)
 				.build(BidoofUnleashed.getInstance())
-				.define(this.badgeIcons(), InventoryDimension.of(7, 4), 1, 1);
+				.define(this.badgeIcons(), InventoryDimension.of(7, 3), 1, 1);
 	}
 
 	@Override
 	public Page getDisplay() {
 		return this.display;
+	}
+
+	private Layout design() {
+		Layout.Builder lb = Layout.builder();
+		lb.row(Icon.BORDER, 0).row(Icon.BORDER, 4).column(Icon.BORDER, 0).column(Icon.BORDER, 8);
+		lb.slots(Icon.BORDER, 46, 47, 51, 52);
+
+		return lb.build();
 	}
 
 	private List<Icon> badgeIcons() {
@@ -56,7 +86,7 @@ public class BadgeCaseUI implements PageDisplayable {
 					Text.of(TextColors.GRAY, "Team:")
 			);
 			for(String member : badge.getTeam()) {
-				lore.add(Text.of(TextColors.YELLOW, member));
+				lore.add(TextSerializers.FORMATTING_CODE.deserialize(member));
 			}
 
 			ItemStack rep = ItemStack.builder()

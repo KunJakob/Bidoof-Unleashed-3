@@ -1,17 +1,16 @@
-package gg.psyduck.bidoofunleashed.commands.general;
+package gg.psyduck.bidoofunleashed.commands.admin;
 
 import com.google.common.collect.Maps;
 import com.nickimpact.impactor.api.commands.SpongeCommand;
 import com.nickimpact.impactor.api.commands.annotations.Aliases;
+import com.nickimpact.impactor.api.commands.annotations.Permission;
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
+import gg.psyduck.bidoofunleashed.api.enums.EnumBattleType;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
 import gg.psyduck.bidoofunleashed.commands.arguments.GymArg;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
-import gg.psyduck.bidoofunleashed.gyms.Gym;
-import gg.psyduck.bidoofunleashed.impl.requirements.EvolutionRequirement;
-import gg.psyduck.bidoofunleashed.impl.requirements.GymRequirement;
-import gg.psyduck.bidoofunleashed.impl.requirements.LevelRequirement;
+import gg.psyduck.bidoofunleashed.battles.gyms.Gym;
 import gg.psyduck.bidoofunleashed.utils.MessageUtils;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -22,9 +21,9 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
 
 import java.util.Map;
-import java.util.Optional;
 
 @Aliases("addrequirement")
+@Permission(admin = true)
 public class AddRequirementCommand extends SpongeCommand {
 
     public AddRequirementCommand(SpongePlugin plugin) {
@@ -35,6 +34,7 @@ public class AddRequirementCommand extends SpongeCommand {
     public CommandElement[] getArgs() {
         return new CommandElement[] {
         		new GymArg(Text.of("gym")),
+		        GenericArguments.enumValue(Text.of("type"), EnumBattleType.class),
 		        GenericArguments.string(Text.of("requirement")),
 		        GenericArguments.optional(GenericArguments.remainingJoinedStrings(Text.of("rest")))
         };
@@ -77,7 +77,7 @@ public class AddRequirementCommand extends SpongeCommand {
         	throw new CommandException(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.INVALID_REQUIREMENT, null, null));
         }
 
-        gym.getRequirements().add(requirement);
+        gym.getBattleSettings(args.<EnumBattleType>getOne(Text.of("type")).get()).getRequirements().add(requirement);
         Map<String, Object> variables = Maps.newHashMap();
         variables.put("bu3_gym", gym.getName());
         variables.put("bu3_requirement", requirementArg);

@@ -4,11 +4,9 @@ import com.google.common.collect.Maps;
 import com.nickimpact.impactor.api.commands.SpongeCommand;
 import com.nickimpact.impactor.api.commands.annotations.Aliases;
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
-import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import gg.psyduck.bidoofunleashed.commands.arguments.GymArg;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
-import gg.psyduck.bidoofunleashed.gyms.Gym;
-import gg.psyduck.bidoofunleashed.players.PlayerData;
+import gg.psyduck.bidoofunleashed.battles.gyms.Gym;
 import gg.psyduck.bidoofunleashed.utils.MessageUtils;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -19,6 +17,8 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 
 @Aliases("opengym")
 public class OpenGymCommand extends SpongeCommand {
@@ -62,9 +62,10 @@ public class OpenGymCommand extends SpongeCommand {
             throw new CommandException(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.PLAYER_NOT_LEADER, null, null));
         }
 
-        Map<String, Object> variables = Maps.newHashMap();
-        variables.put("bu3_gym", gym.getName());
-        src.sendMessage(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.COMMANDS_OPEN_GYM_SUCCESS, null, variables));
+        Map<String, Function<CommandSource, Optional<Text>>> tokens = Maps.newHashMap();
+	    tokens.put("bu3_gym", s -> Optional.of(Text.of(gym.getName())));
+	    gym.setOpen(true);
+        src.sendMessage(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.COMMANDS_OPEN_GYM_SUCCESS, tokens, null));
         return CommandResult.success();
     }
 }

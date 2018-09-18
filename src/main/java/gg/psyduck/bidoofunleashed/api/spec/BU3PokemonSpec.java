@@ -8,15 +8,20 @@ import com.pixelmonmod.pixelmon.config.PixelmonItemsHeld;
 import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
 import com.pixelmonmod.pixelmon.entities.pixelmon.stats.Moveset;
 import com.pixelmonmod.pixelmon.items.ItemHeld;
+import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import net.minecraft.item.ItemStack;
 
 import java.util.List;
 
 public class BU3PokemonSpec extends PokemonSpec {
 
-	public String nickname;
-	public String item;
-	public List<String> attacks;
+	public String nickname = null;
+	public String item = null;
+	public List<String> attacks = null;
+
+	public BU3PokemonSpec(String... args) {
+		super(args);
+	}
 
 	@Override
 	public void apply(EntityPixelmon pokemon) {
@@ -40,9 +45,10 @@ public class BU3PokemonSpec extends PokemonSpec {
 			}
 			if(!moveset.isEmpty()) {
 				pokemon.setMoveset(moveset);
+				pokemon.update(EnumUpdateType.Moveset);
 			}
 		}
 
-		pokemon.update(EnumUpdateType.Moveset, EnumUpdateType.Stats, EnumUpdateType.Nickname);
+		pokemon.update(EnumUpdateType.Stats, EnumUpdateType.Nickname);
 	}
 }

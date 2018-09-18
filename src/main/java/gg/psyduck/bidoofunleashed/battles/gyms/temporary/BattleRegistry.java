@@ -1,7 +1,7 @@
-package gg.psyduck.bidoofunleashed.gyms.temporary;
+package gg.psyduck.bidoofunleashed.battles.gyms.temporary;
 
 import com.google.common.collect.Maps;
-import gg.psyduck.bidoofunleashed.gyms.Gym;
+import gg.psyduck.bidoofunleashed.battles.gyms.Gym;
 import lombok.Getter;
 
 import java.util.Map;

@@ -20,4 +20,16 @@ public class ClientListener {
 			});
 		}
 	}
+
+	@Listener
+	public void onClientDisconnect(ClientConnectionEvent.Disconnect event, @First Player player) {
+		// Unload user data
+		BU3Storage storage = BidoofUnleashed.getInstance().getStorage();
+		if (BidoofUnleashed.getInstance().getDataRegistry().getPlayerData().containsKey(player.getUniqueId())) {
+			storage.addOrUpdatePlayerData(BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(player.getUniqueId()));
+			BidoofUnleashed.getInstance().getDataRegistry().getPlayerData().remove(player.getUniqueId());
+		}
+
+		BidoofUnleashed.getInstance().getDataRegistry().getGyms().stream().filter(gym -> gym.getQueue().contains(player.getUniqueId())).forEach(gym -> gym.getQueue().remove(player.getUniqueId()));
+	}
 }

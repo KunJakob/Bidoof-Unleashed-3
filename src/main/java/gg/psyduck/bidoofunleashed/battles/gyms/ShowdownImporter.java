@@ -1,4 +1,4 @@
-package gg.psyduck.bidoofunleashed.gyms;
+package gg.psyduck.bidoofunleashed.battles.gyms;
 
 import com.google.common.collect.Lists;
 import com.pixelmonmod.pixelmon.battles.attacks.AttackBase;
@@ -44,9 +44,11 @@ public class ShowdownImporter {
 				block.append(line).append("\n");
 			}
 
-			spec = build(block.toString());
-			if(spec != null) {
-				pool.add(spec);
+			if(block.length() != 0) {
+				spec = build(block.toString());
+				if (spec != null) {
+					pool.add(spec);
+				}
 			}
 			reader.close();
 		} catch (Exception e) {
@@ -56,7 +58,7 @@ public class ShowdownImporter {
 		return pool;
 	}
 
-	private static BU3PokemonSpec build(String block) {
+	private static BU3PokemonSpec build(String block) throws RuntimeException {
 		BU3PokemonSpec spec = new BU3PokemonSpec();
 		String[] lines = block.split("\n");
 

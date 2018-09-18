@@ -2,7 +2,7 @@ package gg.psyduck.bidoofunleashed.api;
 
 import gg.psyduck.bidoofunleashed.api.enums.EnumLeaderType;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
-import gg.psyduck.bidoofunleashed.gyms.Gym;
+import gg.psyduck.bidoofunleashed.battles.gyms.Gym;
 import gg.psyduck.bidoofunleashed.players.PlayerData;
 
 import java.util.List;

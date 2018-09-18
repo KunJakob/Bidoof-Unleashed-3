@@ -8,6 +8,7 @@ import io.github.nucleuspowered.nucleus.api.exceptions.PluginAlreadyRegisteredEx
 import io.github.nucleuspowered.nucleus.api.service.NucleusMessageTokenService;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
@@ -19,6 +20,9 @@ public class TokenService implements NucleusMessageTokenService.TokenParser {
 	private final Map<String, Translator> tokens = Maps.newHashMap();
 
 	public TokenService() {
+		tokens.put("bu3_prefix", (p, v, m) -> Optional.of(Text.of(TextColors.YELLOW, "Bidoof Unleashed", TextColors.GRAY, " \u00bb")));
+		tokens.put("bu3_error", (p, v, m) -> Optional.of(Text.of(TextColors.YELLOW, "Bidoof Unleashed", TextColors.GRAY, "(", TextColors.RED, "Error", TextColors.GRAY, ")")));
+
 		try {
 			NucleusAPI.getMessageTokenService().register(
 					BidoofUnleashed.getInstance().getPluginContainer(),

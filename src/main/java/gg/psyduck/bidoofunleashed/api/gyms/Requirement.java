@@ -1,6 +1,6 @@
 package gg.psyduck.bidoofunleashed.api.gyms;
 
-import gg.psyduck.bidoofunleashed.gyms.Gym;
+import gg.psyduck.bidoofunleashed.battles.gyms.Gym;
 import org.spongepowered.api.entity.living.player.Player;
 
 /**

@@ -7,7 +7,7 @@ import com.nickimpact.impactor.api.plugins.SpongePlugin;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
 import gg.psyduck.bidoofunleashed.commands.arguments.GymArg;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
-import gg.psyduck.bidoofunleashed.gyms.Gym;
+import gg.psyduck.bidoofunleashed.battles.gyms.Gym;
 import gg.psyduck.bidoofunleashed.utils.MessageUtils;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -57,7 +57,7 @@ public class ChallengeGymCommand extends SpongeCommand {
 		if(src instanceof Player) {
 			Gym gym = args.<Gym>getOne(GYM).get();
 			try {
-				for (Requirement requirement : gym.getRequirements()) {
+				for (Requirement requirement : gym.getBattleSettings(gym.getBattleType((Player) src)).getRequirements()) {
 					if (!requirement.passes(gym, (Player) src)) {
 						requirement.onInvalid(gym, (Player) src);
 						return CommandResult.empty();
@@ -70,6 +70,7 @@ public class ChallengeGymCommand extends SpongeCommand {
 			gym.queue((Player) src);
 			Map<String, Function<CommandSource, Optional<Text>>> tokens = Maps.newHashMap();
 			tokens.put("bu3_gym", s -> Optional.of(Text.of(gym.getName())));
+			tokens.put("bu3_queue_position", s -> Optional.of(Text.of(gym.getQueue().size())));
 			src.sendMessage(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.COMMANDS_CHALLENGE_QUEUED, tokens, null));
 			return CommandResult.success();
 		}

@@ -5,6 +5,7 @@ import com.nickimpact.impactor.api.configuration.ConfigKey;
 import com.nickimpact.impactor.api.configuration.IConfigKeys;
 import com.nickimpact.impactor.api.configuration.keys.AbstractKey;
 import com.nickimpact.impactor.api.configuration.keys.EnduringKey;
+import com.nickimpact.impactor.api.configuration.keys.IntegerKey;
 import com.nickimpact.impactor.api.configuration.keys.StringKey;
 import com.nickimpact.impactor.api.storage.StorageCredentials;
 
@@ -23,6 +24,8 @@ public class ConfigKeys implements IConfigKeys {
 			c.getString("storage.data.connection-info.username", "username"),
 			c.getString("storage.data.connection-info.password", "password")
 	)));
+
+	public static final ConfigKey<Integer> TELEPORT_WAIT = IntegerKey.of("gyms.teleport.wait", 10);
 
 	private static Map<String, ConfigKey<?>> KEYS = null;
 

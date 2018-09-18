@@ -3,18 +3,13 @@ package gg.psyduck.bidoofunleashed.commands;
 import com.nickimpact.impactor.api.commands.SpongeCommand;
 import com.nickimpact.impactor.api.commands.annotations.Aliases;
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
-import gg.psyduck.bidoofunleashed.commands.admin.AddGymCommand;
-import gg.psyduck.bidoofunleashed.commands.admin.AddGymLeaderCommand;
-import gg.psyduck.bidoofunleashed.commands.admin.CheckGymPoolCmd;
-import gg.psyduck.bidoofunleashed.commands.admin.DeleteGymCommand;
-import gg.psyduck.bidoofunleashed.commands.general.AddRequirementCommand;
+import gg.psyduck.bidoofunleashed.commands.admin.*;
 import gg.psyduck.bidoofunleashed.commands.general.ChallengeGymCommand;
 import gg.psyduck.bidoofunleashed.commands.leader.AcceptChallenge;
 import gg.psyduck.bidoofunleashed.commands.leader.CloseGymCommand;
 import gg.psyduck.bidoofunleashed.commands.general.GiveBadgeCommand;
 import gg.psyduck.bidoofunleashed.commands.general.GymListCommand;
 import gg.psyduck.bidoofunleashed.commands.leader.OpenGymCommand;
-import gg.psyduck.bidoofunleashed.commands.admin.RemoveBadgeCommand;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -59,6 +54,7 @@ public class BU3Command extends SpongeCommand {
                 new CloseGymCommand(plugin),
 				new AcceptChallenge(plugin),
                 new AddRequirementCommand(plugin),
+				new GymArenaSetupCmd(plugin)
 		};
 	}
 

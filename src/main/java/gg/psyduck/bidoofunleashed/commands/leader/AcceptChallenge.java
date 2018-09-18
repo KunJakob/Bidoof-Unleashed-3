@@ -8,13 +8,14 @@ import com.pixelmonmod.pixelmon.storage.PlayerStorage;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import gg.psyduck.bidoofunleashed.commands.arguments.GymArg;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
-import gg.psyduck.bidoofunleashed.gyms.Gym;
+import gg.psyduck.bidoofunleashed.battles.gyms.Gym;
 import gg.psyduck.bidoofunleashed.players.PlayerData;
 import gg.psyduck.bidoofunleashed.players.Roles;
 import gg.psyduck.bidoofunleashed.ui.gympools.GymPoolUI;
 import gg.psyduck.bidoofunleashed.utils.MessageUtils;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -75,7 +76,12 @@ public class AcceptChallenge extends SpongeCommand {
 			if(gym.getQueue().isEmpty()) {
 				throw new CommandException(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.COMMANDS_ACCEPT_EMPTY_QUEUE, null, null));
 			}
-			Player next = gym.getQueue().poll();
+
+			Player next = Sponge.getServer().getPlayer(gym.getQueue().poll()).orElseThrow(() -> new CommandException(Text.of("Something happened finding the next player")));
+			if(gym.getBattleSettings(gym.getBattleType(next)).getPool().getTeam().isEmpty()) {
+				throw new CommandException(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.COMMANDS_ACCEPT_EMPTY_TEAM_POOL, null, null));
+			}
+
 			next.sendMessage(MessageUtils.fetchAndParseMsg(next, MsgConfigKeys.COMMANDS_ACCEPT_LEADER_SELECTING_TEAM, null, null));
 
 			Optional<PlayerStorage> optStorage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) player);

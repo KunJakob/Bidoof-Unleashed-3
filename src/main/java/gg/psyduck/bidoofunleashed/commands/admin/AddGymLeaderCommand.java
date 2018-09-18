@@ -1,13 +1,23 @@
 package gg.psyduck.bidoofunleashed.commands.admin;
 
+import com.flowpowered.math.vector.Vector3d;
 import com.nickimpact.impactor.api.commands.SpongeCommand;
 import com.nickimpact.impactor.api.commands.annotations.Aliases;
 import com.nickimpact.impactor.api.commands.annotations.Permission;
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
+import com.pixelmonmod.pixelmon.Pixelmon;
+import com.pixelmonmod.pixelmon.entities.npcs.NPCTrainer;
+import com.pixelmonmod.pixelmon.entities.npcs.registry.NPCRegistryTrainers;
+import com.pixelmonmod.pixelmon.enums.EnumEncounterMode;
+import com.pixelmonmod.pixelmon.enums.EnumTrainerAI;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import gg.psyduck.bidoofunleashed.api.enums.EnumLeaderType;
-import gg.psyduck.bidoofunleashed.gyms.Gym;
+import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
+import gg.psyduck.bidoofunleashed.battles.gyms.Gym;
 import gg.psyduck.bidoofunleashed.players.Roles;
+import gg.psyduck.bidoofunleashed.utils.MessageUtils;
+import net.minecraft.world.World;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -15,7 +25,11 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
+
+import java.util.Optional;
 
 @Aliases({"addgymleader", "agl"})
 @Permission(admin = true)
@@ -29,13 +43,15 @@ public class AddGymLeaderCommand extends SpongeCommand {
     public CommandElement[] getArgs() {
         return new CommandElement[] {
                 GenericArguments.string(Text.of("gym-name")),
-                GenericArguments.player(Text.of("player"))
+                GenericArguments.string(Text.of("leader")),
+		        GenericArguments.optional(GenericArguments.string(Text.of("world"))),
+		        GenericArguments.optional(GenericArguments.vector3d(Text.of("location")))
         };
     }
 
     @Override
     public Text getDescription() {
-        return Text.of("add a leader to a gym");
+        return Text.of("Add a leader to a gym");
     }
 
     @Override
@@ -51,13 +67,38 @@ public class AddGymLeaderCommand extends SpongeCommand {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         String name = (String) args.getOne("gym-name").get();
-        Player user = args.<Player>getOne("player").get();
+        String leader = args.<String>getOne("leader").get();
 
         Gym gym = BidoofUnleashed.getInstance().getDataRegistry().getGyms().stream().filter(g -> g.getName().equals(name)).findFirst()
                 .orElseThrow(() -> new CommandException(Text.of("Invalid gym name")));
 
-        BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(user.getUniqueId()).setRole(Roles.LEADER);
-        gym.addLeader(user.getUniqueId(), EnumLeaderType.PLAYER);
+        if(leader.equalsIgnoreCase("npc")) {
+	        Optional<org.spongepowered.api.world.World> world = args.<String>getOne(Text.of("world")).map(w -> Sponge.getServer().getWorld(w).orElse(null));
+	        Optional<Vector3d> pos = args.getOne(Text.of("location"));
+
+	        if((!world.isPresent() || !pos.isPresent()) && !(src instanceof Player)) {
+	        	throw new CommandException(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.SOURCE_NOT_PLAYER, null, null));
+	        }
+
+	        NPCTrainer npc = new NPCTrainer((World) world.orElseGet(((Player) src)::getWorld));
+	        npc.init(NPCRegistryTrainers.Steve);
+	        npc.setPosition(
+	        		pos.map(Vector3d::getFloorX).orElseGet(() -> ((Player) src).getLocation().getPosition().getFloorX()) + 0.5,
+			        pos.map(Vector3d::getFloorY).orElseGet(() -> ((Player) src).getLocation().getPosition().getFloorY()),
+			        pos.map(Vector3d::getFloorZ).orElseGet(() -> ((Player) src).getLocation().getPosition().getFloorZ()) + 0.5
+	        );
+	        npc.setAIMode(EnumTrainerAI.StandStill);
+	        npc.ignoreDespawnCounter = true;
+	        npc.initAI();
+	        npc.setStartRotationYaw(180);
+	        npc.setEncounterMode(EnumEncounterMode.Unlimited);
+	        Pixelmon.proxy.spawnEntitySafely(npc, (World) world.orElseGet(((Player) src)::getWorld));
+	        gym.addLeader(npc.getUniqueID(), EnumLeaderType.NPC);
+        } else {
+        	User user = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(leader).orElseThrow(() -> new CommandException(Text.of("Unable to find a player by that name...")));
+	        BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(user.getUniqueId()).setRole(Roles.LEADER);
+	        gym.addLeader(user.getUniqueId(), EnumLeaderType.PLAYER);
+        }
         BidoofUnleashed.getInstance().getStorage().addOrUpdateGym(gym);
         return CommandResult.success();
     }

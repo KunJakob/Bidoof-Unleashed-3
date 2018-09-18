@@ -5,7 +5,7 @@ import com.nickimpact.impactor.api.commands.annotations.Aliases;
 import com.nickimpact.impactor.api.commands.annotations.Permission;
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
 import gg.psyduck.bidoofunleashed.commands.arguments.GymArg;
-import gg.psyduck.bidoofunleashed.gyms.Gym;
+import gg.psyduck.bidoofunleashed.battles.gyms.Gym;
 import gg.psyduck.bidoofunleashed.ui.gympools.GymPoolUI;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;

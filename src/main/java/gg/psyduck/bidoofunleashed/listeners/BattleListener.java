@@ -2,6 +2,7 @@ package gg.psyduck.bidoofunleashed.listeners;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.pixelmonmod.pixelmon.api.events.BattleStartedEvent;
 import com.pixelmonmod.pixelmon.api.events.BeatTrainerEvent;
 import com.pixelmonmod.pixelmon.api.events.battles.BattleEndEvent;
@@ -15,21 +16,23 @@ import gg.psyduck.bidoofunleashed.api.enums.EnumBattleType;
 import gg.psyduck.bidoofunleashed.api.enums.EnumLeaderType;
 import gg.psyduck.bidoofunleashed.api.events.GymBattleEndEvent;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
-import gg.psyduck.bidoofunleashed.gyms.Gym;
-import gg.psyduck.bidoofunleashed.gyms.temporary.BattleRegistry;
-import gg.psyduck.bidoofunleashed.gyms.temporary.Challenge;
+import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
+import gg.psyduck.bidoofunleashed.battles.gyms.Gym;
+import gg.psyduck.bidoofunleashed.battles.gyms.temporary.BattleRegistry;
+import gg.psyduck.bidoofunleashed.battles.gyms.temporary.Challenge;
 import gg.psyduck.bidoofunleashed.players.PlayerData;
+import gg.psyduck.bidoofunleashed.utils.MessageUtils;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
 
 public class BattleListener {
 
@@ -49,9 +52,9 @@ public class BattleListener {
 	}
 
 	private void battleStartHelper(BattleStartedEvent event, NPCTrainer trainer, Player player) {
-		Optional<Gym> gym = BidoofUnleashed.getInstance().getDataRegistry().getGyms().stream().filter(g -> g.getLeaders().entrySet().stream().anyMatch(entry -> entry.getValue() == EnumLeaderType.NPC && entry.getKey() == trainer.getUniqueID())).findAny();
+		Optional<Gym> gym = BidoofUnleashed.getInstance().getDataRegistry().getGyms().stream().filter(g -> g.getLeaders().entrySet().stream().anyMatch(entry -> entry.getKey() == trainer.getUniqueID() && entry.getValue() == EnumLeaderType.NPC)).findAny();
 		gym.ifPresent(g -> {
-			for(Requirement requirement : g.getRequirements()) {
+			for(Requirement requirement : g.getBattleSettings(g.getBattleType(player)).getRequirements()) {
 				try {
 					if(!requirement.passes(g, player)) {
 						requirement.onInvalid(g, player);
@@ -65,7 +68,8 @@ public class BattleListener {
 				}
 			}
 
-			g.startBattle((Entity) trainer, player);
+			EnumBattleType type = g.getBattleType(player);
+			BattleRegistry.register(new Challenge((Entity) trainer, player, type), g);
 		});
 	}
 
@@ -90,6 +94,7 @@ public class BattleListener {
 					.findAny()
 					.orElse(null);
 
+			c.getKey().restore();
 			PlayerData data = BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(c.getKey().getLeader().getUniqueId());
 			if(data != null) {
 				PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) c.getKey().getLeader()).ifPresent(storage -> {
@@ -115,16 +120,15 @@ public class BattleListener {
 
 		challenge.ifPresent(c -> {
 			Sponge.getEventManager().post(new GymBattleEndEvent(c.getKey().getChallenger(), c.getKey().getLeader(), c.getValue(), true));
+			c.getKey().restore();
 			this.onVictory(c.getKey(), c.getValue());
 			BattleRegistry.deregister(c.getKey());
-
-			c.getKey().getChallenger().getCon
 		});
 	}
 
 	private void onVictory(Challenge challenge, Gym gym) {
 		PlayerData data = BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(challenge.getChallenger().getUniqueId());
-		if(!data.hasBadge(gym.getBadge())) {
+		if(challenge.getBattleType() == EnumBattleType.First) {
 			// First battle (before earning badge)
 			PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) challenge.getChallenger()).ifPresent(storage -> {
 				List<String> team = Lists.newArrayList();
@@ -133,32 +137,28 @@ public class BattleListener {
 						String name = nbt.getString(NbtKeys.NAME);
 						int level = nbt.getInteger(NbtKeys.LEVEL);
 
-						team.add("&e" + name + " &7(&a" + level + "&7)");
+						team.add("&e" + name + " &7(&aLvl " + level + "&7)");
 					}
 				}
 
 				if(challenge.getLeader() instanceof Player) {
 					data.awardBadge(gym.getBadge().fill(challenge.getLeader().getUniqueId(), team));
 				} else {
-					data.awardBadge(gym.getBadge().fill(((NPCTrainer) challenge.getLeader()).getName(), team));
-				}
-				gym.getRewards().get(challenge.getChallenger() instanceof Player ? EnumLeaderType.PLAYER : EnumLeaderType.NPC).get(EnumBattleType.First).forEach(reward -> {
-					try {
-						reward.give(challenge.getChallenger());
-					} catch (Exception e) {
-						BidoofUnleashed.getInstance().getLogger().error("Unable to process a reward for " + challenge.getChallenger().getName() + " due to an error...");
-					}
-				});
-			});
-		} else {
-			// Rematch battle
-			gym.getRewards().get(challenge.getChallenger() instanceof Player ? EnumLeaderType.PLAYER : EnumLeaderType.NPC).get(EnumBattleType.Rematch).forEach(reward -> {
-				try {
-					reward.give(challenge.getChallenger());
-				} catch (Exception e) {
-					BidoofUnleashed.getInstance().getLogger().error("Unable to process a reward for " + challenge.getChallenger().getName() + " due to an error...");
+					data.awardBadge(gym.getBadge().fill("NPC", team));
 				}
 			});
 		}
+
+		gym.getBattleSettings(challenge.getBattleType()).getRewards().get(challenge.getChallenger() instanceof Player ? EnumLeaderType.PLAYER : EnumLeaderType.NPC).forEach(reward -> {
+			try {
+				reward.give(challenge.getChallenger());
+			} catch (Exception e) {
+				BidoofUnleashed.getInstance().getLogger().error("Unable to process a reward for " + challenge.getChallenger().getName() + " due to an error...");
+			}
+		});
+
+		Map<String, Function<CommandSource, Optional<Text>>> tokens = Maps.newHashMap();
+		tokens.put("bu3_gym", src -> Optional.of(Text.of(gym.getName())));
+		challenge.getChallenger().sendMessage(MessageUtils.fetchAndParseMsg(challenge.getChallenger(), MsgConfigKeys.BATTLES_WIN, tokens, null));
 	}
 }

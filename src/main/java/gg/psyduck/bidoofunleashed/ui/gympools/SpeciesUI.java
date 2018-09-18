@@ -10,7 +10,7 @@ import com.pixelmonmod.pixelmon.enums.EnumPokemon;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import gg.psyduck.bidoofunleashed.api.spec.BU3PokemonSpec;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
-import gg.psyduck.bidoofunleashed.gyms.Gym;
+import gg.psyduck.bidoofunleashed.battles.gyms.Gym;
 import gg.psyduck.bidoofunleashed.ui.icons.PixelmonIcons;
 import gg.psyduck.bidoofunleashed.utils.MessageUtils;
 import org.spongepowered.api.Sponge;
@@ -65,7 +65,7 @@ class SpeciesUI implements PageDisplayable {
 		pb.layout(this.layout());
 		pb.property(InventoryTitle.of(MessageUtils.fetchAndParseMsg(leader, MsgConfigKeys.SPECIES_TITLE, tokens, null)));
 
-		if(this.focus.getPool().getTeam().size() > 21) {
+		if(this.focus.getBattleSettings(this.focus.getBattleType(challenger)).getPool().getTeam().size() > 21) {
 			pb.previous(Icon.from(ItemStack.builder()
 							.itemType(Sponge.getRegistry().getType(ItemType.class, "pixelmon:trade_holder_left").orElse(ItemTypes.BARRIER))
 							.build()),
@@ -98,7 +98,7 @@ class SpeciesUI implements PageDisplayable {
 	}
 
 	private List<Icon> forge() {
-		List<BU3PokemonSpec> specs = this.focus.getPool().getTeam().stream().filter(spec -> spec.name.equalsIgnoreCase(this.species.name)).collect(Collectors.toList());
+		List<BU3PokemonSpec> specs = this.focus.getBattleSettings(this.focus.getBattleType(challenger)).getPool().getTeam().stream().filter(spec -> spec.name.equalsIgnoreCase(this.species.name)).collect(Collectors.toList());
 		List<Icon> results = Lists.newArrayList();
 		for(BU3PokemonSpec spec : specs) {
 			ItemStack picture = PixelmonIcons.createPicture(EnumPokemon.getFromNameAnyCase(spec.name), spec.shiny != null ? spec.shiny : false, spec.form != null ? spec.form : -1);
