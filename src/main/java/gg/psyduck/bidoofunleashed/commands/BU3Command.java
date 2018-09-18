@@ -7,7 +7,7 @@ import gg.psyduck.bidoofunleashed.commands.admin.*;
 import gg.psyduck.bidoofunleashed.commands.general.ChallengeGymCommand;
 import gg.psyduck.bidoofunleashed.commands.leader.AcceptChallenge;
 import gg.psyduck.bidoofunleashed.commands.leader.CloseGymCommand;
-import gg.psyduck.bidoofunleashed.commands.general.GiveBadgeCommand;
+import gg.psyduck.bidoofunleashed.commands.admin.GiveBadgeCommand;
 import gg.psyduck.bidoofunleashed.commands.general.GymListCommand;
 import gg.psyduck.bidoofunleashed.commands.leader.OpenGymCommand;
 import org.spongepowered.api.command.CommandException;

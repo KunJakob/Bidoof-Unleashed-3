@@ -64,8 +64,12 @@ public class CloseGymCommand extends SpongeCommand {
 
 	    Map<String, Function<CommandSource, Optional<Text>>> tokens = Maps.newHashMap();
 	    tokens.put("bu3_gym", s -> Optional.of(Text.of(gym.getName())));
-	    gym.setOpen(false);
-	    src.sendMessage(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.COMMANDS_CLOSE_GYM_SUCCESS, tokens, null));
+	    if(gym.close()) {
+	    	gym.getQueue().clear();
+		    src.sendMessage(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.COMMANDS_CLOSE_GYM_SUCCESS, tokens, null));
+	    } else {
+	    	throw new CommandException(Text.of("That gym is already closed..."));
+	    }
         return CommandResult.success();
     }
 }

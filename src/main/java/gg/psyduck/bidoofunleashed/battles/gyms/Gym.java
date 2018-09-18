@@ -3,6 +3,7 @@ package gg.psyduck.bidoofunleashed.battles.gyms;
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
+import com.pixelmonmod.pixelmon.battles.controller.participants.PixelmonWrapper;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import gg.psyduck.bidoofunleashed.api.rewards.BU3Reward;
 import com.pixelmonmod.pixelmon.battles.controller.BattleControllerBase;
@@ -15,12 +16,12 @@ import com.pixelmonmod.pixelmon.storage.PixelmonStorage;
 import gg.psyduck.bidoofunleashed.api.enums.EnumBattleType;
 import gg.psyduck.bidoofunleashed.api.enums.EnumLeaderType;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
+import gg.psyduck.bidoofunleashed.api.spec.BU3PokemonSpec;
 import gg.psyduck.bidoofunleashed.battles.Category;
-import gg.psyduck.bidoofunleashed.battles.e4.BU3Battlable;
+import gg.psyduck.bidoofunleashed.api.BU3Battlable;
 import gg.psyduck.bidoofunleashed.battles.battletypes.BattleType;
 import gg.psyduck.bidoofunleashed.battles.gyms.temporary.BattleRegistry;
 import gg.psyduck.bidoofunleashed.battles.gyms.temporary.Challenge;
-import gg.psyduck.bidoofunleashed.data.DataRegistry;
 import gg.psyduck.bidoofunleashed.players.PlayerData;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -54,7 +55,7 @@ public class Gym implements BU3Battlable {
 	private transient Queue<UUID> queue = new LinkedList<>();
 	private transient boolean open = false;
 
-	public Gym(Builder builder) {
+	private Gym(Builder builder) {
 		this.id = builder.id;
 		this.name = builder.name;
 		this.badge = builder.badge;
@@ -76,13 +77,21 @@ public class Gym implements BU3Battlable {
 	}
 
 	public boolean canChallenge(Player player) {
-		return this.queue != null && this.arena.isSetup() && !this.getBattleSettings(this.getBattleType(player)).getPool().getTeam().isEmpty() && player.hasPermission("bu3.gyms." + this.id.toLowerCase() + ".contest");
+		return this.open && player.hasPermission("bu3.gyms." + this.id.toLowerCase() + ".contest");
 	}
 
-	public void queue(Player player) {
+	@Override
+	public boolean canAccess(Player player) {
+		return this.arena.isSetup() && player.hasPermission("bu3.gyms." + this.id.toLowerCase() + ".teleport");
+	}
+
+	public boolean queue(Player player) {
 		if(this.canChallenge(player)) {
 			this.queue.add(player.getUniqueId());
+			return true;
 		}
+
+		return false;
 	}
 
 	/**
@@ -92,11 +101,18 @@ public class Gym implements BU3Battlable {
 	 * @param leader The leader of the gym accepting the challenge
 	 * @param challenger The challenger trying to prove their worth
 	 */
-	public void startBattle(Player leader, Player challenger) {
+	public void startBattle(Player leader, Player challenger, List<BU3PokemonSpec> team) {
 		BattleParticipant bpL;
 
-		EntityPixelmon ls = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) leader).get().getFirstAblePokemon((World) leader.getWorld());
-		bpL = new PlayerParticipant((EntityPlayerMP) leader, ls);
+		bpL = new PlayerParticipant((EntityPlayerMP) leader);
+		bpL.allPokemon = new PixelmonWrapper[team.size()];
+		for(int i = 0; i < team.size(); i++) {
+			EntityPixelmon pokemon = team.get(i).create((World) leader.getWorld());
+			pokemon.loadMoveset();
+			bpL.allPokemon[i] = new PixelmonWrapper(bpL, pokemon, i);
+		}
+		bpL.controlledPokemon = Collections.singletonList(bpL.allPokemon[0]);
+
 		leader.setLocationAndRotationSafely(new Location<>(leader.getWorld(), arena.leader.position), arena.leader.rotation);
 
 		challenger.setLocationAndRotationSafely(new Location<>(challenger.getWorld(), arena.challenger.position), arena.challenger.rotation);
@@ -114,7 +130,9 @@ public class Gym implements BU3Battlable {
 		this.initial.init();
 		this.rematch.init();
 
-		this.queue = new LinkedList<>();
+		if(this.queue == null) {
+			this.queue = new LinkedList<>();
+		}
 
 		if(this.leaders.values().contains(EnumLeaderType.NPC)) {
 			this.open = true;
@@ -123,8 +141,22 @@ public class Gym implements BU3Battlable {
 		return this;
 	}
 
-	public void setOpen(boolean value) {
-	    this.open = value;
+	public boolean open() {
+		if(this.queue != null && this.arena.isSetup()) {
+			this.open = true;
+			return true;
+		}
+
+		return false;
+    }
+
+    public boolean close() {
+		if(!this.open) {
+			return false;
+		}
+
+		this.open = false;
+		return true;
     }
 
     public BattleType getBattleSettings(EnumBattleType type) {
@@ -183,11 +215,13 @@ public class Gym implements BU3Battlable {
 		private Map<UUID, EnumLeaderType> leaders = Maps.newHashMap();
 
 		public Builder id(String id) {
+			Preconditions.checkArgument(BidoofUnleashed.getInstance().getDataRegistry().getGyms().stream().noneMatch(gym -> gym.getId().equalsIgnoreCase(id)), "Can't have two gyms with the same ID");
 			this.id = id.toLowerCase().replaceAll(" ", "_");
 			return this;
 		}
 
 		public Builder name(String name) {
+			Preconditions.checkArgument(BidoofUnleashed.getInstance().getDataRegistry().getGyms().stream().noneMatch(gym -> gym.getName().equalsIgnoreCase(name)), "Can't have two gyms with the same name");
 			this.name = name;
 			return this;
 		}
@@ -254,7 +288,7 @@ public class Gym implements BU3Battlable {
 		}
 
 		public Builder levelCap(EnumBattleType type, int cap) {
-			Preconditions.checkArgument(cap > 0 && cap < PixelmonConfig.maxLevel);
+			Preconditions.checkArgument(cap > 0 && cap <= PixelmonConfig.maxLevel);
 			switch (type) {
 				case First:
 					initial.lvlCap(cap);

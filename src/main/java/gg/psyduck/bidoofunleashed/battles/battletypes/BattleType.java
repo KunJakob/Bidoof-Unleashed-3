@@ -9,7 +9,7 @@ import com.pixelmonmod.pixelmon.config.PixelmonConfig;
 import gg.psyduck.bidoofunleashed.api.enums.EnumLeaderType;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
 import gg.psyduck.bidoofunleashed.api.rewards.BU3Reward;
-import gg.psyduck.bidoofunleashed.battles.e4.BU3Battlable;
+import gg.psyduck.bidoofunleashed.api.BU3Battlable;
 import gg.psyduck.bidoofunleashed.battles.gyms.GymPool;
 import lombok.AccessLevel;
 import lombok.Getter;

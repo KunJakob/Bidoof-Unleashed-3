@@ -3,7 +3,7 @@ package gg.psyduck.bidoofunleashed.data;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import gg.psyduck.bidoofunleashed.battles.Category;
-import gg.psyduck.bidoofunleashed.battles.e4.BU3Battlable;
+import gg.psyduck.bidoofunleashed.api.BU3Battlable;
 import gg.psyduck.bidoofunleashed.battles.e4.EliteFour;
 import gg.psyduck.bidoofunleashed.battles.gyms.Gym;
 import gg.psyduck.bidoofunleashed.players.PlayerData;

@@ -21,11 +21,15 @@ public abstract class AbstractBU3Dao {
 
 	public abstract void shutdown() throws Exception;
 
-	public abstract void addOrUpdatePlayerData(PlayerData data) throws Exception;
+	public abstract void addPlayerData(PlayerData data) throws Exception;
+
+	public abstract void updatePlayerData(PlayerData data) throws Exception;
 
 	public abstract Optional<PlayerData> getPlayerData(UUID uuid) throws Exception;
 
-	public abstract void addOrUpdateGym(Gym gym) throws Exception;
+	public abstract void addGym(Gym gym) throws Exception;
+
+	public abstract void updateGym(Gym gym) throws Exception;
 
 	public abstract List<Gym> fetchGyms() throws Exception;
 

@@ -23,7 +23,7 @@ public class PlayerData {
 
 	private PlayerData(UUID uuid) {
 		this.uuid = uuid;
-		BidoofUnleashed.getInstance().getStorage().addOrUpdatePlayerData(this);
+		BidoofUnleashed.getInstance().getStorage().addPlayerData(this);
 	}
 
 	public static PlayerData createFor(UUID uuid) {

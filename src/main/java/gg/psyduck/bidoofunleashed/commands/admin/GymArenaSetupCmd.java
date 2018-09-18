@@ -74,7 +74,7 @@ public class GymArenaSetupCmd extends SpongeCommand {
 		}
 
 		src.sendMessages(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.COMMANDS_ARENA_AREA_SETUP, null, null));
-		BidoofUnleashed.getInstance().getStorage().addOrUpdateGym(gym);
+		BidoofUnleashed.getInstance().getStorage().updateGym(gym);
 
 		return CommandResult.success();
 	}

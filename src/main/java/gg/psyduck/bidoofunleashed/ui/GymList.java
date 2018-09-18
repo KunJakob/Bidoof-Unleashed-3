@@ -116,13 +116,15 @@ public class GymList implements PageDisplayable {
 					.build();
 			Icon icon = Icon.from(rep);
 			icon.addListener(clickable -> {
-				this.page.close(player);
-				this.player.setLocationAndRotationSafely(
-						new Location<>(
-								Sponge.getServer().getWorld(gym.getArena().getSpectators().getWorld()).orElseThrow(() -> new RuntimeException("Unable to find the target world")),
-								gym.getArena().getSpectators().getPosition()
-						),
-						gym.getArena().getSpectators().getRotation());
+				if(gym.canAccess(player)) {
+					this.page.close(player);
+					this.player.setLocationAndRotationSafely(
+							new Location<>(
+									Sponge.getServer().getWorld(gym.getArena().getSpectators().getWorld()).orElseThrow(() -> new RuntimeException("Unable to find the target world")),
+									gym.getArena().getSpectators().getPosition()
+							),
+							gym.getArena().getSpectators().getRotation());
+				}
 			});
 
 			return icon;

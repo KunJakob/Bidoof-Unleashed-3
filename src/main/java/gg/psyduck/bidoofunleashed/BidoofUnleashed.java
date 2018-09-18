@@ -17,6 +17,7 @@ import com.pixelmonmod.pixelmon.Pixelmon;
 import gg.psyduck.bidoofunleashed.api.BU3Service;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
 import gg.psyduck.bidoofunleashed.api.gyms.json.RequirementAdapter;
+import gg.psyduck.bidoofunleashed.battles.gyms.Gym;
 import gg.psyduck.bidoofunleashed.commands.BU3Command;
 import gg.psyduck.bidoofunleashed.commands.general.CheckBadgeCommand;
 import gg.psyduck.bidoofunleashed.config.ConfigKeys;
@@ -40,6 +41,7 @@ import gg.psyduck.bidoofunleashed.storage.StorageFactory;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
@@ -179,6 +181,11 @@ public class BidoofUnleashed extends SpongePlugin {
 		}
 	}
 
+	@Listener
+	public void onReload(GameReloadEvent event) {
+		this.onReload();
+	}
+
     private void disable() {
         // Disable everything, just in case. Thanks to pie-flavor:
         // https://forums.spongepowered.org/t/disable-plugin-disable-itself/15831/8
@@ -264,7 +271,17 @@ public class BidoofUnleashed extends SpongePlugin {
 	public void onDisconnect() {}
 
 	@Override
-	public void onReload() {}
+	public void onReload() {
+		// TODO - Fully reload a Gym, including things like level cap and rules. Right now, we basically just
+		// TODO - reload the team pools.
+		for(Gym gym : this.dataRegistry.getGyms()) {
+			try {
+				gym.initialize();
+			} catch (Exception e) {
+				this.logger.error("Unable to reload Gym: " + gym.getName());
+			}
+		}
+	}
 
 	@Override
     public PluginInfo getPluginInfo() {

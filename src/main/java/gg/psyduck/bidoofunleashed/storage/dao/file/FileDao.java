@@ -39,7 +39,16 @@ public class FileDao extends AbstractBU3Dao {
 	public void shutdown() throws Exception {}
 
 	@Override
-	public void addOrUpdatePlayerData(PlayerData data) throws Exception {
+	public void addPlayerData(PlayerData data) throws Exception {
+		this.addOrUpdatePlayerData(data);
+	}
+
+	@Override
+	public void updatePlayerData(PlayerData data) throws Exception {
+		this.addOrUpdatePlayerData(data);
+	}
+
+	private void addOrUpdatePlayerData(PlayerData data) throws Exception {
 		File target = new File(BASE_PATH_PLAYERS, data.getUuid().toString().substring(0, 2) + "/" + data.getUuid().toString() + ".json");
 		if(!target.exists()) {
 			target.getParentFile().mkdirs();
@@ -62,7 +71,16 @@ public class FileDao extends AbstractBU3Dao {
 	}
 
 	@Override
-	public void addOrUpdateGym(Gym gym) throws Exception {
+	public void addGym(Gym gym) throws Exception {
+		this.addOrUpdateGym(gym);
+	}
+
+	@Override
+	public void updateGym(Gym gym) throws Exception {
+		this.addOrUpdateGym(gym);
+	}
+
+	private void addOrUpdateGym(Gym gym) throws Exception {
 		File target = new File(BASE_PATH_GYMS, gym.getName() + "/" + gym.getName() + ".json");
 		if(!target.exists()) {
 			target.getParentFile().mkdirs();
@@ -77,14 +95,10 @@ public class FileDao extends AbstractBU3Dao {
 	@Override
 	public List<Gym> fetchGyms() throws Exception {
 		List<Gym> gyms = Lists.newArrayList();
-		try {
-			for (File base : Objects.requireNonNull(BASE_PATH_GYMS.listFiles())) {
-				for (File gym : Objects.requireNonNull(base.listFiles((d, s) -> s.toLowerCase().endsWith(".json")))) {
-					gyms.add(BidoofUnleashed.prettyGson.fromJson(new FileReader(gym), Gym.class).initialize());
-				}
+		for (File base : Objects.requireNonNull(BASE_PATH_GYMS.listFiles())) {
+			for (File gym : Objects.requireNonNull(base.listFiles((d, s) -> s.toLowerCase().endsWith(".json")))) {
+				gyms.add(BidoofUnleashed.prettyGson.fromJson(new FileReader(gym), Gym.class).initialize());
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 
 		return gyms;

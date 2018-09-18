@@ -36,10 +36,20 @@ public class PhasedStorage implements BU3Storage {
 	}
 
 	@Override
-	public CompletableFuture<Void> addOrUpdatePlayerData(PlayerData data) {
+	public CompletableFuture<Void> addPlayerData(PlayerData data) {
 		phaser.register();
 		try {
-			return delegate.addOrUpdatePlayerData(data);
+			return delegate.addPlayerData(data);
+		} finally {
+			phaser.arriveAndDeregister();
+		}
+	}
+
+	@Override
+	public CompletableFuture<Void> updatePlayerData(PlayerData data) {
+		phaser.register();
+		try {
+			return delegate.updatePlayerData(data);
 		} finally {
 			phaser.arriveAndDeregister();
 		}
@@ -56,10 +66,20 @@ public class PhasedStorage implements BU3Storage {
 	}
 
 	@Override
-	public CompletableFuture<Void> addOrUpdateGym(Gym gym) {
+	public CompletableFuture<Void> addGym(Gym gym) {
 		phaser.register();
 		try {
-			return delegate.addOrUpdateGym(gym);
+			return delegate.addGym(gym);
+		} finally {
+			phaser.arriveAndDeregister();
+		}
+	}
+
+	@Override
+	public CompletableFuture<Void> updateGym(Gym gym) {
+		phaser.register();
+		try {
+			return delegate.updateGym(gym);
 		} finally {
 			phaser.arriveAndDeregister();
 		}

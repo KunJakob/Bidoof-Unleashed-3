@@ -1,6 +1,7 @@
 package gg.psyduck.bidoofunleashed.battles.e4;
 
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
+import gg.psyduck.bidoofunleashed.api.BU3Battlable;
 import gg.psyduck.bidoofunleashed.api.enums.EnumBattleType;
 import gg.psyduck.bidoofunleashed.battles.Category;
 import gg.psyduck.bidoofunleashed.battles.battletypes.BattleType;
@@ -16,6 +17,11 @@ public class EliteFour implements BU3Battlable {
 
 	@Override
 	public boolean canChallenge(Player player) {
+		return false;
+	}
+
+	@Override
+	public boolean canAccess(Player player) {
 		return false;
 	}
 

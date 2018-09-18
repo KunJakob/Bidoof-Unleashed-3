@@ -55,7 +55,7 @@ public class AddGymCommand extends SpongeCommand {
 		    src.sendMessages(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.COMMANDS_ADD_GYM_SUCCESS, null, null));
 	    } catch (Exception e) {
 	    	e.printStackTrace();
-		    throw new CommandException(Text.of(e.getMessage()));
+		    throw new CommandException(Text.of("Unable to create gym due to an error..."));
 	    }
 	    return CommandResult.success();
     }

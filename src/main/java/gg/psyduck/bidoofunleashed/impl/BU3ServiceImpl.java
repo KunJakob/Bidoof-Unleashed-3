@@ -74,7 +74,7 @@ public class BU3ServiceImpl implements BU3Service {
 	@Override
 	public void addGym(Gym gym) {
 		BidoofUnleashed.getInstance().getDataRegistry().getGyms().add(gym);
-		BidoofUnleashed.getInstance().getStorage().addOrUpdateGym(gym);
+		BidoofUnleashed.getInstance().getStorage().addGym(gym);
 	}
 
 	@Override

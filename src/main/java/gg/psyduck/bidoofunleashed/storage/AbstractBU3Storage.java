@@ -30,7 +30,8 @@ public class AbstractBU3Storage implements BU3Storage {
 			try {
 				return supplier.call();
 			} catch (Exception e) {
-				Throwables.propagateIfPossible(e);
+				e.printStackTrace();
+				Throwables.throwIfUnchecked(e);
 				throw new CompletionException(e);
 			}
 		}, BidoofUnleashed.getInstance().getAsyncExecutorService());
@@ -41,7 +42,8 @@ public class AbstractBU3Storage implements BU3Storage {
 			try {
 				runnable.run();
 			} catch (Exception e) {
-				Throwables.propagateIfPossible(e);
+				e.printStackTrace();
+				Throwables.throwIfUnchecked(e);
 				throw new CompletionException(e);
 			}
 		}, BidoofUnleashed.getInstance().getAsyncExecutorService());
@@ -62,8 +64,13 @@ public class AbstractBU3Storage implements BU3Storage {
 	}
 
 	@Override
-	public CompletableFuture<Void> addOrUpdatePlayerData(PlayerData data) {
-		return makeFuture(() -> dao.addOrUpdatePlayerData(data));
+	public CompletableFuture<Void> addPlayerData(PlayerData data) {
+		return makeFuture(() -> dao.addPlayerData(data));
+	}
+
+	@Override
+	public CompletableFuture<Void> updatePlayerData(PlayerData data) {
+		return makeFuture(() -> dao.updatePlayerData(data));
 	}
 
 	@Override
@@ -72,8 +79,13 @@ public class AbstractBU3Storage implements BU3Storage {
 	}
 
 	@Override
-	public CompletableFuture<Void> addOrUpdateGym(Gym gym) {
-	    return makeFuture(() -> dao.addOrUpdateGym(gym));
+	public CompletableFuture<Void> addGym(Gym gym) {
+		return makeFuture(() -> dao.addGym(gym));
+	}
+
+	@Override
+	public CompletableFuture<Void> updateGym(Gym gym) {
+		return makeFuture(() -> dao.updateGym(gym));
 	}
 
 	@Override

@@ -99,7 +99,7 @@ public class AddGymLeaderCommand extends SpongeCommand {
 	        BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(user.getUniqueId()).setRole(Roles.LEADER);
 	        gym.addLeader(user.getUniqueId(), EnumLeaderType.PLAYER);
         }
-        BidoofUnleashed.getInstance().getStorage().addOrUpdateGym(gym);
+        BidoofUnleashed.getInstance().getStorage().updateGym(gym);
         return CommandResult.success();
     }
 }

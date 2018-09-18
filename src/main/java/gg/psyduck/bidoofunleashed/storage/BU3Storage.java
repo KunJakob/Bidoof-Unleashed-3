@@ -11,14 +11,9 @@ import java.util.concurrent.CompletableFuture;
 
 public interface BU3Storage extends Storage {
 
-	/**
-	 * Writes the specified player data to the registered provider. If the provider already has the data registered,
-	 * identified by the player's UUID, then the data will just be updated.
-	 *
-	 * @param data The player data to save
-	 * @return A {@link CompletableFuture} with a void value
-	 */
-	CompletableFuture<Void> addOrUpdatePlayerData(PlayerData data);
+	CompletableFuture<Void> addPlayerData(PlayerData data);
+
+	CompletableFuture<Void> updatePlayerData(PlayerData data);
 
 	/**
 	 * Attempts to locate the {@link PlayerData} based on the specified UUID. If the data does not exist, this method
@@ -30,14 +25,9 @@ public interface BU3Storage extends Storage {
 	 */
 	CompletableFuture<Optional<PlayerData>> getPlayerData(UUID uuid);
 
-	/**
-	 * Writes the specified gym to the registered provider. If the provider already has the gym registered,
-	 * then the data will just be updated.
-	 *
-	 * @param gym The gym to save
-	 * @return A {@link CompletableFuture} with a void value
-	 */
-	CompletableFuture<Void> addOrUpdateGym(Gym gym);
+	CompletableFuture<Void> addGym(Gym gym);
+
+	CompletableFuture<Void> updateGym(Gym gym);
 
 	/**
 	 * Fetches all saved gyms, and returns them as a List for easy operation. We realistically should have all of them

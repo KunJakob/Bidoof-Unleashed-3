@@ -131,20 +131,9 @@ public class GymPoolUI implements PageDisplayable {
 					// Close display
 					this.display.close(leader);
 
-					// Set leader team
-					Optional<PlayerStorage> optStorage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) leader);
-					optStorage.ifPresent(storage -> {
-						storage.partyPokemon = new NBTTagCompound[6];
-						for(BU3PokemonSpec spec : this.chosenTeam) {
-							EntityPixelmon pokemon = spec.create((World) leader.getWorld());
-							storage.addToParty(pokemon);
-						}
-						storage.sendUpdatedList();
-					});
-
 					challenger.sendMessage(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.MISC_CHALLENGE_BEGINNING, null, variables));
 					leader.sendMessage(MessageUtils.fetchAndParseMsg(leader, MsgConfigKeys.MISC_CHALLENGE_BEGINNING_LEADER_SELECTED, null, variables));
-					Sponge.getScheduler().createTaskBuilder().execute(() -> this.focus.startBattle(leader, challenger)).delay(10, TimeUnit.SECONDS).submit(BidoofUnleashed.getInstance());
+					Sponge.getScheduler().createTaskBuilder().execute(() -> this.focus.startBattle(leader, challenger, chosenTeam)).delay(10, TimeUnit.SECONDS).submit(BidoofUnleashed.getInstance());
 				});
 				lb.slot(conf, 17);
 			}
@@ -178,20 +167,9 @@ public class GymPoolUI implements PageDisplayable {
 					team.add(new BU3PokemonSpec("bidoof lvl:5"));
 				}
 
-				// Set leader team
-				Optional<PlayerStorage> optStorage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) leader);
-				optStorage.ifPresent(storage -> {
-					storage.partyPokemon = new NBTTagCompound[6];
-					for(BU3PokemonSpec spec : team) {
-						EntityPixelmon pokemon = spec.create((World) leader.getWorld());
-						storage.addToParty(pokemon);
-					}
-					storage.sendUpdatedList();
-				});
-
 				challenger.sendMessage(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.MISC_CHALLENGE_BEGINNING, null, variables));
 				leader.sendMessage(MessageUtils.fetchAndParseMsg(leader, MsgConfigKeys.MISC_CHALLENGE_BEGINNING_LEADER_RANDOM, null, variables));
-				Sponge.getScheduler().createTaskBuilder().execute(() -> this.focus.startBattle(leader, challenger)).delay(10, TimeUnit.SECONDS).submit(BidoofUnleashed.getInstance());
+				Sponge.getScheduler().createTaskBuilder().execute(() -> this.focus.startBattle(leader, challenger, team)).delay(10, TimeUnit.SECONDS).submit(BidoofUnleashed.getInstance());
 			});
 			lb.slot(rng, 35);
 		}

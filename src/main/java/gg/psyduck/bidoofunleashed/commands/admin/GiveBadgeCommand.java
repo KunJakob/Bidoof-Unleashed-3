@@ -1,4 +1,4 @@
-package gg.psyduck.bidoofunleashed.commands.general;
+package gg.psyduck.bidoofunleashed.commands.admin;
 
 import com.google.common.collect.Maps;
 import com.nickimpact.impactor.api.commands.SpongeCommand;
@@ -89,7 +89,7 @@ public class GiveBadgeCommand extends SpongeCommand {
         Badge badge = gym.getBadge().fill(player.getUniqueId(), team);
         PlayerData data = BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(target.getUniqueId());
         data.awardBadge(badge);
-        BidoofUnleashed.getInstance().getStorage().addOrUpdatePlayerData(data);
+        BidoofUnleashed.getInstance().getStorage().updatePlayerData(data);
 
         Map<String, Object> variables = Maps.newHashMap();
         variables.put("player", target.getName());

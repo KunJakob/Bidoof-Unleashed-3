@@ -21,8 +21,10 @@ import java.util.function.Function;
 
 public class SqlDao extends AbstractBU3Dao {
 
-	private static final String ADD_OR_UPDATE_PLAYERDATA = "INSERT INTO `{prefix}player_data` (uuid, data) VALUES ('%1$s', '%2$s') ON DUPLICATE KEY UPDATE data='%2$s'";
-	private static final String ADD_OR_UPDATE_GYM = "INSERT INTO `{prefix}gyms` (name, data) VALUES ('%1$s', '%2$s') ON DUPLICATE KEY UPDATE data='%2$s'";
+	private static final String ADD_PLAYERDATA = "INSERT INTO `{prefix}player_data` (uuid, content) VALUES ('%s', '%s')";
+	private static final String UPDATE_PLAYERDATA = "UPDATE `{prefix}player_data` SET content = '%s' WHERE uuid = '%s'";
+	private static final String ADD_GYM = "INSERT INTO `{prefix}gyms` (name, content) VALUES ('%s', '%s')";
+	private static final String UPDATE_GYM = "UPDATE `{prefix}gyms` SET content = '%s' WHERE name = '%s'";
 	private static final String GET_PLAYERDATA = "SELECT * FROM `{prefix}player_data` WHERE UUID='%s'";
 	private static final String GET_GYMS = "SELECT * FROM `{prefix}gyms` WHERE NAME='%s'";
 	private static final String DELETE_GYMS = "DELETE FROM `{prefix}gyms` WHERE NAME='%s'";
@@ -95,64 +97,67 @@ public class SqlDao extends AbstractBU3Dao {
 	public void shutdown() throws Exception {}
 
 	@Override
-	public void addOrUpdatePlayerData(PlayerData data) throws Exception {
-		try {
-			Connection connection = provider.getConnection();
-			String stmt = String.format(prefix.apply(ADD_OR_UPDATE_PLAYERDATA), data.getUuid(), BidoofUnleashed.prettyGson.toJson(data));
+	public void addPlayerData(PlayerData data) throws Exception {
+		Connection connection = provider.getConnection();
+		String stmt = String.format(prefix.apply(ADD_PLAYERDATA), data.getUuid(), BidoofUnleashed.prettyGson.toJson(data));
 
-			PreparedStatement ps = connection.prepareStatement(stmt);
-			ps.executeUpdate();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		PreparedStatement ps = connection.prepareStatement(stmt);
+		ps.executeUpdate();
+	}
+
+	@Override
+	public void updatePlayerData(PlayerData data) throws Exception {
+		Connection connection = provider.getConnection();
+		String stmt = String.format(prefix.apply(UPDATE_PLAYERDATA), BidoofUnleashed.prettyGson.toJson(data), data.getUuid());
+
+		PreparedStatement ps = connection.prepareStatement(stmt);
+		ps.executeUpdate();
 	}
 
 	@Override
 	public Optional<PlayerData> getPlayerData(UUID uuid) throws Exception {
 		PlayerData data = null;
 
-		try {
-			Connection connection = provider.getConnection();
-			String stmt = String.format(prefix.apply(GET_PLAYERDATA), uuid);
-			PreparedStatement query = connection.prepareStatement(stmt);
-			ResultSet results = query.executeQuery();
-			if(results.next()) {
-				data = BidoofUnleashed.prettyGson.fromJson(results.getString("data"), PlayerData.class);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		Connection connection = provider.getConnection();
+		String stmt = String.format(prefix.apply(GET_PLAYERDATA), uuid);
+		PreparedStatement query = connection.prepareStatement(stmt);
+		ResultSet results = query.executeQuery();
+		if(results.next()) {
+			data = BidoofUnleashed.prettyGson.fromJson(results.getString("content"), PlayerData.class);
 		}
+
 
 		return Optional.ofNullable(data);
 	}
 
 	@Override
-	public void addOrUpdateGym(Gym gym) throws Exception {
-		try {
-			Connection connection = provider.getConnection();
-			String stmt = String.format(prefix.apply(ADD_OR_UPDATE_GYM), gym.getName(), BidoofUnleashed.prettyGson.toJson(gym));
+	public void addGym(Gym gym) throws Exception {
+		Connection connection = provider.getConnection();
+		String stmt = String.format(prefix.apply(ADD_GYM), gym.getName(), BidoofUnleashed.prettyGson.toJson(gym));
 
-			PreparedStatement ps = connection.prepareStatement(stmt);
-			ps.executeUpdate();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		PreparedStatement ps = connection.prepareStatement(stmt);
+		ps.executeUpdate();
+	}
+
+	@Override
+	public void updateGym(Gym gym) throws Exception {
+		Connection connection = provider.getConnection();
+		String stmt = String.format(prefix.apply(UPDATE_GYM), BidoofUnleashed.prettyGson.toJson(gym), gym.getName());
+
+		PreparedStatement ps = connection.prepareStatement(stmt);
+		ps.executeUpdate();
 	}
 
 	@Override
 	public List<Gym> fetchGyms() throws Exception {
 		List<Gym> gyms = Lists.newArrayList();
 
-		try {
-			Connection connection = provider.getConnection();
-			String stmt = prefix.apply(GET_GYMS);
-			PreparedStatement query = connection.prepareStatement(stmt);
-			ResultSet results = query.executeQuery();
-			while(results.next()) {
-				gyms.add(BidoofUnleashed.prettyGson.fromJson(results.getString("data"), Gym.class).initialize());
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		Connection connection = provider.getConnection();
+		String stmt = prefix.apply(GET_GYMS);
+		PreparedStatement query = connection.prepareStatement(stmt);
+		ResultSet results = query.executeQuery();
+		while(results.next()) {
+			gyms.add(BidoofUnleashed.prettyGson.fromJson(results.getString("content"), Gym.class).initialize());
 		}
 
 		return gyms;
@@ -160,14 +165,10 @@ public class SqlDao extends AbstractBU3Dao {
 
     @Override
     public void removeGym(Gym gym) throws Exception {
-        try {
-            Connection connection = provider.getConnection();
-            String stmt = String.format(prefix.apply(DELETE_GYMS), gym.getName());
+        Connection connection = provider.getConnection();
+        String stmt = String.format(prefix.apply(DELETE_GYMS), gym.getName());
 
-            PreparedStatement ps = connection.prepareStatement(stmt);
-            ps.executeUpdate();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        PreparedStatement ps = connection.prepareStatement(stmt);
+        ps.executeUpdate();
     }
 }

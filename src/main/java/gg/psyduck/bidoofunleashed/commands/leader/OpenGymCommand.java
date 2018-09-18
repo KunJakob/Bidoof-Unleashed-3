@@ -64,8 +64,11 @@ public class OpenGymCommand extends SpongeCommand {
 
         Map<String, Function<CommandSource, Optional<Text>>> tokens = Maps.newHashMap();
 	    tokens.put("bu3_gym", s -> Optional.of(Text.of(gym.getName())));
-	    gym.setOpen(true);
-        src.sendMessage(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.COMMANDS_OPEN_GYM_SUCCESS, tokens, null));
+	    if(gym.open()) {
+		    src.sendMessage(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.COMMANDS_OPEN_GYM_SUCCESS, tokens, null));
+	    } else {
+	    	throw new CommandException(Text.of("Can't open gym, likely because it still needs to be finalized..."));
+	    }
         return CommandResult.success();
     }
 }

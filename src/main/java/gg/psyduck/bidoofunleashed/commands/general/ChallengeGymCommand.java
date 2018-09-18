@@ -67,11 +67,17 @@ public class ChallengeGymCommand extends SpongeCommand {
 				throw new CommandException(Text.of("An error occurred whilst processing your information, please inform a staff member..."));
 			}
 
-			gym.queue((Player) src);
-			Map<String, Function<CommandSource, Optional<Text>>> tokens = Maps.newHashMap();
-			tokens.put("bu3_gym", s -> Optional.of(Text.of(gym.getName())));
-			tokens.put("bu3_queue_position", s -> Optional.of(Text.of(gym.getQueue().size())));
-			src.sendMessage(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.COMMANDS_CHALLENGE_QUEUED, tokens, null));
+			if(gym.isOpen()) {
+				if (!gym.queue((Player) src)) {
+					throw new CommandException(Text.of("Unfortunately, you are unable to challenge that gym..."));
+				}
+				Map<String, Function<CommandSource, Optional<Text>>> tokens = Maps.newHashMap();
+				tokens.put("bu3_gym", s -> Optional.of(Text.of(gym.getName())));
+				tokens.put("bu3_queue_position", s -> Optional.of(Text.of(gym.getQueue().size())));
+				src.sendMessage(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.COMMANDS_CHALLENGE_QUEUED, tokens, null));
+			} else {
+				throw new CommandException(Text.of("That gym is not open..."));
+			}
 			return CommandResult.success();
 		}
 

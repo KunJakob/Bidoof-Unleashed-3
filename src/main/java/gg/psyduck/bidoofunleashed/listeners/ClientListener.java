@@ -26,7 +26,7 @@ public class ClientListener {
 		// Unload user data
 		BU3Storage storage = BidoofUnleashed.getInstance().getStorage();
 		if (BidoofUnleashed.getInstance().getDataRegistry().getPlayerData().containsKey(player.getUniqueId())) {
-			storage.addOrUpdatePlayerData(BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(player.getUniqueId()));
+			storage.updatePlayerData(BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(player.getUniqueId()));
 			BidoofUnleashed.getInstance().getDataRegistry().getPlayerData().remove(player.getUniqueId());
 		}
 
