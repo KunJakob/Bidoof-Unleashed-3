@@ -1,8 +1,8 @@
 package gg.psyduck.bidoofunleashed.commands.arguments;
 
 import gg.psyduck.bidoofunleashed.api.enums.EnumBattleType;
-import gg.psyduck.bidoofunleashed.battles.gyms.Badge;
-import gg.psyduck.bidoofunleashed.battles.gyms.Gym;
+import gg.psyduck.bidoofunleashed.gyms.Badge;
+import gg.psyduck.bidoofunleashed.gyms.Gym;
 import org.apache.commons.lang3.StringUtils;
 
 public class GymSpec {
@@ -13,7 +13,6 @@ public class GymSpec {
 		String name = null;
 		String badgeType = null;
 		String badgeName = null;
-		Gym.Arena arena = new Gym.Arena();
 
 		Gym.Builder builder = Gym.builder();
 		for(String mapping : split) {

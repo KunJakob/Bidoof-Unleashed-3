@@ -2,7 +2,7 @@ package gg.psyduck.bidoofunleashed.players;
 
 import com.google.common.collect.Lists;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
-import gg.psyduck.bidoofunleashed.battles.gyms.Badge;
+import gg.psyduck.bidoofunleashed.gyms.Badge;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.nbt.NBTTagCompound;

@@ -1,7 +1,7 @@
 package gg.psyduck.bidoofunleashed.storage;
 
 import com.nickimpact.impactor.api.storage.Storage;
-import gg.psyduck.bidoofunleashed.battles.gyms.Gym;
+import gg.psyduck.bidoofunleashed.gyms.Gym;
 import gg.psyduck.bidoofunleashed.players.PlayerData;
 
 import java.util.List;

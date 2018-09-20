@@ -6,7 +6,7 @@ import com.nickimpact.impactor.api.commands.annotations.Aliases;
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
 import gg.psyduck.bidoofunleashed.commands.arguments.GymArg;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
-import gg.psyduck.bidoofunleashed.battles.gyms.Gym;
+import gg.psyduck.bidoofunleashed.gyms.Gym;
 import gg.psyduck.bidoofunleashed.utils.MessageUtils;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -41,7 +41,7 @@ public class CloseGymCommand extends SpongeCommand {
 
     @Override
     public Text getUsage() {
-        return Text.of("/closegym <gym>");
+        return Text.of("/bu3 closegym <gym>");
     }
 
     @Override

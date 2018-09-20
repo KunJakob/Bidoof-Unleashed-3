@@ -33,7 +33,7 @@ public class GymListCommand extends SpongeCommand {
 
     @Override
     public Text getUsage() {
-        return Text.of("/gymlist");
+        return Text.of("/bu3 gymlist");
     }
 
     @Override

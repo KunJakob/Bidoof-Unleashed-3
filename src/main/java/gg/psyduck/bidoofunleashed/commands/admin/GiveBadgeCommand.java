@@ -10,8 +10,8 @@ import com.pixelmonmod.pixelmon.storage.PlayerStorage;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import gg.psyduck.bidoofunleashed.commands.arguments.GymArg;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
-import gg.psyduck.bidoofunleashed.battles.gyms.Badge;
-import gg.psyduck.bidoofunleashed.battles.gyms.Gym;
+import gg.psyduck.bidoofunleashed.gyms.Badge;
+import gg.psyduck.bidoofunleashed.gyms.Gym;
 import gg.psyduck.bidoofunleashed.players.PlayerData;
 import gg.psyduck.bidoofunleashed.utils.MessageUtils;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
-@Aliases("givebadge")
+@Aliases({"givebadge", "gb"})
 public class GiveBadgeCommand extends SpongeCommand {
 
     public GiveBadgeCommand(SpongePlugin plugin) {
@@ -53,7 +53,7 @@ public class GiveBadgeCommand extends SpongeCommand {
 
     @Override
     public Text getUsage() {
-        return Text.of("/givebadge <target> <gym>");
+        return Text.of("/bu3 givebadge <target> <gym>");
     }
 
     @Override

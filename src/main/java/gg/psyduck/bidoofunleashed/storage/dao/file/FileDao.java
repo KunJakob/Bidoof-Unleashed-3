@@ -3,7 +3,7 @@ package gg.psyduck.bidoofunleashed.storage.dao.file;
 import com.google.common.collect.Lists;
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
-import gg.psyduck.bidoofunleashed.battles.gyms.Gym;
+import gg.psyduck.bidoofunleashed.gyms.Gym;
 import gg.psyduck.bidoofunleashed.players.PlayerData;
 import gg.psyduck.bidoofunleashed.storage.dao.AbstractBU3Dao;
 

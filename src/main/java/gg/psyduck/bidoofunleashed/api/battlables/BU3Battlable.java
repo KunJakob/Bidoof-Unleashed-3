@@ -1,4 +1,4 @@
-package gg.psyduck.bidoofunleashed.api;
+package gg.psyduck.bidoofunleashed.api.battlables;
 
 import com.google.common.collect.Maps;
 import com.pixelmonmod.pixelmon.storage.NbtKeys;
@@ -6,11 +6,10 @@ import com.pixelmonmod.pixelmon.storage.PixelmonStorage;
 import com.pixelmonmod.pixelmon.storage.PlayerStorage;
 import gg.psyduck.bidoofunleashed.api.enums.EnumBattleType;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
-import gg.psyduck.bidoofunleashed.api.spec.BU3PokemonSpec;
-import gg.psyduck.bidoofunleashed.battles.Category;
+import gg.psyduck.bidoofunleashed.api.pixelmon.specs.BU3PokemonSpec;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
-import gg.psyduck.bidoofunleashed.battles.gyms.Gym;
-import gg.psyduck.bidoofunleashed.battles.battletypes.BattleType;
+import gg.psyduck.bidoofunleashed.gyms.Gym;
+import gg.psyduck.bidoofunleashed.api.battlables.battletypes.BattleType;
 import gg.psyduck.bidoofunleashed.utils.MessageUtils;
 import net.minecraft.entity.player.EntityPlayerMP;
 import org.spongepowered.api.command.CommandSource;
@@ -76,8 +75,9 @@ public interface BU3Battlable {
 	 * @param leader The leader of the gym accepting the challenge
 	 * @param challenger The challenger trying to prove their worth
 	 * @param team The team the leader will be battling with
+	 * @return True if the battle launches successfully, false otherwise
 	 */
-	void startBattle(Player leader, Player challenger, List<BU3PokemonSpec> team);
+	boolean startBattle(Player leader, Player challenger, List<BU3PokemonSpec> team);
 
 	EnumBattleType getBattleType(Player player);
 

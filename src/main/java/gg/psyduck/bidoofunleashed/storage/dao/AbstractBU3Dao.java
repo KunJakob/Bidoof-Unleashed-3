@@ -1,7 +1,7 @@
 package gg.psyduck.bidoofunleashed.storage.dao;
 
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
-import gg.psyduck.bidoofunleashed.battles.gyms.Gym;
+import gg.psyduck.bidoofunleashed.gyms.Gym;
 import gg.psyduck.bidoofunleashed.players.PlayerData;
 import lombok.AccessLevel;
 import lombok.Getter;

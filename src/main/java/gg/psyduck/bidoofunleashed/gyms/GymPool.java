@@ -1,7 +1,8 @@
-package gg.psyduck.bidoofunleashed.battles.gyms;
+package gg.psyduck.bidoofunleashed.gyms;
 
 import com.google.common.collect.Lists;
-import gg.psyduck.bidoofunleashed.api.spec.BU3PokemonSpec;
+import gg.psyduck.bidoofunleashed.api.pixelmon.specs.BU3PokemonSpec;
+import gg.psyduck.bidoofunleashed.api.battlables.ShowdownImporter;
 import lombok.Getter;
 
 import java.io.File;

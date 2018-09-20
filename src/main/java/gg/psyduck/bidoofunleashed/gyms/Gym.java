@@ -1,10 +1,14 @@
-package gg.psyduck.bidoofunleashed.battles.gyms;
+package gg.psyduck.bidoofunleashed.gyms;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.pixelmonmod.pixelmon.battles.controller.participants.PixelmonWrapper;
+import com.pixelmonmod.pixelmon.enums.items.EnumPokeballs;
+import com.pixelmonmod.pixelmon.storage.PlayerStorage;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
+import gg.psyduck.bidoofunleashed.api.pixelmon.participants.TempTeamParticipant;
+import gg.psyduck.bidoofunleashed.api.pixelmon.specs.BU3PokemonSpec;
 import gg.psyduck.bidoofunleashed.api.rewards.BU3Reward;
 import com.pixelmonmod.pixelmon.battles.controller.BattleControllerBase;
 import com.pixelmonmod.pixelmon.battles.controller.participants.BattleParticipant;
@@ -16,12 +20,11 @@ import com.pixelmonmod.pixelmon.storage.PixelmonStorage;
 import gg.psyduck.bidoofunleashed.api.enums.EnumBattleType;
 import gg.psyduck.bidoofunleashed.api.enums.EnumLeaderType;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
-import gg.psyduck.bidoofunleashed.api.spec.BU3PokemonSpec;
-import gg.psyduck.bidoofunleashed.battles.Category;
-import gg.psyduck.bidoofunleashed.api.BU3Battlable;
-import gg.psyduck.bidoofunleashed.battles.battletypes.BattleType;
-import gg.psyduck.bidoofunleashed.battles.gyms.temporary.BattleRegistry;
-import gg.psyduck.bidoofunleashed.battles.gyms.temporary.Challenge;
+import gg.psyduck.bidoofunleashed.api.battlables.Category;
+import gg.psyduck.bidoofunleashed.api.battlables.BU3Battlable;
+import gg.psyduck.bidoofunleashed.api.battlables.battletypes.BattleType;
+import gg.psyduck.bidoofunleashed.gyms.temporary.BattleRegistry;
+import gg.psyduck.bidoofunleashed.gyms.temporary.Challenge;
 import gg.psyduck.bidoofunleashed.players.PlayerData;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -101,24 +104,45 @@ public class Gym implements BU3Battlable {
 	 * @param leader The leader of the gym accepting the challenge
 	 * @param challenger The challenger trying to prove their worth
 	 */
-	public void startBattle(Player leader, Player challenger, List<BU3PokemonSpec> team) {
-		BattleParticipant bpL;
-
-		bpL = new PlayerParticipant((EntityPlayerMP) leader);
+	public boolean startBattle(Player leader, Player challenger, List<BU3PokemonSpec> team) {
+		BattleParticipant bpL = new TempTeamParticipant((EntityPlayerMP) leader);
 		bpL.allPokemon = new PixelmonWrapper[team.size()];
+
+		PlayerStorage lStorage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) leader).orElse(null);
+		if(lStorage == null) {
+			return false;
+		}
+
 		for(int i = 0; i < team.size(); i++) {
 			EntityPixelmon pokemon = team.get(i).create((World) leader.getWorld());
+			if(team.get(i).level == null) {
+				pokemon.getLvl().setLevel(this.getBattleSettings(this.getBattleType(challenger)).getLvlCap());
+			}
 			pokemon.loadMoveset();
+			pokemon.caughtBall = EnumPokeballs.PokeBall;
+			pokemon.setOwnerId(leader.getUniqueId());
+			pokemon.setPokemonId(lStorage.getNewPokemonID());
 			bpL.allPokemon[i] = new PixelmonWrapper(bpL, pokemon, i);
 		}
+
 		bpL.controlledPokemon = Collections.singletonList(bpL.allPokemon[0]);
 
 		leader.setLocationAndRotationSafely(new Location<>(leader.getWorld(), arena.leader.position), arena.leader.rotation);
 
 		challenger.setLocationAndRotationSafely(new Location<>(challenger.getWorld(), arena.challenger.position), arena.challenger.rotation);
-		EntityPixelmon cs = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) challenger).get().getFirstAblePokemon((World) challenger.getWorld());
+		PlayerStorage storage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) challenger).orElse(null);
+		if(storage == null) {
+			return false;
+		}
+
+		EntityPixelmon cs = storage.getFirstAblePokemon((World) challenger.getWorld());
+		if(cs == null) {
+			return false;
+		}
+
 		BattleRegistry.register(new Challenge(leader, challenger, this.getBattleType(challenger)), this);
 		new BattleControllerBase(bpL, new PlayerParticipant((EntityPlayerMP) challenger, cs), this.initial.getBattleRules()); // Need to ensure we are checking what type of battle it is
+		return true;
 	}
 
 	public EnumBattleType getBattleType(Player player) {

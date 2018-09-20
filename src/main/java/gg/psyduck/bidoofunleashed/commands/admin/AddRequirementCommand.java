@@ -10,7 +10,7 @@ import gg.psyduck.bidoofunleashed.api.enums.EnumBattleType;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
 import gg.psyduck.bidoofunleashed.commands.arguments.GymArg;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
-import gg.psyduck.bidoofunleashed.battles.gyms.Gym;
+import gg.psyduck.bidoofunleashed.gyms.Gym;
 import gg.psyduck.bidoofunleashed.utils.MessageUtils;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -47,7 +47,7 @@ public class AddRequirementCommand extends SpongeCommand {
 
     @Override
     public Text getUsage() {
-        return Text.of("/bu3 addrequirement <requirement>");
+        return Text.of("/bu3 addrequirement <gym> <battle type> <requirement> <additional>");
     }
 
     @Override

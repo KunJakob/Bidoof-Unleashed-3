@@ -6,21 +6,18 @@ import com.nickimpact.impactor.gui.v2.Icon;
 import com.nickimpact.impactor.gui.v2.Layout;
 import com.nickimpact.impactor.gui.v2.Page;
 import com.nickimpact.impactor.gui.v2.PageDisplayable;
-import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
 import com.pixelmonmod.pixelmon.enums.EnumPokemon;
-import com.pixelmonmod.pixelmon.storage.PixelmonStorage;
-import com.pixelmonmod.pixelmon.storage.PlayerStorage;
+import com.pixelmonmod.pixelmon.enums.forms.EnumForms;
+import com.pixelmonmod.pixelmon.enums.forms.EnumUnown;
+import com.pixelmonmod.pixelmon.enums.forms.IEnumForm;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import gg.psyduck.bidoofunleashed.api.enums.EnumBattleType;
-import gg.psyduck.bidoofunleashed.api.spec.BU3PokemonSpec;
+import gg.psyduck.bidoofunleashed.api.pixelmon.specs.BU3PokemonSpec;
 import gg.psyduck.bidoofunleashed.config.ConfigKeys;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
-import gg.psyduck.bidoofunleashed.battles.gyms.Gym;
+import gg.psyduck.bidoofunleashed.gyms.Gym;
 import gg.psyduck.bidoofunleashed.ui.icons.PixelmonIcons;
 import gg.psyduck.bidoofunleashed.utils.MessageUtils;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.data.key.Keys;
@@ -59,7 +56,7 @@ public class GymPoolUI implements PageDisplayable {
 		this.leader = leader;
 		this.challenger = challenger;
 		this.focus = gym;
-		this.type = this.focus.getBattleType(challenger);
+		this.type = challenger != null ? this.focus.getBattleType(challenger) : EnumBattleType.First;
 		this.chosenTeam = chosenTeam;
 		this.display = this.build().define(this.forge(), InventoryDimension.of(7, 3), 1, 1);
 		this.display.getViews().forEach(ui -> ui.setCloseAction((event, player) -> {
@@ -124,8 +121,12 @@ public class GymPoolUI implements PageDisplayable {
 			Map<String, Object> variables = Maps.newHashMap();
 			variables.put("bu3_wait", BidoofUnleashed.getInstance().getConfig().get(ConfigKeys.TELEPORT_WAIT));
 
-			if(this.chosenTeam.size() > this.focus.getBattleSettings(type).getMinPokemon()) {
-				ItemStack confirm = ItemStack.builder().itemType(ItemTypes.DYE).add(Keys.DYE_COLOR, DyeColors.LIME).build();
+			if(this.chosenTeam.size() >= this.focus.getBattleSettings(type).getMinPokemon() && this.chosenTeam.size() <= this.focus.getBattleSettings(type).getMaxPokemon()) {
+				ItemStack confirm = ItemStack.builder()
+						.itemType(ItemTypes.DYE)
+						.add(Keys.DISPLAY_NAME, Text.of(TextColors.GREEN, "Begin Battle!"))
+						.add(Keys.DYE_COLOR, DyeColors.LIME)
+						.build();
 				Icon conf = Icon.from(confirm);
 				conf.addListener(clickable -> {
 					// Close display
@@ -136,9 +137,21 @@ public class GymPoolUI implements PageDisplayable {
 					Sponge.getScheduler().createTaskBuilder().execute(() -> this.focus.startBattle(leader, challenger, chosenTeam)).delay(10, TimeUnit.SECONDS).submit(BidoofUnleashed.getInstance());
 				});
 				lb.slot(conf, 17);
+			} else {
+				ItemStack confirm = ItemStack.builder()
+						.itemType(ItemTypes.DYE)
+						.add(Keys.DISPLAY_NAME, Text.of(TextColors.GRAY, "Select your team..."))
+						.add(Keys.DYE_COLOR, DyeColors.GRAY)
+						.build();
+				Icon conf = Icon.from(confirm);
+				lb.slots(conf, 17);
 			}
 
-			ItemStack random = ItemStack.builder().itemType(ItemTypes.DYE).add(Keys.DYE_COLOR, DyeColors.LIGHT_BLUE).build();
+			ItemStack random = ItemStack.builder()
+					.itemType(ItemTypes.DYE)
+					.add(Keys.DISPLAY_NAME, MessageUtils.fetchAndParseMsg(leader, MsgConfigKeys.UI_GYM_POOL_RANDOM_TEAM, null, null))
+					.add(Keys.DYE_COLOR, DyeColors.LIGHT_BLUE)
+					.build();
 			Icon rng = Icon.from(random);
 			rng.addListener(clickable -> {
 				this.display.close(leader);
@@ -185,7 +198,7 @@ public class GymPoolUI implements PageDisplayable {
 			EnumPokemon species = EnumPokemon.getFromNameAnyCase(spec.name);
 			if(speciesIndex.containsKey(species)) {
 				Map<Byte, Integer> formToAmount = speciesIndex.get(species);
-				byte form = spec.form != null ? spec.form : 0;
+				byte form = spec.form != null ? spec.form : -1;
 				if(formToAmount.containsKey(form)) {
 					formToAmount.replace(form, formToAmount.get(form) + 1);
 				} else {
@@ -195,7 +208,7 @@ public class GymPoolUI implements PageDisplayable {
 				speciesIndex.replace(species, formToAmount);
 			} else {
 				Map<Byte, Integer> formToAmount = Maps.newHashMap();
-				byte form = spec.form != null ? spec.form : 0;
+				byte form = spec.form != null ? spec.form : -1;
 				formToAmount.put(form, 1);
 				speciesIndex.put(species, formToAmount);
 			}
@@ -208,7 +221,8 @@ public class GymPoolUI implements PageDisplayable {
 			List<Text> lore = Lists.newArrayList();
 			lore.add(Text.of(TextColors.GREEN, "Form Index:"));
 			for(Map.Entry<Byte, Integer> fEntry : entry.getValue().entrySet()) {
-				String fName = entry.getKey().getFormEnum(fEntry.getKey()).getFormSuffix().substring(1);
+				IEnumForm form = entry.getKey().getFormEnum(fEntry.getKey());
+				String fName = form == EnumForms.NoForm ? "None" : form instanceof EnumUnown ? form.getSpriteSuffix().substring(1) : form.getFormSuffix().substring(1);
 				lore.add(Text.of(TextColors.GRAY, fName.substring(0, 1).toUpperCase() + fName.substring(1) + ": ", TextColors.YELLOW, fEntry.getValue()));
 			}
 			icon.getDisplay().offer(Keys.ITEM_LORE, lore);

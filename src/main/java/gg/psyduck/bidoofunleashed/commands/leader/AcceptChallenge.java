@@ -8,7 +8,7 @@ import com.pixelmonmod.pixelmon.storage.PlayerStorage;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import gg.psyduck.bidoofunleashed.commands.arguments.GymArg;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
-import gg.psyduck.bidoofunleashed.battles.gyms.Gym;
+import gg.psyduck.bidoofunleashed.gyms.Gym;
 import gg.psyduck.bidoofunleashed.players.PlayerData;
 import gg.psyduck.bidoofunleashed.players.Roles;
 import gg.psyduck.bidoofunleashed.ui.gympools.GymPoolUI;
@@ -49,7 +49,7 @@ public class AcceptChallenge extends SpongeCommand {
 
 	@Override
 	public Text getUsage() {
-		return Text.of("/bu3 accept");
+		return Text.of("/bu3 accept <gym>");
 	}
 
 	@Override

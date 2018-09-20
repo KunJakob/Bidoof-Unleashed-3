@@ -62,8 +62,10 @@ public class MsgConfigKeys implements IConfigKeys {
 		    "",
 		    "&7Leaders:"
     ));
+	public static final ConfigKey<String> UI_GYM_POOL_RANDOM_TEAM = StringKey.of("ui.gym-pool.icons.random-team", "&eSelect a Random Team");
 
-    public static final ConfigKey<String> MISC_CHALLENGE_BEGINNING = StringKey.of("misc.challenge.accepted.before-begin.challenger", "{{bu3_prefix}} &7The gym leader is now ready, starting battle in {{bu3_wait}} seconds!");
+
+	public static final ConfigKey<String> MISC_CHALLENGE_BEGINNING = StringKey.of("misc.challenge.accepted.before-begin.challenger", "{{bu3_prefix}} &7The gym leader is now ready, starting battle in {{bu3_wait}} seconds!");
     public static final ConfigKey<String> MISC_CHALLENGE_BEGINNING_LEADER_RANDOM = StringKey.of("misc.challenge.accepted.before-begin.leader.random", "{{bu3_prefix}} &7Your team was randomly selected, beginning battle in {{bu3_wait}} seconds!");
     public static final ConfigKey<String> MISC_CHALLENGE_BEGINNING_LEADER_SELECTED = StringKey.of("misc.challenge.accepted.before-begin.leader.selected", "{{bu3_prefix}} &7Your team has been applied, starting battle in {{bu3_wait}} seconds!");
 

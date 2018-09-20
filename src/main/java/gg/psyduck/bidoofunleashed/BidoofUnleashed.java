@@ -14,10 +14,14 @@ import com.nickimpact.impactor.api.rewards.impl.CommandSeriesReward;
 import com.nickimpact.impactor.api.services.plan.PlanData;
 import com.nickimpact.impactor.api.storage.StorageType;
 import com.pixelmonmod.pixelmon.Pixelmon;
+import com.pixelmonmod.pixelmon.api.pokemon.PokemonSpec;
 import gg.psyduck.bidoofunleashed.api.BU3Service;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
 import gg.psyduck.bidoofunleashed.api.gyms.json.RequirementAdapter;
-import gg.psyduck.bidoofunleashed.battles.gyms.Gym;
+import gg.psyduck.bidoofunleashed.api.pixelmon.specs.HeldItemSpec;
+import gg.psyduck.bidoofunleashed.api.pixelmon.specs.MovesetSpec;
+import gg.psyduck.bidoofunleashed.api.pixelmon.specs.NicknameSpec;
+import gg.psyduck.bidoofunleashed.gyms.Gym;
 import gg.psyduck.bidoofunleashed.commands.BU3Command;
 import gg.psyduck.bidoofunleashed.commands.general.CheckBadgeCommand;
 import gg.psyduck.bidoofunleashed.config.ConfigKeys;
@@ -124,6 +128,11 @@ public class BidoofUnleashed extends SpongePlugin {
 				.setPrettyPrinting()
 				.create();
 		Sponge.getServiceManager().setProvider(this, BU3Service.class, (service = new BU3ServiceImpl()));
+
+		// Register extra spec values for PokemonSpec
+		PokemonSpec.extraSpecTypes.add(new NicknameSpec("nickname", ""));
+		PokemonSpec.extraSpecTypes.add(new HeldItemSpec("item", ""));
+		PokemonSpec.extraSpecTypes.add(new MovesetSpec("moves", new String[4]));
 	}
 
 	@Listener

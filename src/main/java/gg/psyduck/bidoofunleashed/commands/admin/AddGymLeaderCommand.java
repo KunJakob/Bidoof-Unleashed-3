@@ -13,7 +13,7 @@ import com.pixelmonmod.pixelmon.enums.EnumTrainerAI;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import gg.psyduck.bidoofunleashed.api.enums.EnumLeaderType;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
-import gg.psyduck.bidoofunleashed.battles.gyms.Gym;
+import gg.psyduck.bidoofunleashed.gyms.Gym;
 import gg.psyduck.bidoofunleashed.players.Roles;
 import gg.psyduck.bidoofunleashed.utils.MessageUtils;
 import net.minecraft.world.World;
@@ -56,7 +56,7 @@ public class AddGymLeaderCommand extends SpongeCommand {
 
     @Override
     public Text getUsage() {
-        return Text.of("/addgymleader <gym-name> <player>");
+        return Text.of("/bu3 addgymleader <gym-name> <player>");
     }
 
     @Override

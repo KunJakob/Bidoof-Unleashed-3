@@ -40,7 +40,7 @@ public class AddGymCommand extends SpongeCommand {
 
     @Override
     public Text getUsage() {
-        return Text.of("/", this.getAllAliases().get(0), " <spec>");
+        return Text.of("/bu3 ", this.getAllAliases().get(0), " <spec>");
     }
 
     @Override

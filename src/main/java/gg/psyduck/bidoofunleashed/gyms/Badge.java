@@ -1,4 +1,4 @@
-package gg.psyduck.bidoofunleashed.battles.gyms;
+package gg.psyduck.bidoofunleashed.gyms;
 
 import com.google.gson.annotations.SerializedName;
 import lombok.Getter;

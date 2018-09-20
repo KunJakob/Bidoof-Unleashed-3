@@ -6,7 +6,7 @@ import com.nickimpact.impactor.gui.v2.Layout;
 import com.nickimpact.impactor.gui.v2.Page;
 import com.nickimpact.impactor.gui.v2.PageDisplayable;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
-import gg.psyduck.bidoofunleashed.battles.gyms.Badge;
+import gg.psyduck.bidoofunleashed.gyms.Badge;
 import gg.psyduck.bidoofunleashed.players.PlayerData;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;

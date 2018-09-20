@@ -5,6 +5,7 @@ import com.nickimpact.impactor.api.commands.annotations.Aliases;
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
 import gg.psyduck.bidoofunleashed.commands.admin.*;
 import gg.psyduck.bidoofunleashed.commands.general.ChallengeGymCommand;
+import gg.psyduck.bidoofunleashed.commands.general.HelpCmd;
 import gg.psyduck.bidoofunleashed.commands.leader.AcceptChallenge;
 import gg.psyduck.bidoofunleashed.commands.leader.CloseGymCommand;
 import gg.psyduck.bidoofunleashed.commands.admin.GiveBadgeCommand;
@@ -41,20 +42,21 @@ public class BU3Command extends SpongeCommand {
 
 	@Override
 	public SpongeCommand[] getSubCommands() {
-		return new SpongeCommand[] {
+		return new SpongeCommand[]{
+				new HelpCmd(plugin, this),
 				new AddGymCommand(plugin),
-                new DeleteGymCommand(plugin),
+				new DeleteGymCommand(plugin),
 				new AddGymLeaderCommand(plugin),
 				new ChallengeGymCommand(plugin),
-				new GymListCommand(plugin),
-                new GiveBadgeCommand(plugin),
-                new RemoveBadgeCommand(plugin),
+				new GiveBadgeCommand(plugin),
+				new RemoveBadgeCommand(plugin),
 				new CheckGymPoolCmd(plugin),
-                new OpenGymCommand(plugin),
-                new CloseGymCommand(plugin),
+				new OpenGymCommand(plugin),
+				new CloseGymCommand(plugin),
 				new AcceptChallenge(plugin),
-                new AddRequirementCommand(plugin),
-				new GymArenaSetupCmd(plugin)
+				new AddRequirementCommand(plugin),
+				new GymArenaSetupCmd(plugin),
+				new GymListCommand(plugin),
 		};
 	}
 

@@ -1,4 +1,4 @@
-package gg.psyduck.bidoofunleashed.api.spec;
+package gg.psyduck.bidoofunleashed.api.pixelmon.specs;
 
 import com.pixelmonmod.pixelmon.api.pokemon.PokemonSpec;
 import com.pixelmonmod.pixelmon.battles.attacks.Attack;
@@ -10,17 +10,36 @@ import com.pixelmonmod.pixelmon.entities.pixelmon.stats.Moveset;
 import com.pixelmonmod.pixelmon.items.ItemHeld;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import net.minecraft.item.ItemStack;
+import scala.actors.threadpool.Arrays;
 
 import java.util.List;
 
+/**
+ * An extension of Pixelmon's provided PokemonSpec. Simply adds a few extra fields in quick
+ * access for future usage.
+ */
 public class BU3PokemonSpec extends PokemonSpec {
 
-	public String nickname = null;
-	public String item = null;
-	public List<String> attacks = null;
+	public String nickname;
+	public String item;
+	public List<String> attacks;
 
 	public BU3PokemonSpec(String... args) {
 		super(args);
+
+		for(int i = 0; i < args.length; i++) {
+			switch (args[i]) {
+				case "nickname":
+					this.nickname = args[i];
+					break;
+				case "item":
+					this.item = args[i];
+					break;
+				case "attacks":
+					this.attacks = Arrays.asList(args[i].split(","));
+					break;
+			}
+		}
 	}
 
 	@Override

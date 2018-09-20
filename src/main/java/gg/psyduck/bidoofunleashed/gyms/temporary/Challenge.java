@@ -1,4 +1,4 @@
-package gg.psyduck.bidoofunleashed.battles.gyms.temporary;
+package gg.psyduck.bidoofunleashed.gyms.temporary;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;

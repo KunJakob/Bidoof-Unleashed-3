@@ -1,4 +1,4 @@
-package gg.psyduck.bidoofunleashed.battles.battletypes;
+package gg.psyduck.bidoofunleashed.api.battlables.battletypes;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -9,8 +9,8 @@ import com.pixelmonmod.pixelmon.config.PixelmonConfig;
 import gg.psyduck.bidoofunleashed.api.enums.EnumLeaderType;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
 import gg.psyduck.bidoofunleashed.api.rewards.BU3Reward;
-import gg.psyduck.bidoofunleashed.api.BU3Battlable;
-import gg.psyduck.bidoofunleashed.battles.gyms.GymPool;
+import gg.psyduck.bidoofunleashed.api.battlables.BU3Battlable;
+import gg.psyduck.bidoofunleashed.gyms.GymPool;
 import lombok.AccessLevel;
 import lombok.Getter;
 

@@ -1,6 +1,6 @@
 package gg.psyduck.bidoofunleashed.storage.wrapping;
 
-import gg.psyduck.bidoofunleashed.battles.gyms.Gym;
+import gg.psyduck.bidoofunleashed.gyms.Gym;
 import gg.psyduck.bidoofunleashed.players.PlayerData;
 import gg.psyduck.bidoofunleashed.storage.BU3Storage;
 import lombok.RequiredArgsConstructor;

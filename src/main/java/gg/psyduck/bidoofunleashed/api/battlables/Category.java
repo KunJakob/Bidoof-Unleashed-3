@@ -1,4 +1,4 @@
-package gg.psyduck.bidoofunleashed.battles;
+package gg.psyduck.bidoofunleashed.api.battlables;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

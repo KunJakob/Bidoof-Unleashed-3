@@ -1,13 +1,16 @@
-package gg.psyduck.bidoofunleashed.battles.e4;
+package gg.psyduck.bidoofunleashed.e4;
 
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
-import gg.psyduck.bidoofunleashed.api.BU3Battlable;
+import gg.psyduck.bidoofunleashed.api.battlables.BU3Battlable;
 import gg.psyduck.bidoofunleashed.api.enums.EnumBattleType;
-import gg.psyduck.bidoofunleashed.battles.Category;
-import gg.psyduck.bidoofunleashed.battles.battletypes.BattleType;
+import gg.psyduck.bidoofunleashed.api.pixelmon.specs.BU3PokemonSpec;
+import gg.psyduck.bidoofunleashed.api.battlables.Category;
+import gg.psyduck.bidoofunleashed.api.battlables.battletypes.BattleType;
 import gg.psyduck.bidoofunleashed.players.PlayerData;
 import lombok.Getter;
 import org.spongepowered.api.entity.living.player.Player;
+
+import java.util.List;
 
 @Getter
 public class EliteFour implements BU3Battlable {
@@ -26,8 +29,8 @@ public class EliteFour implements BU3Battlable {
 	}
 
 	@Override
-	public void startBattle(Player leader, Player challenger) {
-
+	public boolean startBattle(Player leader, Player challenger, List<BU3PokemonSpec> team) {
+		return false;
 	}
 
 	@Override

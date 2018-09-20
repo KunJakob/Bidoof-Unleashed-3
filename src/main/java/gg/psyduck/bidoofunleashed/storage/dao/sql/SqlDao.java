@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
 import com.nickimpact.impactor.api.storage.connections.sql.AbstractSQLConnectionFactory;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
-import gg.psyduck.bidoofunleashed.battles.gyms.Gym;
+import gg.psyduck.bidoofunleashed.gyms.Gym;
 import gg.psyduck.bidoofunleashed.players.PlayerData;
 import gg.psyduck.bidoofunleashed.storage.dao.AbstractBU3Dao;
 import lombok.Getter;
@@ -26,7 +26,7 @@ public class SqlDao extends AbstractBU3Dao {
 	private static final String ADD_GYM = "INSERT INTO `{prefix}gyms` (name, content) VALUES ('%s', '%s')";
 	private static final String UPDATE_GYM = "UPDATE `{prefix}gyms` SET content = '%s' WHERE name = '%s'";
 	private static final String GET_PLAYERDATA = "SELECT * FROM `{prefix}player_data` WHERE UUID='%s'";
-	private static final String GET_GYMS = "SELECT * FROM `{prefix}gyms` WHERE NAME='%s'";
+	private static final String GET_GYMS = "SELECT * FROM `{prefix}gyms`";
 	private static final String DELETE_GYMS = "DELETE FROM `{prefix}gyms` WHERE NAME='%s'";
 
 	@Getter private final AbstractSQLConnectionFactory provider;
