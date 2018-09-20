@@ -92,7 +92,7 @@ public class ShowdownImporter {
 			String item = matcher.group("item");
 			if (item != null) {
 				item = item.toLowerCase().replaceAll(" ", "_");
-				spec.item = item;
+				spec.item = "pixelmon:" + item;
 			}
 
 			String form = matcher.group("form1");
