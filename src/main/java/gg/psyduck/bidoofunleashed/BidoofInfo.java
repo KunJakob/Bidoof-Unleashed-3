@@ -16,7 +16,7 @@ public class BidoofInfo implements PluginInfo {
 
     public static final String ID = "bu3";
     public static final String NAME = "Bidoof Unleashed 3";
-    public static final String VERSION = "S7.1-0.13.1-BETA";
+    public static final String VERSION = "S7.1-0.13.2-BETA";
     public static final String DESCRIPTION = "Gyms, with a hint of Bidoof";
 
     @Override

@@ -68,8 +68,10 @@ public class BattleListener {
 				}
 			}
 
+			BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(player.getUniqueId()).updateCooldown(g);
 			EnumBattleType type = g.getBattleType(player);
 			BattleRegistry.register(new Challenge((Entity) trainer, player, type), g);
+
 		});
 	}
 
@@ -95,13 +97,8 @@ public class BattleListener {
 					.orElse(null);
 
 			c.getKey().restore();
-			PlayerData data = BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(c.getKey().getLeader().getUniqueId());
-			if(data != null) {
-				PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) c.getKey().getLeader()).ifPresent(storage -> {
-					storage.partyPokemon = data.getTeam();
-					storage.sendUpdatedList();
-				});
-			}
+			PlayerData data = BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(c.getKey().getChallenger().getUniqueId());
+			data.purgeCooldown(c.getValue());
 
 			if(results == BattleResults.VICTORY) {
 				Sponge.getEventManager().post(new GymBattleEndEvent(c.getKey().getChallenger(), c.getKey().getLeader(), c.getValue(), true));

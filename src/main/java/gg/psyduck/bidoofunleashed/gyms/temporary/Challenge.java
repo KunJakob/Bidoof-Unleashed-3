@@ -39,7 +39,7 @@ public class Challenge {
 	}
 
 	/**
-	 * Locks a users team from leveling up during the battle. The last thing we want is for the leader of player to level
+	 * Locks a users team from leveling up during the battle. The last thing we want is for the leader or player to level
 	 * above the level cap!
 	 *
 	 * @param player The target player to lock

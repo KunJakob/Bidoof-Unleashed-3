@@ -23,6 +23,7 @@ import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
 import gg.psyduck.bidoofunleashed.api.battlables.Category;
 import gg.psyduck.bidoofunleashed.api.battlables.BU3Battlable;
 import gg.psyduck.bidoofunleashed.api.battlables.battletypes.BattleType;
+import gg.psyduck.bidoofunleashed.config.ConfigKeys;
 import gg.psyduck.bidoofunleashed.gyms.temporary.BattleRegistry;
 import gg.psyduck.bidoofunleashed.gyms.temporary.Challenge;
 import gg.psyduck.bidoofunleashed.players.PlayerData;
@@ -49,6 +50,7 @@ public class Gym implements BU3Battlable {
 	private Arena arena;
 	private Category category;
 	private int weight;
+	private int cooldown;
 
 	private BattleType initial;
 	private BattleType rematch;
@@ -68,6 +70,7 @@ public class Gym implements BU3Battlable {
 
 		List<Gym> mappings = BidoofUnleashed.getInstance().getDataRegistry().sortedGyms().get(this.category);
 
+		this.cooldown = builder.cooldown;
 		this.weight = builder.weight >= 0 ? builder.weight : mappings != null ? mappings.size() : 0;
 		this.initial = builder.initial.path(new File(BASE_PATH_GYMS, this.name + "/initial.pool")).build();
 		this.rematch = builder.rematch.path(new File(BASE_PATH_GYMS, this.name + "/rematch.pool")).build();
@@ -80,7 +83,8 @@ public class Gym implements BU3Battlable {
 	}
 
 	public boolean canChallenge(Player player) {
-		return this.open && player.hasPermission("bu3.gyms." + this.id.toLowerCase() + ".contest");
+		PlayerData pd = BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(player.getUniqueId());
+		return this.open && player.hasPermission("bu3.gyms." + this.id.toLowerCase() + ".contest") && pd.afterCooldownPeriod(this);
 	}
 
 	@Override
@@ -142,6 +146,7 @@ public class Gym implements BU3Battlable {
 
 		BattleRegistry.register(new Challenge(leader, challenger, this.getBattleType(challenger)), this);
 		new BattleControllerBase(bpL, new PlayerParticipant((EntityPlayerMP) challenger, cs), this.initial.getBattleRules()); // Need to ensure we are checking what type of battle it is
+		BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(challenger.getUniqueId()).updateCooldown(this);
 		return true;
 	}
 
@@ -232,6 +237,7 @@ public class Gym implements BU3Battlable {
 		private Arena arena;
 		private String category = "default";
 		private int weight = -1;
+		private int cooldown = BidoofUnleashed.getInstance().getConfig().get(ConfigKeys.DEFAULT_COOLDOWN);
 
 		private BattleType.Builder initial = new BattleType.Builder();
 		private BattleType.Builder rematch = new BattleType.Builder();
@@ -258,6 +264,11 @@ public class Gym implements BU3Battlable {
 		public Builder weight(int weight) {
 			Preconditions.checkArgument(weight > -1, "Weights must be >= 0");
 			this.weight = weight;
+			return this;
+		}
+
+		public Builder cooldown(int minutes) {
+			this.cooldown = minutes;
 			return this;
 		}
 

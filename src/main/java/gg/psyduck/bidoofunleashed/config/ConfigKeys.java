@@ -26,6 +26,7 @@ public class ConfigKeys implements IConfigKeys {
 	)));
 
 	public static final ConfigKey<Integer> TELEPORT_WAIT = IntegerKey.of("gyms.teleport.wait", 10);
+	public static final ConfigKey<Integer> DEFAULT_COOLDOWN = IntegerKey.of("gyms.defaults.cooldown", 60);
 
 	private static Map<String, ConfigKey<?>> KEYS = null;
 
