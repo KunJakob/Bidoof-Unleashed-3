@@ -119,8 +119,8 @@ public class GymPoolUI implements PageDisplayable {
 				lb.slot(Icon.from(picture), index++);
 			}
 
-			Map<String, Object> variables = Maps.newHashMap();
-			variables.put("bu3_wait", BidoofUnleashed.getInstance().getConfig().get(ConfigKeys.TELEPORT_WAIT));
+			Map<String, Function<CommandSource, Optional<Text>>> tokens = Maps.newHashMap();
+			tokens.put("bu3_wait", src -> Optional.of(Text.of(BidoofUnleashed.getInstance().getConfig().get(ConfigKeys.TELEPORT_WAIT))));
 
 			if(this.chosenTeam.size() >= this.focus.getBattleSettings(type).getMinPokemon() && this.chosenTeam.size() <= this.focus.getBattleSettings(type).getMaxPokemon()) {
 				ItemStack confirm = ItemStack.builder()
@@ -133,8 +133,8 @@ public class GymPoolUI implements PageDisplayable {
 					// Close display
 					this.display.close(leader);
 
-					challenger.sendMessage(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.MISC_CHALLENGE_BEGINNING, null, variables));
-					leader.sendMessage(MessageUtils.fetchAndParseMsg(leader, MsgConfigKeys.MISC_CHALLENGE_BEGINNING_LEADER_SELECTED, null, variables));
+					challenger.sendMessage(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.MISC_CHALLENGE_BEGINNING, tokens, null));
+					leader.sendMessage(MessageUtils.fetchAndParseMsg(leader, MsgConfigKeys.MISC_CHALLENGE_BEGINNING_LEADER_SELECTED, tokens, null));
 					Sponge.getScheduler().createTaskBuilder().execute(() -> this.focus.startBattle(leader, challenger, chosenTeam)).delay(10, TimeUnit.SECONDS).submit(BidoofUnleashed.getInstance());
 				});
 				lb.slot(conf, 17);
@@ -157,8 +157,8 @@ public class GymPoolUI implements PageDisplayable {
 			rng.addListener(clickable -> {
 				this.display.close(leader);
 				List<BU3PokemonSpec> team = TeamSelectors.randomized(this.focus, this.challenger);
-				challenger.sendMessage(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.MISC_CHALLENGE_BEGINNING, null, variables));
-				leader.sendMessage(MessageUtils.fetchAndParseMsg(leader, MsgConfigKeys.MISC_CHALLENGE_BEGINNING_LEADER_RANDOM, null, variables));
+				challenger.sendMessage(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.MISC_CHALLENGE_BEGINNING, tokens, null));
+				leader.sendMessage(MessageUtils.fetchAndParseMsg(leader, MsgConfigKeys.MISC_CHALLENGE_BEGINNING_LEADER_RANDOM, tokens, null));
 				Sponge.getScheduler().createTaskBuilder().execute(() -> this.focus.startBattle(leader, challenger, team)).delay(10, TimeUnit.SECONDS).submit(BidoofUnleashed.getInstance());
 			});
 			lb.slot(rng, 35);

@@ -66,14 +66,16 @@ public class MsgConfigKeys implements IConfigKeys {
 	public static final ConfigKey<String> UI_GYM_POOL_RANDOM_TEAM = StringKey.of("ui.gym-pool.icons.random-team", "&eSelect a Random Team");
 
 
-	public static final ConfigKey<String> MISC_CHALLENGE_BEGINNING = StringKey.of("misc.challenge.accepted.before-begin.challenger", "{{bu3_prefix}} &7The gym leader is now ready, starting battle in {{bu3_wait}} seconds!");
-    public static final ConfigKey<String> MISC_CHALLENGE_BEGINNING_LEADER_RANDOM = StringKey.of("misc.challenge.accepted.before-begin.leader.random", "{{bu3_prefix}} &7Your team was randomly selected, beginning battle in {{bu3_wait}} seconds!");
-    public static final ConfigKey<String> MISC_CHALLENGE_BEGINNING_LEADER_SELECTED = StringKey.of("misc.challenge.accepted.before-begin.leader.selected", "{{bu3_prefix}} &7Your team has been applied, starting battle in {{bu3_wait}} seconds!");
-	public static final ConfigKey<String> NEW_CHALLENGER_QUEUED = StringKey.of("misc.challenge.leaders.new-challenger", "{{bu3_prefix}} &7A new challenger awaits a battle for the &e{{bu3_gym}} Gym&7!");
+	public static final ConfigKey<String> MISC_CHALLENGE_COOLDOWN = StringKey.of("misc.challenge.challenger.cooldown", "{{bu3_error}} &7Sorry, but your cooldown for the &a{{bu3_gym}} &7has yet to expire! Time remaining: &e{{bu3_cooldown_time}}");
+	public static final ConfigKey<String> MISC_CHALLENGE_BEGINNING = StringKey.of("misc.challenge.challenger.battle-accepted.inform", "{{bu3_prefix}} &7The gym leader is now ready, starting battle in {{bu3_wait}} seconds!");
+    public static final ConfigKey<String> MISC_CHALLENGE_BEGINNING_LEADER_RANDOM = StringKey.of("misc.challenge.leader.battle-accepted.random-team", "{{bu3_prefix}} &7Your team was randomly selected, beginning battle in {{bu3_wait}} seconds!");
+    public static final ConfigKey<String> MISC_CHALLENGE_BEGINNING_LEADER_SELECTED = StringKey.of("misc.challenge.leader.battle-accepted.selected-team", "{{bu3_prefix}} &7Your team has been applied, starting battle in {{bu3_wait}} seconds!");
+	public static final ConfigKey<String> NEW_CHALLENGER_QUEUED = StringKey.of("misc.challenge.leader.new-challenger", "{{bu3_prefix}} &7A new challenger awaits a battle for the &e{{bu3_gym}} Gym&7!");
 
 	public static final ConfigKey<String> ERRORS_MISSING_PLAYER_STORAGE = StringKey.of("errors.missing-player-storage", "{{bu3_error}} &7A Pixelmon error was encountered, and prevented successful operation...");
 
 	public static final ConfigKey<String> BATTLES_WIN = StringKey.of("battles.win", "{{bu3_prefix}} &7Congrats! You've defeated the &e{{bu3_gym}} Gym&7!");
+	public static final ConfigKey<String> BATTLES_LOSE = StringKey.of("battles.lose", "{{bu3_prefix}} &7Well shoot! You've lost to the &e{{bu3_gym}} Gym&7!");
 
 	private static Map<String, ConfigKey<?>> KEYS = null;
 

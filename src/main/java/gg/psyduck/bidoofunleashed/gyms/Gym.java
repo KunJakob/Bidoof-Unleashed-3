@@ -3,6 +3,7 @@ package gg.psyduck.bidoofunleashed.gyms;
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
+import com.nickimpact.impactor.time.Time;
 import com.pixelmonmod.pixelmon.battles.controller.participants.PixelmonWrapper;
 import com.pixelmonmod.pixelmon.enums.items.EnumPokeballs;
 import com.pixelmonmod.pixelmon.storage.PlayerStorage;
@@ -24,20 +25,29 @@ import gg.psyduck.bidoofunleashed.api.battlables.Category;
 import gg.psyduck.bidoofunleashed.api.battlables.BU3Battlable;
 import gg.psyduck.bidoofunleashed.api.battlables.battletypes.BattleType;
 import gg.psyduck.bidoofunleashed.config.ConfigKeys;
+import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
 import gg.psyduck.bidoofunleashed.gyms.temporary.BattleRegistry;
 import gg.psyduck.bidoofunleashed.gyms.temporary.Challenge;
 import gg.psyduck.bidoofunleashed.players.PlayerData;
+import gg.psyduck.bidoofunleashed.utils.MessageUtils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.World;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.Location;
 
 import java.io.File;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
+import java.util.function.Function;
 
 @Getter
 public class Gym implements BU3Battlable {
@@ -82,9 +92,25 @@ public class Gym implements BU3Battlable {
 		this.leaders.put(uuid, type);
 	}
 
-	public boolean canChallenge(Player player) {
+	@Override
+	public boolean checkCooldown(Player player) {
 		PlayerData pd = BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(player.getUniqueId());
-		return this.open && player.hasPermission("bu3.gyms." + this.id.toLowerCase() + ".contest") && pd.afterCooldownPeriod(this);
+		if(!pd.afterCooldownPeriod(this)) {
+			LocalDate till = pd.getCooldowns().get(this.getName()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			Duration duration = Duration.between(LocalDate.now(), till);
+
+			Map<String, Function<CommandSource, Optional<Text>>> tokens = Maps.newHashMap();
+			tokens.put("bu3_gym", src -> Optional.of(Text.of(this.getName())));
+			tokens.put("bu3_cooldown_time", src -> Optional.of(Text.of(new Time(duration.getSeconds()).toString())));
+
+			player.sendMessage(MessageUtils.fetchAndParseMsg(player, MsgConfigKeys.MISC_CHALLENGE_COOLDOWN, tokens, null));
+			return false;
+		}
+		return true;
+	}
+
+	public boolean canChallenge(Player player) {
+		return this.open && player.hasPermission("bu3.gyms." + this.id.toLowerCase() + ".contest") && this.checkCooldown(player);
 	}
 
 	@Override

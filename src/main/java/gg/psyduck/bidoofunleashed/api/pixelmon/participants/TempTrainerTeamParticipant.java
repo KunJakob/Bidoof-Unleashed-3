@@ -7,15 +7,40 @@ import com.pixelmonmod.pixelmon.battles.controller.participants.TrainerParticipa
 import com.pixelmonmod.pixelmon.entities.npcs.NPCTrainer;
 import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
 import com.pixelmonmod.pixelmon.enums.EnumBossMode;
+import com.pixelmonmod.pixelmon.enums.items.EnumPokeballs;
+import com.pixelmonmod.pixelmon.storage.PlayerStorage;
+import gg.psyduck.bidoofunleashed.api.pixelmon.specs.BU3PokemonSpec;
+import gg.psyduck.bidoofunleashed.gyms.Gym;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import org.spongepowered.api.entity.living.player.Player;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class TempTrainerTeamParticipant extends TrainerParticipant {
 
-	public TempTrainerTeamParticipant(NPCTrainer trainer, EntityPlayer opponent, int numPokemon) throws IllegalStateException {
-		super(trainer, opponent, numPokemon);
+	public TempTrainerTeamParticipant(NPCTrainer trainer, EntityPlayer opponent, List<BU3PokemonSpec> team, Gym gym) throws IllegalStateException {
+		super(trainer, opponent, team.size());
+		this.allPokemon = new PixelmonWrapper[team.size()];
+
+		PlayerStorage storage = trainer.getPokemonStorage();
+		for(int i = 0; i < team.size(); i++) {
+			EntityPixelmon pokemon = team.get(i).create(trainer.world);
+			if(team.get(i).level == null) {
+				pokemon.getLvl().setLevel(gym.getBattleSettings(gym.getBattleType((Player) opponent)).getLvlCap());
+			}
+			if(pokemon.getMoveset() == null || pokemon.getMoveset().isEmpty()) {
+				pokemon.loadMoveset();
+			}
+			pokemon.caughtBall = EnumPokeballs.PokeBall;
+			pokemon.setOwnerId(trainer.getUniqueID());
+			pokemon.setPokemonId(storage.getNewPokemonID());
+			this.allPokemon[i] = new PixelmonWrapper(this, pokemon, i);
+		}
+
+		this.controlledPokemon = Collections.singletonList(this.allPokemon[0]);
 	}
 
 	@Override

@@ -53,6 +53,9 @@ public class PlayerData {
 	 * @param gym The gym to check against
 	 */
 	public void updateCooldown(Gym gym) {
+		if(this.cooldowns == null) {
+			this.cooldowns = new HashMap<>();
+		}
 		this.cooldowns.put(gym.getName(), Date.from(Instant.now().plus(gym.getCooldown() != 0 ? gym.getCooldown() : BidoofUnleashed.getInstance().getConfig().get(ConfigKeys.DEFAULT_COOLDOWN), ChronoUnit.MINUTES)));
     }
 
@@ -62,6 +65,9 @@ public class PlayerData {
 	 * @param gym The gym to purge the cooldown for
 	 */
 	public void purgeCooldown(Gym gym) {
+		if(this.cooldowns == null) {
+			this.cooldowns = new HashMap<>();
+		}
 		this.cooldowns.remove(gym.getName());
     }
 
@@ -74,6 +80,9 @@ public class PlayerData {
 	 * @return True if no cooldown exists, or the returned cooldown date is before the current system time.
 	 */
 	public boolean afterCooldownPeriod(Gym gym) {
+		if(this.cooldowns == null) {
+			this.cooldowns = new HashMap<>();
+		}
 		Date period = this.cooldowns.get(gym.getName());
 		if(period == null) {
 			return true;

@@ -8,21 +8,17 @@ import com.pixelmonmod.pixelmon.api.events.BeatTrainerEvent;
 import com.pixelmonmod.pixelmon.api.events.battles.BattleEndEvent;
 import com.pixelmonmod.pixelmon.battles.controller.BattleControllerBase;
 import com.pixelmonmod.pixelmon.battles.controller.participants.BattleParticipant;
-import com.pixelmonmod.pixelmon.battles.controller.participants.PixelmonWrapper;
 import com.pixelmonmod.pixelmon.battles.controller.participants.PlayerParticipant;
 import com.pixelmonmod.pixelmon.entities.npcs.NPCTrainer;
 import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
 import com.pixelmonmod.pixelmon.enums.battle.BattleResults;
-import com.pixelmonmod.pixelmon.enums.items.EnumPokeballs;
 import com.pixelmonmod.pixelmon.storage.NbtKeys;
 import com.pixelmonmod.pixelmon.storage.PixelmonStorage;
-import com.pixelmonmod.pixelmon.storage.PlayerStorage;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import gg.psyduck.bidoofunleashed.api.enums.EnumBattleType;
 import gg.psyduck.bidoofunleashed.api.enums.EnumLeaderType;
 import gg.psyduck.bidoofunleashed.api.events.GymBattleEndEvent;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
-import gg.psyduck.bidoofunleashed.api.pixelmon.participants.TempTeamParticipant;
 import gg.psyduck.bidoofunleashed.api.pixelmon.participants.TempTrainerTeamParticipant;
 import gg.psyduck.bidoofunleashed.api.pixelmon.specs.BU3PokemonSpec;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
@@ -47,7 +43,7 @@ import java.util.function.Function;
 
 public class BattleListener {
 
-	private static List<UUID> queued = new ArrayList<>();
+	private static List<UUID> queued = Lists.newArrayList();
 
 	@SubscribeEvent
 	public void onBattleStart(BattleStartedEvent event) {
@@ -56,21 +52,26 @@ public class BattleListener {
 		if (event.participant1[0].getEntity() instanceof NPCTrainer) {
 			trainer = (NPCTrainer)event.participant1[0].getEntity();
 			player = (EntityPlayerMP)(event.participant2[0].getEntity());
-			this.battleStartHelper(event, trainer, (Player) player, event.participant1);
+			this.battleStartHelper(event, trainer, (Player) player);
 		} else if (event.participant2[0].getEntity() instanceof NPCTrainer) {
 			trainer = (NPCTrainer)event.participant2[0].getEntity();
 			player = (EntityPlayerMP)(event.participant1[0].getEntity());
-			this.battleStartHelper(event, trainer, (Player) player, event.participant2);
+			this.battleStartHelper(event, trainer, (Player) player);
 		}
 	}
 
-	private void battleStartHelper(BattleStartedEvent event, NPCTrainer trainer, Player player, BattleParticipant[] participants) {
+	private void battleStartHelper(BattleStartedEvent event, NPCTrainer trainer, Player player) {
 		if(queued.contains(trainer.getUniqueID())) {
-			return; // We don't want to redo this entire process, so return here to end it all
+			return;
 		}
 
 		Optional<Gym> gym = BidoofUnleashed.getInstance().getDataRegistry().getGyms().stream().filter(g -> g.getLeaders().entrySet().stream().anyMatch(entry -> entry.getKey() == trainer.getUniqueID() && entry.getValue() == EnumLeaderType.NPC)).findAny();
 		gym.ifPresent(g -> {
+			if(!g.canChallenge(player)) {
+				event.setCanceled(true);
+				return;
+			}
+
 			for(Requirement requirement : g.getBattleSettings(g.getBattleType(player)).getRequirements()) {
 				try {
 					if(!requirement.passes(g, player)) {
@@ -86,31 +87,15 @@ public class BattleListener {
 			}
 
 			List<BU3PokemonSpec> team = TeamSelectors.randomized(g, player);
-			TempTrainerTeamParticipant tttp = new TempTrainerTeamParticipant(trainer, (EntityPlayerMP) player, team.size());
-			tttp.allPokemon = new PixelmonWrapper[team.size()];
-
-			PlayerStorage storage = trainer.getPokemonStorage();
-			for(int i = 0; i < team.size(); i++) {
-				EntityPixelmon pokemon = team.get(i).create(trainer.world);
-				if(team.get(i).level == null) {
-					pokemon.getLvl().setLevel(g.getBattleSettings(g.getBattleType(player)).getLvlCap());
-				}
-				pokemon.loadMoveset();
-				pokemon.caughtBall = EnumPokeballs.PokeBall;
-				pokemon.setOwnerId(trainer.getUniqueID());
-				pokemon.setPokemonId(storage.getNewPokemonID());
-				tttp.allPokemon[i] = new PixelmonWrapper(tttp, pokemon, i);
-			}
-
-			tttp.controlledPokemon = Collections.singletonList(tttp.allPokemon[0]);
-			participants[0] = tttp;
-
+			TempTrainerTeamParticipant tttp = new TempTrainerTeamParticipant(trainer, (EntityPlayerMP) player, team, g);
 			BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(player.getUniqueId()).updateCooldown(g);
 			EnumBattleType type = g.getBattleType(player);
 			BattleRegistry.register(new Challenge((Entity) trainer, player, type), g);
-			queued.add(trainer.getUniqueID());
 			event.setCanceled(true);
-			new BattleControllerBase(tttp, new PlayerParticipant((EntityPlayerMP) player), g.getBattleSettings(g.getBattleType(player)).getBattleRules());
+			queued.add(trainer.getUniqueID());
+
+			EntityPixelmon first = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) player).orElseThrow(() -> new RuntimeException("Missing player data for " + player.getName())).getFirstAblePokemon((World) player.getWorld());
+			new BattleControllerBase(tttp, new PlayerParticipant((EntityPlayerMP) player, first), g.getBattleSettings(g.getBattleType(player)).getBattleRules());
 		});
 	}
 
@@ -144,20 +129,11 @@ public class BattleListener {
 				this.onVictory(c.getKey(), c.getValue());
 			} else {
 				Sponge.getEventManager().post(new GymBattleEndEvent(c.getKey().getChallenger(), c.getKey().getLeader(), c.getValue(), false));
+				Map<String, Function<CommandSource, Optional<Text>>> tokens = Maps.newHashMap();
+				tokens.put("bu3_gym", src -> Optional.of(Text.of(c.getValue().getName())));
+				c.getKey().getChallenger().sendMessage(MessageUtils.fetchAndParseMsg(c.getKey().getChallenger(), MsgConfigKeys.BATTLES_LOSE, tokens, null));
 			}
 
-			BattleRegistry.deregister(c.getKey());
-		});
-	}
-
-	@SubscribeEvent
-	public void onBattleEndNPC(BeatTrainerEvent event) {
-		Optional<Map.Entry<Challenge, Gym>> challenge = BattleRegistry.getBattles().entrySet().stream().filter(entry -> event.player.getName().equalsIgnoreCase(entry.getKey().getChallenger().getName())).findAny();
-
-		challenge.ifPresent(c -> {
-			Sponge.getEventManager().post(new GymBattleEndEvent(c.getKey().getChallenger(), c.getKey().getLeader(), c.getValue(), true));
-			c.getKey().restore();
-			this.onVictory(c.getKey(), c.getValue());
 			BattleRegistry.deregister(c.getKey());
 		});
 	}
