@@ -73,6 +73,10 @@ public class AcceptChallenge extends SpongeCommand {
 
 		Gym gym = args.<Gym>getOne(GYM).get();
 		if(gym != null) {
+			if(!gym.getLeaders().keySet().contains(player.getUniqueId())) {
+				throw new CommandException(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.PLAYER_NOT_LEADER_OF_GYM, null, null));
+			}
+
 			if(gym.getQueue().isEmpty()) {
 				throw new CommandException(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.COMMANDS_ACCEPT_EMPTY_QUEUE, null, null));
 			}
@@ -83,11 +87,6 @@ public class AcceptChallenge extends SpongeCommand {
 			}
 
 			next.sendMessage(MessageUtils.fetchAndParseMsg(next, MsgConfigKeys.COMMANDS_ACCEPT_LEADER_SELECTING_TEAM, null, null));
-
-			Optional<PlayerStorage> optStorage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) player);
-			NBTTagCompound[] party = optStorage.orElseThrow(() -> new CommandException(MessageUtils.fetchAndParseMsg(next, MsgConfigKeys.ERRORS_MISSING_PLAYER_STORAGE, null, null))).partyPokemon;
-			data.setTeam(party);
-
 			new GymPoolUI(player, next, gym).open(player, 1);
 		} else {
 			throw new CommandException(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.COMMANDS_ACCEPT_NOT_ON_DUTY, null, null));

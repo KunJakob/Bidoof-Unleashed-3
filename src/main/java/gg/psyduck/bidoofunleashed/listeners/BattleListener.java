@@ -6,24 +6,35 @@ import com.google.common.collect.Maps;
 import com.pixelmonmod.pixelmon.api.events.BattleStartedEvent;
 import com.pixelmonmod.pixelmon.api.events.BeatTrainerEvent;
 import com.pixelmonmod.pixelmon.api.events.battles.BattleEndEvent;
+import com.pixelmonmod.pixelmon.battles.controller.BattleControllerBase;
 import com.pixelmonmod.pixelmon.battles.controller.participants.BattleParticipant;
+import com.pixelmonmod.pixelmon.battles.controller.participants.PixelmonWrapper;
+import com.pixelmonmod.pixelmon.battles.controller.participants.PlayerParticipant;
 import com.pixelmonmod.pixelmon.entities.npcs.NPCTrainer;
+import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
 import com.pixelmonmod.pixelmon.enums.battle.BattleResults;
+import com.pixelmonmod.pixelmon.enums.items.EnumPokeballs;
 import com.pixelmonmod.pixelmon.storage.NbtKeys;
 import com.pixelmonmod.pixelmon.storage.PixelmonStorage;
+import com.pixelmonmod.pixelmon.storage.PlayerStorage;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import gg.psyduck.bidoofunleashed.api.enums.EnumBattleType;
 import gg.psyduck.bidoofunleashed.api.enums.EnumLeaderType;
 import gg.psyduck.bidoofunleashed.api.events.GymBattleEndEvent;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
+import gg.psyduck.bidoofunleashed.api.pixelmon.participants.TempTeamParticipant;
+import gg.psyduck.bidoofunleashed.api.pixelmon.participants.TempTrainerTeamParticipant;
+import gg.psyduck.bidoofunleashed.api.pixelmon.specs.BU3PokemonSpec;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
 import gg.psyduck.bidoofunleashed.gyms.temporary.BattleRegistry;
 import gg.psyduck.bidoofunleashed.gyms.temporary.Challenge;
 import gg.psyduck.bidoofunleashed.players.PlayerData;
 import gg.psyduck.bidoofunleashed.utils.MessageUtils;
+import gg.psyduck.bidoofunleashed.utils.TeamSelectors;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
@@ -36,6 +47,8 @@ import java.util.function.Function;
 
 public class BattleListener {
 
+	private static List<UUID> queued = new ArrayList<>();
+
 	@SubscribeEvent
 	public void onBattleStart(BattleStartedEvent event) {
 		NPCTrainer trainer;
@@ -43,15 +56,19 @@ public class BattleListener {
 		if (event.participant1[0].getEntity() instanceof NPCTrainer) {
 			trainer = (NPCTrainer)event.participant1[0].getEntity();
 			player = (EntityPlayerMP)(event.participant2[0].getEntity());
-			this.battleStartHelper(event, trainer, (Player) player);
+			this.battleStartHelper(event, trainer, (Player) player, event.participant1);
 		} else if (event.participant2[0].getEntity() instanceof NPCTrainer) {
 			trainer = (NPCTrainer)event.participant2[0].getEntity();
 			player = (EntityPlayerMP)(event.participant1[0].getEntity());
-			this.battleStartHelper(event, trainer, (Player) player);
+			this.battleStartHelper(event, trainer, (Player) player, event.participant2);
 		}
 	}
 
-	private void battleStartHelper(BattleStartedEvent event, NPCTrainer trainer, Player player) {
+	private void battleStartHelper(BattleStartedEvent event, NPCTrainer trainer, Player player, BattleParticipant[] participants) {
+		if(queued.contains(trainer.getUniqueID())) {
+			return; // We don't want to redo this entire process, so return here to end it all
+		}
+
 		Optional<Gym> gym = BidoofUnleashed.getInstance().getDataRegistry().getGyms().stream().filter(g -> g.getLeaders().entrySet().stream().anyMatch(entry -> entry.getKey() == trainer.getUniqueID() && entry.getValue() == EnumLeaderType.NPC)).findAny();
 		gym.ifPresent(g -> {
 			for(Requirement requirement : g.getBattleSettings(g.getBattleType(player)).getRequirements()) {
@@ -68,10 +85,32 @@ public class BattleListener {
 				}
 			}
 
+			List<BU3PokemonSpec> team = TeamSelectors.randomized(g, player);
+			TempTrainerTeamParticipant tttp = new TempTrainerTeamParticipant(trainer, (EntityPlayerMP) player, team.size());
+			tttp.allPokemon = new PixelmonWrapper[team.size()];
+
+			PlayerStorage storage = trainer.getPokemonStorage();
+			for(int i = 0; i < team.size(); i++) {
+				EntityPixelmon pokemon = team.get(i).create(trainer.world);
+				if(team.get(i).level == null) {
+					pokemon.getLvl().setLevel(g.getBattleSettings(g.getBattleType(player)).getLvlCap());
+				}
+				pokemon.loadMoveset();
+				pokemon.caughtBall = EnumPokeballs.PokeBall;
+				pokemon.setOwnerId(trainer.getUniqueID());
+				pokemon.setPokemonId(storage.getNewPokemonID());
+				tttp.allPokemon[i] = new PixelmonWrapper(tttp, pokemon, i);
+			}
+
+			tttp.controlledPokemon = Collections.singletonList(tttp.allPokemon[0]);
+			participants[0] = tttp;
+
 			BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(player.getUniqueId()).updateCooldown(g);
 			EnumBattleType type = g.getBattleType(player);
 			BattleRegistry.register(new Challenge((Entity) trainer, player, type), g);
-
+			queued.add(trainer.getUniqueID());
+			event.setCanceled(true);
+			new BattleControllerBase(tttp, new PlayerParticipant((EntityPlayerMP) player), g.getBattleSettings(g.getBattleType(player)).getBattleRules());
 		});
 	}
 

@@ -18,6 +18,7 @@ import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
 import gg.psyduck.bidoofunleashed.ui.icons.PixelmonIcons;
 import gg.psyduck.bidoofunleashed.utils.MessageUtils;
+import gg.psyduck.bidoofunleashed.utils.TeamSelectors;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.data.key.Keys;
@@ -155,31 +156,7 @@ public class GymPoolUI implements PageDisplayable {
 			Icon rng = Icon.from(random);
 			rng.addListener(clickable -> {
 				this.display.close(leader);
-
-				// Randomly select team
-				Random x = new Random();
-
-				int min = this.focus.getBattleSettings(type).getMinPokemon();
-				int max = this.focus.getBattleSettings(type).getMaxPokemon();
-				int size = Math.min(1, Math.max(6, x.nextInt(max - min) + min));
-
-				List<BU3PokemonSpec> team = Lists.newArrayList();
-
-				List<BU3PokemonSpec> specs = this.focus.getBattleSettings(type).getPool().getTeam();
-				if(specs.size() > 0) {
-					for (int i = 0; i < size; i++) {
-						BU3PokemonSpec spec = specs.get(x.nextInt(specs.size()));
-						BU3PokemonSpec y = spec;
-						while (team.stream().anyMatch(s -> s.name.equalsIgnoreCase(y.name))) {
-							spec = specs.get(x.nextInt(specs.size()));
-						}
-
-						team.add(spec);
-					}
-				} else {
-					team.add(new BU3PokemonSpec("bidoof lvl:5"));
-				}
-
+				List<BU3PokemonSpec> team = TeamSelectors.randomized(this.focus, this.challenger);
 				challenger.sendMessage(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.MISC_CHALLENGE_BEGINNING, null, variables));
 				leader.sendMessage(MessageUtils.fetchAndParseMsg(leader, MsgConfigKeys.MISC_CHALLENGE_BEGINNING_LEADER_RANDOM, null, variables));
 				Sponge.getScheduler().createTaskBuilder().execute(() -> this.focus.startBattle(leader, challenger, team)).delay(10, TimeUnit.SECONDS).submit(BidoofUnleashed.getInstance());

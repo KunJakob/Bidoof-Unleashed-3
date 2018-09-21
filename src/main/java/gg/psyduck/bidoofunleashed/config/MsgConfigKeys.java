@@ -40,6 +40,7 @@ public class MsgConfigKeys implements IConfigKeys {
 
 	public static final ConfigKey<String> SOURCE_NOT_PLAYER = StringKey.of("commands.error.src-not-player", "{{bu3_error}} &7You must be a player to use this command!");
     public static final ConfigKey<String> PLAYER_NOT_LEADER = StringKey.of("commands.error.player-not-leader", "{{bu3_error}} &7You must be a gym leader to use this command!");
+    public static final ConfigKey<String> PLAYER_NOT_LEADER_OF_GYM = StringKey.of("commands.error.player-not-leader", "{{bu3_error}} &7You must be a gym leader for this gym to accept its challenges!");
     public static final ConfigKey<String> BADGE_NOT_FOUND = StringKey.of("commands.error.badge-not-present", "{{bu3_error}} {{player}} does not have that badge!");
     public static final ConfigKey<String> INVALID_REQUIREMENT = StringKey.of("commands.error.invalid-requirement", "{bu3_error}} &7You have specified an invalid requirement");
 
@@ -68,6 +69,7 @@ public class MsgConfigKeys implements IConfigKeys {
 	public static final ConfigKey<String> MISC_CHALLENGE_BEGINNING = StringKey.of("misc.challenge.accepted.before-begin.challenger", "{{bu3_prefix}} &7The gym leader is now ready, starting battle in {{bu3_wait}} seconds!");
     public static final ConfigKey<String> MISC_CHALLENGE_BEGINNING_LEADER_RANDOM = StringKey.of("misc.challenge.accepted.before-begin.leader.random", "{{bu3_prefix}} &7Your team was randomly selected, beginning battle in {{bu3_wait}} seconds!");
     public static final ConfigKey<String> MISC_CHALLENGE_BEGINNING_LEADER_SELECTED = StringKey.of("misc.challenge.accepted.before-begin.leader.selected", "{{bu3_prefix}} &7Your team has been applied, starting battle in {{bu3_wait}} seconds!");
+	public static final ConfigKey<String> NEW_CHALLENGER_QUEUED = StringKey.of("misc.challenge.leaders.new-challenger", "{{bu3_prefix}} &7A new challenger awaits a battle for the &e{{bu3_gym}} Gym&7!");
 
 	public static final ConfigKey<String> ERRORS_MISSING_PLAYER_STORAGE = StringKey.of("errors.missing-player-storage", "{{bu3_error}} &7A Pixelmon error was encountered, and prevented successful operation...");
 

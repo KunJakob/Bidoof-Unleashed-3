@@ -4,11 +4,13 @@ import com.google.common.collect.Maps;
 import com.nickimpact.impactor.api.commands.SpongeCommand;
 import com.nickimpact.impactor.api.commands.annotations.Aliases;
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
+import gg.psyduck.bidoofunleashed.api.enums.EnumLeaderType;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
 import gg.psyduck.bidoofunleashed.commands.arguments.GymArg;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
 import gg.psyduck.bidoofunleashed.utils.MessageUtils;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -19,7 +21,9 @@ import org.spongepowered.api.text.Text;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Aliases("challenge")
 public class ChallengeGymCommand extends SpongeCommand {
@@ -75,6 +79,10 @@ public class ChallengeGymCommand extends SpongeCommand {
 				tokens.put("bu3_gym", s -> Optional.of(Text.of(gym.getName())));
 				tokens.put("bu3_queue_position", s -> Optional.of(Text.of(gym.getQueue().size())));
 				src.sendMessage(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.COMMANDS_CHALLENGE_QUEUED, tokens, null));
+
+				for(UUID uuid : gym.getLeaders().entrySet().stream().filter(entry -> entry.getValue() == EnumLeaderType.PLAYER).map(Map.Entry::getKey).collect(Collectors.toList())) {
+					Sponge.getServer().getPlayer(uuid).ifPresent(player -> player.sendMessage(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.NEW_CHALLENGER_QUEUED, tokens, null)));
+				}
 			} else {
 				throw new CommandException(Text.of("That gym is not open..."));
 			}
