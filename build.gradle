@@ -45,7 +45,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 ext {
-    pluginversion = '0.13.3-BETA'
+    pluginversion = '0.13.4-BETA'
     spongeapiversion = '7.1.0-SNAPSHOT'
     completeversion = "S${spongeapiversion.substring(0, 5)}-${pluginversion}"
 }
