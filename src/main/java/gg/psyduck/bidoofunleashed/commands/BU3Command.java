@@ -45,6 +45,7 @@ public class BU3Command extends SpongeCommand {
 		return new SpongeCommand[]{
 				new HelpCmd(plugin, this),
 				new AddGymCommand(plugin),
+				new EditGymCmd(plugin),
 				new DeleteGymCommand(plugin),
 				new AddGymLeaderCommand(plugin),
 				new ChallengeGymCommand(plugin),

@@ -80,7 +80,7 @@ public class ChallengeGymCommand extends SpongeCommand {
 				tokens.put("bu3_queue_position", s -> Optional.of(Text.of(gym.getQueue().size())));
 				src.sendMessage(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.COMMANDS_CHALLENGE_QUEUED, tokens, null));
 
-				for(UUID uuid : gym.getLeaders().entrySet().stream().filter(entry -> entry.getValue() == EnumLeaderType.PLAYER).map(Map.Entry::getKey).collect(Collectors.toList())) {
+				for(UUID uuid : gym.getLeaders()) {
 					Sponge.getServer().getPlayer(uuid).ifPresent(player -> player.sendMessage(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.NEW_CHALLENGER_QUEUED, tokens, null)));
 				}
 			} else {

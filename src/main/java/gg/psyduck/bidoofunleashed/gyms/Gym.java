@@ -2,9 +2,11 @@ package gg.psyduck.bidoofunleashed.gyms;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.nickimpact.impactor.time.Time;
 import com.pixelmonmod.pixelmon.battles.controller.participants.PixelmonWrapper;
+import com.pixelmonmod.pixelmon.entities.npcs.NPCTrainer;
 import com.pixelmonmod.pixelmon.enums.items.EnumPokeballs;
 import com.pixelmonmod.pixelmon.storage.PlayerStorage;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
@@ -36,8 +38,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.World;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.Location;
 
@@ -54,6 +58,7 @@ public class Gym implements BU3Battlable {
 
 	private static final File BASE_PATH_GYMS = new File("bidoof-unleashed-3/json/gyms/");
 
+	private UUID uuid;
 	private String id;
 	private String name;
 	private Badge badge;
@@ -65,12 +70,14 @@ public class Gym implements BU3Battlable {
 	private BattleType initial;
 	private BattleType rematch;
 
-	private Map<UUID, EnumLeaderType> leaders;
+	private List<UUID> leaders;
+	private int npcs = 0;
 
 	private transient Queue<UUID> queue = new LinkedList<>();
 	private transient boolean open = false;
 
 	private Gym(Builder builder) {
+		this.uuid = UUID.randomUUID();
 		this.id = builder.id;
 		this.name = builder.name;
 		this.badge = builder.badge;
@@ -82,14 +89,27 @@ public class Gym implements BU3Battlable {
 
 		this.cooldown = builder.cooldown;
 		this.weight = builder.weight >= 0 ? builder.weight : mappings != null ? mappings.size() : 0;
-		this.initial = builder.initial.path(new File(BASE_PATH_GYMS, this.name + "/initial.pool")).build();
-		this.rematch = builder.rematch.path(new File(BASE_PATH_GYMS, this.name + "/rematch.pool")).build();
+		this.initial = builder.initial.path(new File(BASE_PATH_GYMS, this.name + "/initial.pool"));
+		this.rematch = builder.rematch.path(new File(BASE_PATH_GYMS, this.name + "/rematch.pool"));
 
 		this.initialize();
 	}
 
-	public void addLeader(UUID uuid, EnumLeaderType type) {
-		this.leaders.put(uuid, type);
+	public void addPlayerLeader(UUID uuid) {
+		this.leaders.add(uuid);
+	}
+
+	public void removePlayerLeader(UUID uuid) {
+		this.leaders.remove(uuid);
+	}
+
+	public void addNPCLeader(NPCTrainer npc) {
+		this.npcs++;
+		npc.getEntityData().setString("BU3-Gym", this.getUuid().toString());
+	}
+
+	public void removeNPCLeader(NPCTrainer npc) {
+		this.npcs--;
 	}
 
 	@Override
@@ -109,17 +129,22 @@ public class Gym implements BU3Battlable {
 		return true;
 	}
 
+	@Override
+	public boolean isReady() {
+		return this.id != null && this.name != null && this.badge != null && this.arena.isSetup();
+	}
+
 	public boolean canChallenge(Player player) {
 		return this.open && player.hasPermission("bu3.gyms." + this.id.toLowerCase() + ".contest") && this.checkCooldown(player);
 	}
 
 	@Override
 	public boolean canAccess(Player player) {
-		return this.arena.isSetup() && player.hasPermission("bu3.gyms." + this.id.toLowerCase() + ".teleport");
+		return this.isReady() && player.hasPermission("bu3.gyms." + this.id.toLowerCase() + ".access");
 	}
 
 	public boolean queue(Player player) {
-		if(this.canChallenge(player)) {
+		if(this.canAccess(player) && this.canChallenge(player)) {
 			this.queue.add(player.getUniqueId());
 			return true;
 		}
@@ -189,7 +214,7 @@ public class Gym implements BU3Battlable {
 			this.queue = new LinkedList<>();
 		}
 
-		if(this.leaders.values().contains(EnumLeaderType.NPC)) {
+		if(this.npcs > 0) {
 			this.open = true;
 		}
 
@@ -222,8 +247,38 @@ public class Gym implements BU3Battlable {
 		}
     }
 
+    public void copy(Gym edit) {
+		this.id = edit.id;
+		this.name = edit.name;
+		this.badge = edit.badge;
+		this.arena = edit.arena;
+		this.cooldown = edit.cooldown;
+		this.weight = edit.weight;
+		this.category = edit.category;
+		this.initial = edit.initial;
+		this.rematch = edit.rematch;
+		this.leaders = edit.leaders;
+    }
+
 	public static Builder builder() {
 		return new Builder();
+	}
+
+	public Builder toBuilder() {
+		Gym.Builder builder = new Builder();
+		builder.name = this.name;
+		builder.id = this.id;
+		builder.badge = this.badge;
+		builder.arena = this.arena;
+		builder.category = this.category.getId();
+		builder.weight = this.weight;
+		builder.cooldown = this.cooldown;
+
+		builder.initial = this.initial;
+		builder.rematch = this.rematch;
+
+		builder.leaders = this.leaders;
+		return builder;
 	}
 
 	/**
@@ -258,27 +313,33 @@ public class Gym implements BU3Battlable {
 
 	public static class Builder {
 		private String id;
-		private String name;
-		private Badge badge;
+		public String name;
+		private Badge badge = new Badge();
 		private Arena arena;
 		private String category = "default";
 		private int weight = -1;
 		private int cooldown = BidoofUnleashed.getInstance().getConfig().get(ConfigKeys.DEFAULT_COOLDOWN);
 
-		private BattleType.Builder initial = new BattleType.Builder();
-		private BattleType.Builder rematch = new BattleType.Builder();
+		private BattleType initial = new BattleType();
+		private BattleType rematch = new BattleType();
 
-		private Map<UUID, EnumLeaderType> leaders = Maps.newHashMap();
+		private List<UUID> leaders = Lists.newArrayList();
 
 		public Builder id(String id) {
 			Preconditions.checkArgument(BidoofUnleashed.getInstance().getDataRegistry().getGyms().stream().noneMatch(gym -> gym.getId().equalsIgnoreCase(id)), "Can't have two gyms with the same ID");
 			this.id = id.toLowerCase().replaceAll(" ", "_");
+			if(this.name == null) {
+				this.name = id;
+			}
 			return this;
 		}
 
 		public Builder name(String name) {
 			Preconditions.checkArgument(BidoofUnleashed.getInstance().getDataRegistry().getGyms().stream().noneMatch(gym -> gym.getName().equalsIgnoreCase(name)), "Can't have two gyms with the same name");
 			this.name = name;
+			if(this.id == null) {
+				this.id = name.toLowerCase().replaceAll(" ", "_");
+			}
 			return this;
 		}
 
@@ -298,8 +359,13 @@ public class Gym implements BU3Battlable {
 			return this;
 		}
 
-		public Builder badge(Badge badge) {
-			this.badge = badge;
+		public Builder badgeName(String name) {
+			this.badge = badge.name(name);
+			return this;
+		}
+
+		public Builder badgeType(String itemType) {
+			this.badge = badge.itemType(itemType);
 			return this;
 		}
 
@@ -312,10 +378,10 @@ public class Gym implements BU3Battlable {
 			Preconditions.checkArgument(BattleClauseRegistry.getClauseRegistry().hasClause(clause), "Invalid clause: " + clause);
 			switch (type) {
 				case First:
-					initial.clause(clause);
+					initial.addClause(clause);
 					break;
 				case Rematch:
-					rematch.clause(clause);
+					rematch.addClause(clause);
 					break;
 			}
 			return this;
@@ -332,10 +398,10 @@ public class Gym implements BU3Battlable {
 		public Builder rule(EnumBattleType type, String rule) {
 			switch (type) {
 				case First:
-					initial.rule(rule);
+					initial.addRule(rule);
 					break;
 				case Rematch:
-					rematch.rule(rule);
+					rematch.addRule(rule);
 					break;
 			}
 			return this;
@@ -365,12 +431,12 @@ public class Gym implements BU3Battlable {
 			switch (type) {
 				case First:
 					for(BU3Reward reward : rewards) {
-						initial.reward(leaderType, reward);
+						initial.addRewards(leaderType, reward);
 					}
 					break;
 				case Rematch:
 					for(BU3Reward reward : rewards) {
-						rematch.reward(leaderType, reward);
+						rematch.addRewards(leaderType, reward);
 					}
 					break;
 			}
@@ -378,7 +444,7 @@ public class Gym implements BU3Battlable {
 		}
 
 		public Builder leader(UUID uuid, EnumLeaderType type) {
-			leaders.put(uuid, type);
+			leaders.add(uuid);
 			return this;
 		}
 
@@ -386,12 +452,12 @@ public class Gym implements BU3Battlable {
 			switch (type) {
 				case First:
 					for(Requirement requirement : requirements) {
-						initial.requirement(requirement);
+						initial.addRequirements(requirement);
 					}
 					break;
 				case Rematch:
 					for(Requirement requirement : requirements) {
-						rematch.requirement(requirement);
+						rematch.addRequirements(requirement);
 					}
 					break;
 			}
@@ -437,10 +503,6 @@ public class Gym implements BU3Battlable {
 		}
 
 		public Gym build() {
-			Preconditions.checkNotNull(this.id);
-			Preconditions.checkNotNull(this.name);
-			Preconditions.checkNotNull(this.badge);
-
 			return new Gym(this);
 		}
 	}

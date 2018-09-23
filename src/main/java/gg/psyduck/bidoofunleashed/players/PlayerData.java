@@ -37,6 +37,9 @@ public class PlayerData {
 	}
 
 	public boolean hasBadge(Badge badge) {
+		if(badge == null) {
+			return false;
+		}
 	    return this.badges.stream().anyMatch(b -> b.getName().equals(badge.getName()) && b.getItemType().equals(badge.getItemType()));
     }
 

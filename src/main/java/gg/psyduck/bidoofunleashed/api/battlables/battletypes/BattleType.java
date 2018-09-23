@@ -1,6 +1,5 @@
 package gg.psyduck.bidoofunleashed.api.battlables.battletypes;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.annotations.SerializedName;
@@ -22,33 +21,25 @@ import java.util.Map;
 @Getter
 public class BattleType {
 
-	private int lvlCap;
+	private int lvlCap = PixelmonConfig.maxLevel;
 	@Getter(AccessLevel.PRIVATE)
 	@SerializedName("requirements")
-	private List<Requirement> baseRequirements;
-	private Map<EnumLeaderType, List<BU3Reward>> rewards;
-	private List<String> rules;
-	private List<String> clauses;
+	private List<Requirement> baseRequirements = Lists.newArrayList();
+	private Map<EnumLeaderType, List<BU3Reward>> rewards = Maps.newHashMap();
+	private List<String> rules = Lists.newArrayList();
+	private List<String> clauses = Lists.newArrayList();
 
 	private GymPool pool;
-	private int minPokemon;
-	private int maxPokemon;
+	private int minPokemon = 1;
+	private int maxPokemon = 6;
 
 	private transient BattleRules battleRules;
 
-	public BattleType(Builder builder) {
-		this.pool = new GymPool(builder.poolPath);
-		this.maxPokemon = builder.maxPokemon;
-		this.minPokemon = builder.minPokemon;
-		this.baseRequirements = builder.requirements;
-		this.rewards = builder.rewards;
+	public BattleType() {
 		if(this.rewards.isEmpty()) {
 			this.rewards.put(EnumLeaderType.PLAYER, Lists.newArrayList());
 			this.rewards.put(EnumLeaderType.NPC, Lists.newArrayList());
 		}
-		this.rules = builder.rules;
-		this.clauses = builder.clauses;
-		this.lvlCap = builder.lvlCap;
 	}
 
 	public void init() {
@@ -59,20 +50,17 @@ public class BattleType {
 		this.pool.init();
 	}
 
+	public BattleType path(File path) {
+		this.pool = new GymPool(path);
+		return this;
+	}
+
 	public void addClause(String clause) {
 		this.clauses.add(clause);
 	}
 
-	public void addClauses(String... clauses) {
-		Arrays.stream(clauses).forEach(this::addClause);
-	}
-
 	public void addRule(String rule) {
 		this.rules.add(rule);
-	}
-
-	public void addRules(String... rules) {
-		Arrays.stream(rules).forEach(this::addRule);
 	}
 
 	public void addRewards(EnumLeaderType type, BU3Reward... rewards) {
@@ -81,6 +69,18 @@ public class BattleType {
 
 	public void addRequirements(Requirement... requirements) {
 		this.baseRequirements.addAll(Arrays.asList(requirements));
+	}
+
+	public void lvlCap(int level) {
+		this.lvlCap = level;
+	}
+
+	public void min(int minPokemon) {
+		this.minPokemon = minPokemon;
+	}
+
+	public void max(int maxPokemon) {
+		this.maxPokemon = maxPokemon;
 	}
 
 	private String repImportText(List<String> content) {
@@ -96,71 +96,5 @@ public class BattleType {
 		List<Requirement> requirements = Lists.newArrayList(this.getBaseRequirements());
 		requirements.add(BU3Battlable.lvlCapRequirement);
 		return requirements;
-	}
-
-	public static Builder builder() {
-		return new Builder();
-	}
-
-	public static class Builder {
-
-		private File poolPath;
-		private int minPokemon = 1;
-		private int maxPokemon = 6;
-
-		private int lvlCap = PixelmonConfig.maxLevel;
-		private List<Requirement> requirements = Lists.newArrayList();
-		private Map<EnumLeaderType, List<BU3Reward>> rewards = Maps.newHashMap();
-		private List<String> rules = Lists.newArrayList();
-		private List<String> clauses = Lists.newArrayList();
-
-		public Builder path(File path) {
-			this.poolPath = path;
-			return this;
-		}
-
-		public Builder min(int min) {
-			this.minPokemon = min;
-			return this;
-		}
-
-		public Builder max(int max) {
-			this.maxPokemon = max;
-			return this;
-		}
-
-		public Builder requirement(Requirement requirement) {
-			this.requirements.add(requirement);
-			return this;
-		}
-
-		public Builder reward(EnumLeaderType type, BU3Reward reward) {
-			if(this.rewards.containsKey(type)) {
-				this.rewards.get(type).add(reward);
-			} else {
-				this.rewards.put(type, Lists.newArrayList(reward));
-			}
-			return this;
-		}
-
-		public Builder lvlCap(int lvlCap) {
-			this.lvlCap = lvlCap;
-			return this;
-		}
-
-		public Builder rule(String rule) {
-			this.rules.add(rule);
-			return this;
-		}
-
-		public Builder clause(String clause) {
-			this.clauses.add(clause);
-			return this;
-		}
-
-		public BattleType build() {
-			Preconditions.checkNotNull(poolPath, "Pool path must be set!");
-			return new BattleType(this);
-		}
 	}
 }

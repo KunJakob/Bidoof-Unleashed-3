@@ -31,7 +31,9 @@ public class MsgConfigKeys implements IConfigKeys {
 	public static final ConfigKey<String> COMMANDS_ACCEPT_NOT_ON_DUTY = StringKey.of("commands.accept-challenge.leader.not-active", "{{bu3_error}} &7You aren't currently on duty...");
     public static final ConfigKey<String> COMMANDS_ADD_REQUIREMENT_SUCCESS = StringKey.of("commands.add-requirement.success", "{{bu3_prefix}} &7You have successfully added the requirement {{bu3_requirement}} to the gym {{bu3_gym} Gym");
     public static final ConfigKey<String> COMMANDS_ADD_GYM_SUCCESS = StringKey.of("commands.add-gym.success", "{{bu3_prefix}} &7Gym successfully created!");
+    public static final ConfigKey<String> COMMANDS_ADD_GYM_EXISTS = StringKey.of("commands.add-gym.error.exists", "{{bu3_error}} &7A gym with that name already exists...");
 	public static final ConfigKey<String> COMMANDS_ARENA_AREA_SETUP = StringKey.of("commands.arena-setup.applied", "{{bu3_prefix}} &7Arena settings updated!");
+	public static final ConfigKey<String> COMMANDS_EDIT_GYM_SUCCESS = StringKey.of("commands.add-gym.success", "{{bu3_prefix}} &7Gym successfully edited!");
 
 	public static final ConfigKey<String> REQUIREMENT_GYM = StringKey.of("requirements.gym", "{{bu3_error}} &7Unfortunately, you can't challenge this gym until you've earned the &e{{bu3_badge}}&7...");
 	public static final ConfigKey<String> REQUIREMENT_LEVELCAP = StringKey.of("requirements.level-cap", "{{bu3_error}} &7Unfortunately, a member of your party exceeds the level cap of &e{{bu3_level_cap}}&7...");
@@ -71,6 +73,7 @@ public class MsgConfigKeys implements IConfigKeys {
     public static final ConfigKey<String> MISC_CHALLENGE_BEGINNING_LEADER_RANDOM = StringKey.of("misc.challenge.leader.battle-accepted.random-team", "{{bu3_prefix}} &7Your team was randomly selected, beginning battle in {{bu3_wait}} seconds!");
     public static final ConfigKey<String> MISC_CHALLENGE_BEGINNING_LEADER_SELECTED = StringKey.of("misc.challenge.leader.battle-accepted.selected-team", "{{bu3_prefix}} &7Your team has been applied, starting battle in {{bu3_wait}} seconds!");
 	public static final ConfigKey<String> NEW_CHALLENGER_QUEUED = StringKey.of("misc.challenge.leader.new-challenger", "{{bu3_prefix}} &7A new challenger awaits a battle for the &e{{bu3_gym}} Gym&7!");
+	public static final ConfigKey<String> MISC_GYM_MORE_REQUIRED = StringKey.of("commands.add-gym.success", "{{bu3_prefix}} &7The gym is, however, not yet complete! Please finish it with &e/bu3 editgym {{bu3_gym}}");
 
 	public static final ConfigKey<String> ERRORS_MISSING_PLAYER_STORAGE = StringKey.of("errors.missing-player-storage", "{{bu3_error}} &7A Pixelmon error was encountered, and prevented successful operation...");
 

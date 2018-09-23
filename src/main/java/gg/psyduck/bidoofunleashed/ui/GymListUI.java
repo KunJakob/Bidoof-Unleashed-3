@@ -7,6 +7,7 @@ import com.nickimpact.impactor.gui.v2.Page;
 import com.nickimpact.impactor.gui.v2.PageDisplayable;
 import com.pixelmonmod.pixelmon.config.PixelmonConfig;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
+import gg.psyduck.bidoofunleashed.api.battlables.BU3Battlable;
 import gg.psyduck.bidoofunleashed.api.enums.EnumLeaderType;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
@@ -32,12 +33,12 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class GymList implements PageDisplayable {
+public class GymListUI implements PageDisplayable {
 
 	private Page page;
 	private Player player;
 
-	public GymList(Player player) {
+	public GymListUI(Player player) {
 		this.player = player;
 		this.page = this.build().define(this.gymIcons(), InventoryDimension.of(7, 3), 1, 1);
 	}
@@ -55,19 +56,23 @@ public class GymList implements PageDisplayable {
 				ItemStack.builder()
 						.itemType(Sponge.getRegistry().getType(ItemType.class, "pixelmon:trade_holder_left").orElse(ItemTypes.BARRIER))
 						.build()
-				), 48
+				),
+				48
 		);
 		pb.current(Icon.from(
 				ItemStack.builder()
 						.itemType(Sponge.getRegistry().getType(ItemType.class, "pixelmon:trade_monitor").orElse(ItemTypes.BARRIER))
 						.build()
-				), 49
+				),
+				49
 		);
 		pb.next(Icon.from(
 				ItemStack.builder()
 						.itemType(Sponge.getRegistry().getType(ItemType.class, "pixelmon:trade_holder_right").orElse(ItemTypes.BARRIER))
 						.build()
-		), 50);
+				),
+				50
+		);
 
 		return pb.build(BidoofUnleashed.getInstance());
 	}
@@ -81,7 +86,7 @@ public class GymList implements PageDisplayable {
 	}
 
 	private List<Icon> gymIcons() {
-		return BidoofUnleashed.getInstance().getDataRegistry().getGyms().stream().map(gym -> {
+		return BidoofUnleashed.getInstance().getDataRegistry().getGyms().stream().filter(BU3Battlable::isReady).map(gym -> {
 			Map<String, Function<CommandSource, Optional<Text>>> tokens = Maps.newHashMap();
 			tokens.put("bu3_gym", src -> Optional.of(Text.of(gym.getName())));
 			tokens.put("bu3_gym_stage", src -> Optional.of(Text.of(gym.getBattleType((Player) src).name())));
@@ -102,11 +107,14 @@ public class GymList implements PageDisplayable {
 			});
 
 			List<Text> lore = MessageUtils.fetchAndParseMsgs(player, MsgConfigKeys.UI_GYM_ICON_LORE, tokens, null);
-			lore.add(Text.of(TextColors.YELLOW, "NPCs x", gym.getLeaders().entrySet().stream().filter(entry -> entry.getValue() == EnumLeaderType.NPC).count()));
+			int npcs = gym.getNpcs();
+			if(npcs > 0) {
+				lore.add(Text.of(TextColors.YELLOW, "NPCs x", npcs));
+			}
 
 			UserStorageService service = Sponge.getServiceManager().provideUnchecked(UserStorageService.class);
-			for(Map.Entry<UUID, EnumLeaderType> entry : gym.getLeaders().entrySet().stream().filter(entry -> entry.getValue() == EnumLeaderType.PLAYER).collect(Collectors.toList())) {
-				service.get(entry.getKey()).ifPresent(user -> lore.add(Text.of(TextColors.AQUA, user.getName())));
+			for(UUID uuid : gym.getLeaders()) {
+				service.get(uuid).ifPresent(user -> lore.add(Text.of(TextColors.AQUA, user.getName())));
 			}
 
 			ItemStack rep = ItemStack.builder()

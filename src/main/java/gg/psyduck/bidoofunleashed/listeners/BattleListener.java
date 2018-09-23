@@ -61,11 +61,15 @@ public class BattleListener {
 	}
 
 	private void battleStartHelper(BattleStartedEvent event, NPCTrainer trainer, Player player) {
+		if(!trainer.getEntityData().hasKey("BU3-Gym")) {
+			return;
+		}
+
 		if(queued.contains(trainer.getUniqueID())) {
 			return;
 		}
 
-		Optional<Gym> gym = BidoofUnleashed.getInstance().getDataRegistry().getGyms().stream().filter(g -> g.getLeaders().entrySet().stream().anyMatch(entry -> entry.getKey() == trainer.getUniqueID() && entry.getValue() == EnumLeaderType.NPC)).findAny();
+		Optional<Gym> gym = BidoofUnleashed.getInstance().getDataRegistry().getGyms().stream().filter(g -> g.getUuid().equals(UUID.fromString(trainer.getEntityData().getString("BU3-Gym")))).findAny();
 		gym.ifPresent(g -> {
 			if(!g.canChallenge(player)) {
 				event.setCanceled(true);

@@ -3,6 +3,7 @@ package gg.psyduck.bidoofunleashed.commands.admin;
 import com.google.common.collect.Maps;
 import com.nickimpact.impactor.api.commands.SpongeCommand;
 import com.nickimpact.impactor.api.commands.annotations.Aliases;
+import com.nickimpact.impactor.api.commands.annotations.Permission;
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
 import com.pixelmonmod.pixelmon.storage.NbtKeys;
 import com.pixelmonmod.pixelmon.storage.PixelmonStorage;
@@ -32,6 +33,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 @Aliases({"givebadge", "gb"})
+@Permission(admin = true)
 public class GiveBadgeCommand extends SpongeCommand {
 
     public GiveBadgeCommand(SpongePlugin plugin) {
@@ -69,7 +71,7 @@ public class GiveBadgeCommand extends SpongeCommand {
         Player player = (Player) src;
         Player target = (Player) args.getOne("target").get();
         Gym gym = (Gym) args.getOne("gym").get();
-        if (!gym.getLeaders().containsKey(player.getUniqueId())) {
+        if (!gym.getLeaders().contains(player.getUniqueId())) {
             throw new CommandException(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.PLAYER_NOT_LEADER, null, null));
         }
         List<String> team = new ArrayList<>();

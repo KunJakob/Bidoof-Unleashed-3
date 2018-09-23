@@ -51,8 +51,8 @@ public class BU3ServiceImpl implements BU3Service {
 	}
 
 	@Override
-	public Map<Gym, Map<UUID, EnumLeaderType>> getAllLeaders() {
-		Map<Gym, Map<UUID, EnumLeaderType>> leaders = Maps.newHashMap();
+	public Map<Gym, List<UUID>> getAllLeaders() {
+		Map<Gym, List<UUID>> leaders = Maps.newHashMap();
 		for(Gym gym : this.getAllGyms()) {
 			leaders.put(gym, gym.getLeaders());
 		}
@@ -61,13 +61,13 @@ public class BU3ServiceImpl implements BU3Service {
 	}
 
 	@Override
-	public Optional<Map<UUID, EnumLeaderType>> getLeadersForGym(String name) {
+	public Optional<List<UUID>> getLeadersForGym(String name) {
 		Optional<Gym> target = this.getAllGyms().stream().filter(gym -> gym.getName().equalsIgnoreCase(name)).findAny();
 		return target.map(Gym::getLeaders);
 	}
 
 	@Override
-	public Map<UUID, EnumLeaderType> getLeadersForGym(Gym gym) {
+	public List<UUID> getLeadersForGym(Gym gym) {
 		return gym.getLeaders();
 	}
 

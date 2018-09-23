@@ -45,7 +45,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 ext {
-    pluginversion = '0.13.4-BETA'
+    pluginversion = '0.13.5-BETA'
     spongeapiversion = '7.1.0-SNAPSHOT'
     completeversion = "S${spongeapiversion.substring(0, 5)}-${pluginversion}"
 }
@@ -66,11 +66,6 @@ dependencies {
 	compile "org.projectlombok:lombok:1.18.0"
 	compile group: 'com.zaxxer', name: 'HikariCP', version: '2.5.1'
     testCompile "junit:junit:4.11"
-}
-
-configurations {
-    shade
-    compile.extendsFrom shade
 }
 
 //Fix forges AT breaking everything because the AT checker is stupid

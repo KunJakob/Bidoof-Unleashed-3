@@ -24,6 +24,11 @@ public class EliteFour implements BU3Battlable {
 	}
 
 	@Override
+	public boolean isReady() {
+		return false;
+	}
+
+	@Override
 	public boolean canChallenge(Player player) {
 		return false;
 	}

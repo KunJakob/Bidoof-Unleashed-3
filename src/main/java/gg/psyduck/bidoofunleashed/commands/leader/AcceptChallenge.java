@@ -73,7 +73,7 @@ public class AcceptChallenge extends SpongeCommand {
 
 		Gym gym = args.<Gym>getOne(GYM).get();
 		if(gym != null) {
-			if(!gym.getLeaders().keySet().contains(player.getUniqueId())) {
+			if(!gym.getLeaders().contains(player.getUniqueId())) {
 				throw new CommandException(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.PLAYER_NOT_LEADER_OF_GYM, null, null));
 			}
 

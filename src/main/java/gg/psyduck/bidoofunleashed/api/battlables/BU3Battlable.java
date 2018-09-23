@@ -61,6 +61,16 @@ public interface BU3Battlable {
 	boolean checkCooldown(Player player);
 
 	/**
+	 * Checks whether the implementing instance has been entirely setup. In other words, is there any detail missing
+	 * that would prevent the implementation as expected?
+	 *
+	 * Basically, this algorithm is just a bunch of null checks along with any additional parameter checks.
+	 *
+	 * @return True if the implementation is ready, false otherwise
+	 */
+	boolean isReady();
+
+	/**
 	 * States whether or not a player can challenge the implementing instance.
 	 *
 	 * @param player The player in question

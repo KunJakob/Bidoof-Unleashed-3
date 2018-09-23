@@ -44,7 +44,7 @@ public interface BU3Service {
 	 *
 	 * @return A mapping of leaders, by UUID, to their respective gyms.
 	 */
-	Map<Gym, Map<UUID, EnumLeaderType>> getAllLeaders();
+	Map<Gym, List<UUID>> getAllLeaders();
 
 	/**
 	 * Fetches the set of leaders, by their UUID, for a gym with the specified name.
@@ -55,7 +55,7 @@ public interface BU3Service {
 	 * @return A mapping containing leader UUIDs, along with their roles. If the gym
 	 * specified doesn't exist, however, an empty Optional.
 	 */
-	Optional<Map<UUID, EnumLeaderType>> getLeadersForGym(String name);
+	Optional<List<UUID>> getLeadersForGym(String name);
 
 	/**
 	 * Fetches the set of leaders, by their UUID, for the specified gym.
@@ -63,7 +63,7 @@ public interface BU3Service {
 	 * @param gym The gym to fetch against
 	 * @return A mapping containing leader UUIDs, along with their roles.
 	 */
-	Map<UUID, EnumLeaderType> getLeadersForGym(Gym gym);
+	List<UUID> getLeadersForGym(Gym gym);
 
 	/**
 	 * Adds a gym to the Storage Provider, as well as the loaded cache of gyms.

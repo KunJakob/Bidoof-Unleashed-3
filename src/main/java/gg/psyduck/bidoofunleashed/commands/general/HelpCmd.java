@@ -12,6 +12,8 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.HoverAction;
+import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 
 import java.util.List;
@@ -50,7 +52,7 @@ public class HelpCmd extends SpongeCommand {
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 		PaginationList list = PaginationList.builder()
 				.title(Text.of(TextColors.YELLOW, "Bidoof Unleashed Help"))
-				.contents(this.getUsage(reference))
+				.contents(this.getUsage(src, reference))
 				.build();
 		list.sendTo(src);
 
@@ -63,11 +65,14 @@ public class HelpCmd extends SpongeCommand {
 	 * @param cmd The command to parse
 	 * @return A list of text representing every command's usage.
 	 */
-	private List<Text> getUsage(SpongeCommand cmd) {
+	private List<Text> getUsage(CommandSource src, SpongeCommand cmd) {
 		List<Text> result = Lists.newArrayList();
-		result.add(cmd.getUsage());
+		Text x = Text.builder(cmd.getUsage(), "").onHover(TextActions.showText(cmd.getDescription())).build();
+		result.add(x);
 		for(SpongeCommand child : cmd.getSubCommands()) {
-			result.addAll(this.getUsage(child));
+			if(src.hasPermission(child.getPermission())) {
+				result.addAll(this.getUsage(src, child));
+			}
 		}
 
 		return result;

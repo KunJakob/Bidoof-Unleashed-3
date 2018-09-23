@@ -31,7 +31,7 @@ import org.spongepowered.api.text.Text;
 
 import java.util.Optional;
 
-@Aliases({"addgymleader", "agl"})
+@Aliases({"addgymleader", "agl", "addleader", "al"})
 @Permission(admin = true)
 public class AddGymLeaderCommand extends SpongeCommand {
 
@@ -93,11 +93,11 @@ public class AddGymLeaderCommand extends SpongeCommand {
 	        npc.setStartRotationYaw(180);
 	        npc.setEncounterMode(EnumEncounterMode.Unlimited);
 	        Pixelmon.proxy.spawnEntitySafely(npc, (World) world.orElseGet(((Player) src)::getWorld));
-	        gym.addLeader(npc.getUniqueID(), EnumLeaderType.NPC);
+	        gym.addNPCLeader(npc);
         } else {
         	User user = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(leader).orElseThrow(() -> new CommandException(Text.of("Unable to find a player by that name...")));
 	        BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(user.getUniqueId()).setRole(Roles.LEADER);
-	        gym.addLeader(user.getUniqueId(), EnumLeaderType.PLAYER);
+	        gym.addPlayerLeader(user.getUniqueId());
         }
         BidoofUnleashed.getInstance().getStorage().updateGym(gym);
         return CommandResult.success();

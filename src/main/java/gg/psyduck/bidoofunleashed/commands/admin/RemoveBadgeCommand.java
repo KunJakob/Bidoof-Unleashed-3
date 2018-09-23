@@ -63,7 +63,7 @@ public class RemoveBadgeCommand extends SpongeCommand {
         Player player = (Player) src;
         Player target = (Player) args.getOne("target").get();
         Gym gym = (Gym) args.getOne("gym").get();
-        if (!gym.getLeaders().containsKey(player.getUniqueId())) {
+        if (!gym.getLeaders().contains(player.getUniqueId())) {
             throw new CommandException(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.PLAYER_NOT_LEADER, null, null));
         }
 

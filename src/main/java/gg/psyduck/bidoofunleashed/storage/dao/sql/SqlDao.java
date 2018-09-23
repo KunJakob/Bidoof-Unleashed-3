@@ -23,11 +23,11 @@ public class SqlDao extends AbstractBU3Dao {
 
 	private static final String ADD_PLAYERDATA = "INSERT INTO `{prefix}player_data` (uuid, content) VALUES ('%s', '%s')";
 	private static final String UPDATE_PLAYERDATA = "UPDATE `{prefix}player_data` SET content = '%s' WHERE uuid = '%s'";
-	private static final String ADD_GYM = "INSERT INTO `{prefix}gyms` (name, content) VALUES ('%s', '%s')";
-	private static final String UPDATE_GYM = "UPDATE `{prefix}gyms` SET content = '%s' WHERE name = '%s'";
-	private static final String GET_PLAYERDATA = "SELECT * FROM `{prefix}player_data` WHERE UUID='%s'";
+	private static final String ADD_GYM = "INSERT INTO `{prefix}gyms` (uuid, content) VALUES ('%s', '%s')";
+	private static final String UPDATE_GYM = "UPDATE `{prefix}gyms` SET content = '%s' WHERE uuid = '%s'";
+	private static final String GET_PLAYERDATA = "SELECT * FROM `{prefix}player_data` WHERE uuid='%s'";
 	private static final String GET_GYMS = "SELECT * FROM `{prefix}gyms`";
-	private static final String DELETE_GYMS = "DELETE FROM `{prefix}gyms` WHERE NAME='%s'";
+	private static final String DELETE_GYMS = "DELETE FROM `{prefix}gyms` WHERE uuid='%s'";
 
 	@Getter private final AbstractSQLConnectionFactory provider;
 	@Getter private final Function<String, String> prefix;
@@ -133,7 +133,7 @@ public class SqlDao extends AbstractBU3Dao {
 	@Override
 	public void addGym(Gym gym) throws Exception {
 		Connection connection = provider.getConnection();
-		String stmt = String.format(prefix.apply(ADD_GYM), gym.getName(), BidoofUnleashed.prettyGson.toJson(gym));
+		String stmt = String.format(prefix.apply(ADD_GYM), gym.getUuid(), BidoofUnleashed.prettyGson.toJson(gym));
 
 		PreparedStatement ps = connection.prepareStatement(stmt);
 		ps.executeUpdate();
@@ -142,7 +142,7 @@ public class SqlDao extends AbstractBU3Dao {
 	@Override
 	public void updateGym(Gym gym) throws Exception {
 		Connection connection = provider.getConnection();
-		String stmt = String.format(prefix.apply(UPDATE_GYM), BidoofUnleashed.prettyGson.toJson(gym), gym.getName());
+		String stmt = String.format(prefix.apply(UPDATE_GYM), BidoofUnleashed.prettyGson.toJson(gym), gym.getUuid());
 
 		PreparedStatement ps = connection.prepareStatement(stmt);
 		ps.executeUpdate();

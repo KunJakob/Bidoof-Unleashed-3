@@ -2,6 +2,7 @@ package gg.psyduck.bidoofunleashed.gyms;
 
 import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.util.Date;
@@ -33,6 +34,10 @@ public class Badge {
 	/** The winning team for the player */
 	private final List<String> team;
 
+	public Badge() {
+		this("Default", "minecraft:barrier");
+	}
+
 	public Badge(String name, String itemType) {
 		this.name = name;
 		this.itemType = itemType;
@@ -58,6 +63,14 @@ public class Badge {
 		this.npcName = npcName;
 		this.obtained = Date.from(Instant.now());
 		this.team = team;
+	}
+
+	public Badge name(String name) {
+		return new Badge(name, this.itemType);
+	}
+
+	public Badge itemType(String itemType) {
+		return new Badge(this.name, itemType);
 	}
 
 	public Badge fill(UUID leader, List<String> team) {
