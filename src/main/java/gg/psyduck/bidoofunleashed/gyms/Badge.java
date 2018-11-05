@@ -31,8 +31,7 @@ public class Badge {
 	/** The date the badge was obtained */
 	private final Date obtained;
 
-	/** The winning team for the player */
-	private final List<String> team;
+	private Integer timesDefeated;
 
 	public Badge() {
 		this("Default", "minecraft:barrier");
@@ -44,25 +43,25 @@ public class Badge {
 		this.leader = null;
 		this.npcName = null;
 		this.obtained = null;
-		this.team = null;
+		this.timesDefeated = null;
 	}
 
-	private Badge(String name, String itemType, UUID leader, List<String> team) {
+	private Badge(String name, String itemType, UUID leader) {
 		this.name = name;
 		this.itemType = itemType;
 		this.leader = leader;
 		this.npcName = null;
 		this.obtained = Date.from(Instant.now());
-		this.team = team;
+		this.timesDefeated = 0;
 	}
 
-	private Badge(String name, String itemType, String npcName, List<String> team) {
+	private Badge(String name, String itemType, String npcName) {
 		this.name = name;
 		this.itemType = itemType;
 		this.leader = null;
 		this.npcName = npcName;
 		this.obtained = Date.from(Instant.now());
-		this.team = team;
+		this.timesDefeated = 0;
 	}
 
 	public Badge name(String name) {
@@ -73,11 +72,15 @@ public class Badge {
 		return new Badge(this.name, itemType);
 	}
 
-	public Badge fill(UUID leader, List<String> team) {
-		return new Badge(this.name, this.itemType, leader, team);
+	public Badge fill(UUID leader) {
+		return new Badge(this.name, this.itemType, leader);
 	}
 
-	public Badge fill(String npcName, List<String> team) {
-		return new Badge(this.name, this.itemType, npcName, team);
+	public Badge fill(String npcName) {
+		return new Badge(this.name, this.itemType, npcName);
+	}
+
+	public void incWins() {
+		++this.timesDefeated;
 	}
 }

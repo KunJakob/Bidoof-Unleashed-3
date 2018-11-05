@@ -14,7 +14,7 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 
-@Aliases("gymlist")
+@Aliases({"gyms", "gymlist"})
 public class GymListCommand extends SpongeCommand {
 
     public GymListCommand(SpongePlugin plugin) {
@@ -33,7 +33,7 @@ public class GymListCommand extends SpongeCommand {
 
     @Override
     public Text getUsage() {
-        return Text.of("/bu3 gymlist");
+        return Text.of("/bu3 gyms");
     }
 
     @Override
@@ -47,7 +47,7 @@ public class GymListCommand extends SpongeCommand {
         	throw new CommandException(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.SOURCE_NOT_PLAYER, null, null));
         }
 
-	    new GymListUI((Player) src).open((Player) src, 1);
+	    new GymListUI((Player) src).open((Player) src);
         return CommandResult.success();
     }
 }

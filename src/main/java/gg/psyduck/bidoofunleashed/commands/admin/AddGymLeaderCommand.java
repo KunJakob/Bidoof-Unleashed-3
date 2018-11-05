@@ -12,6 +12,7 @@ import com.pixelmonmod.pixelmon.enums.EnumEncounterMode;
 import com.pixelmonmod.pixelmon.enums.EnumTrainerAI;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import gg.psyduck.bidoofunleashed.api.enums.EnumLeaderType;
+import gg.psyduck.bidoofunleashed.commands.arguments.GymArg;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
 import gg.psyduck.bidoofunleashed.players.Roles;
@@ -42,7 +43,7 @@ public class AddGymLeaderCommand extends SpongeCommand {
     @Override
     public CommandElement[] getArgs() {
         return new CommandElement[] {
-                GenericArguments.string(Text.of("gym-name")),
+        		new GymArg(Text.of("gym-name")),
                 GenericArguments.string(Text.of("leader")),
 		        GenericArguments.optional(GenericArguments.string(Text.of("world"))),
 		        GenericArguments.optional(GenericArguments.vector3d(Text.of("location")))
@@ -66,11 +67,8 @@ public class AddGymLeaderCommand extends SpongeCommand {
 
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-        String name = (String) args.getOne("gym-name").get();
+        Gym gym = args.<Gym>getOne("gym-name").get();
         String leader = args.<String>getOne("leader").get();
-
-        Gym gym = BidoofUnleashed.getInstance().getDataRegistry().getGyms().stream().filter(g -> g.getName().equals(name)).findFirst()
-                .orElseThrow(() -> new CommandException(Text.of("Invalid gym name")));
 
         if(leader.equalsIgnoreCase("npc")) {
 	        Optional<org.spongepowered.api.world.World> world = args.<String>getOne(Text.of("world")).map(w -> Sponge.getServer().getWorld(w).orElse(null));
@@ -97,8 +95,10 @@ public class AddGymLeaderCommand extends SpongeCommand {
         } else {
         	User user = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(leader).orElseThrow(() -> new CommandException(Text.of("Unable to find a player by that name...")));
 	        BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(user.getUniqueId()).setRole(Roles.LEADER);
-	        gym.addPlayerLeader(user.getUniqueId());
+	        gym.addLeader(user.getUniqueId());
         }
+
+        src.sendMessages(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.COMMANDS_ADD_LEADER, null, null));
         BidoofUnleashed.getInstance().getStorage().updateGym(gym);
         return CommandResult.success();
     }

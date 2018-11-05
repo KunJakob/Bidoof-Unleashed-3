@@ -3,6 +3,7 @@ package gg.psyduck.bidoofunleashed.impl.requirements;
 import com.google.common.collect.Maps;
 import com.nickimpact.impactor.json.Typing;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
+import gg.psyduck.bidoofunleashed.api.battlables.BU3Battlable;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
@@ -15,6 +16,7 @@ import org.spongepowered.api.text.Text;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Typing("gym")
 @NoArgsConstructor
@@ -33,12 +35,12 @@ public class GymRequirement implements Requirement {
 	}
 
 	@Override
-	public boolean passes(Gym gym, Player player) {
+	public boolean passes(BU3Battlable battlable, Player player) {
 		return BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(player.getUniqueId()).getBadges().stream().anyMatch(badge -> badge.getName().equalsIgnoreCase(requirement.getBadge().getName()));
 	}
 
 	@Override
-	public void onInvalid(Gym gym, Player player) {
+	public void onInvalid(BU3Battlable battlable, Player player) {
 		Map<String, Function<CommandSource, Optional<Text>>> tokens = Maps.newHashMap();
 		tokens.put("bu3_badge", s -> Optional.of(Text.of(requirement.getBadge().getName())));
 		Text parsed = MessageUtils.fetchAndParseMsg(player, MsgConfigKeys.REQUIREMENT_GYM, tokens, null);
@@ -52,8 +54,8 @@ public class GymRequirement implements Requirement {
 		}
 
 		String gym = args[0];
-		for(Gym g : BidoofUnleashed.getInstance().getDataRegistry().getGyms()) {
-			if(g.getId().equalsIgnoreCase(gym)) {
+		for(Gym g : BidoofUnleashed.getInstance().getDataRegistry().getBattlables().values().stream().filter(base -> base instanceof Gym).map(base -> (Gym) base).collect(Collectors.toList())) {
+			if(g.getName().equalsIgnoreCase(gym)) {
 				return new GymRequirement(g);
 			}
 		}

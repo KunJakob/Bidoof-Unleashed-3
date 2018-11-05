@@ -8,6 +8,7 @@ import com.pixelmonmod.pixelmon.enums.EnumPokemon;
 import com.pixelmonmod.pixelmon.storage.NbtKeys;
 import com.pixelmonmod.pixelmon.storage.PixelmonStorage;
 import com.pixelmonmod.pixelmon.storage.PlayerStorage;
+import gg.psyduck.bidoofunleashed.api.battlables.BU3Battlable;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
@@ -30,7 +31,7 @@ public class EvolutionRequirement implements Requirement {
 	}
 
 	@Override
-	public boolean passes(Gym gym, Player player) throws Exception {
+	public boolean passes(BU3Battlable battlable, Player player) throws Exception {
 		PlayerStorage storage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) player).orElseThrow(() -> new Exception("Missing player storage data for " + player.getName()));
 		for(NBTTagCompound nbt : storage.partyPokemon) {
 			EnumPokemon species = EnumPokemon.getFromNameAnyCase(nbt.getString(NbtKeys.NAME));
@@ -55,7 +56,7 @@ public class EvolutionRequirement implements Requirement {
 	}
 
 	@Override
-	public void onInvalid(Gym gym, Player player) {
+	public void onInvalid(BU3Battlable battlable, Player player) {
 		player.sendMessage(MessageUtils.fetchAndParseMsg(player, MsgConfigKeys.REQUIREMENT_EVOLUTION, null, null));
 	}
 

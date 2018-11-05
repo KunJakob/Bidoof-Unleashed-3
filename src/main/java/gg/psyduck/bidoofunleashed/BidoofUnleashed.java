@@ -1,32 +1,49 @@
 package gg.psyduck.bidoofunleashed;
 
-import java.io.*;
-import java.nio.file.Path;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Optional;
-
+import com.google.common.collect.Lists;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.inject.Inject;
+import com.nickimpact.impactor.CoreInfo;
 import com.nickimpact.impactor.api.commands.SpongeCommand;
+import com.nickimpact.impactor.api.configuration.AbstractConfig;
+import com.nickimpact.impactor.api.configuration.AbstractConfigAdapter;
+import com.nickimpact.impactor.api.configuration.ConfigBase;
+import com.nickimpact.impactor.api.logger.Logger;
+import com.nickimpact.impactor.api.plugins.PluginInfo;
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
 import com.nickimpact.impactor.api.rewards.Reward;
 import com.nickimpact.impactor.api.rewards.impl.CommandReward;
 import com.nickimpact.impactor.api.rewards.impl.CommandSeriesReward;
 import com.nickimpact.impactor.api.services.plan.PlanData;
 import com.nickimpact.impactor.api.storage.StorageType;
+import com.nickimpact.impactor.logging.ConsoleLogger;
+import com.nickimpact.impactor.logging.SpongeLogger;
 import com.pixelmonmod.pixelmon.Pixelmon;
 import com.pixelmonmod.pixelmon.api.pokemon.PokemonSpec;
+import com.pixelmonmod.pixelmon.api.pokemon.SpecValue;
+import com.pixelmonmod.pixelmon.battles.attacks.Attack;
+import com.pixelmonmod.pixelmon.entities.pixelmon.stats.AttackTypeAdapter;
+import com.pixelmonmod.pixelmon.entities.pixelmon.stats.evolution.EvoConditionTypeAdapter;
+import com.pixelmonmod.pixelmon.entities.pixelmon.stats.evolution.Evolution;
+import com.pixelmonmod.pixelmon.entities.pixelmon.stats.evolution.EvolutionTypeAdapter;
+import com.pixelmonmod.pixelmon.entities.pixelmon.stats.evolution.conditions.EvoCondition;
 import gg.psyduck.bidoofunleashed.api.BU3Service;
+import gg.psyduck.bidoofunleashed.api.battlables.BU3BattleBase;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
 import gg.psyduck.bidoofunleashed.api.gyms.json.RequirementAdapter;
+import gg.psyduck.bidoofunleashed.api.pixelmon.custom.Customs;
 import gg.psyduck.bidoofunleashed.api.pixelmon.specs.HeldItemSpec;
 import gg.psyduck.bidoofunleashed.api.pixelmon.specs.MovesetSpec;
 import gg.psyduck.bidoofunleashed.api.pixelmon.specs.NicknameSpec;
-import gg.psyduck.bidoofunleashed.gyms.Gym;
 import gg.psyduck.bidoofunleashed.commands.BU3Command;
 import gg.psyduck.bidoofunleashed.commands.general.CheckBadgeCommand;
 import gg.psyduck.bidoofunleashed.config.ConfigKeys;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
 import gg.psyduck.bidoofunleashed.data.DataRegistry;
+import gg.psyduck.bidoofunleashed.e4.E4Stage;
+import gg.psyduck.bidoofunleashed.e4.EliteFour;
+import gg.psyduck.bidoofunleashed.gyms.Gym;
 import gg.psyduck.bidoofunleashed.impl.BU3ServiceImpl;
 import gg.psyduck.bidoofunleashed.impl.requirements.EvolutionRequirement;
 import gg.psyduck.bidoofunleashed.impl.requirements.GymRequirement;
@@ -37,11 +54,13 @@ import gg.psyduck.bidoofunleashed.listeners.BattleListener;
 import gg.psyduck.bidoofunleashed.listeners.ClientListener;
 import gg.psyduck.bidoofunleashed.rewards.ChancePokemonReward;
 import gg.psyduck.bidoofunleashed.rewards.ItemReward;
-import gg.psyduck.bidoofunleashed.rewards.money.MoneyReward;
 import gg.psyduck.bidoofunleashed.rewards.PokemonReward;
 import gg.psyduck.bidoofunleashed.rewards.json.RewardAdapter;
+import gg.psyduck.bidoofunleashed.rewards.money.MoneyReward;
 import gg.psyduck.bidoofunleashed.storage.BU3Storage;
 import gg.psyduck.bidoofunleashed.storage.StorageFactory;
+import gg.psyduck.bidoofunleashed.utils.MessageUtils;
+import lombok.Getter;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
@@ -60,24 +79,17 @@ import org.spongepowered.api.service.economy.EconomyService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
-import com.google.common.collect.Lists;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.inject.Inject;
-import com.nickimpact.impactor.CoreInfo;
-import com.nickimpact.impactor.api.configuration.AbstractConfig;
-import com.nickimpact.impactor.api.configuration.AbstractConfigAdapter;
-import com.nickimpact.impactor.api.configuration.ConfigBase;
-import com.nickimpact.impactor.api.logger.Logger;
-import com.nickimpact.impactor.api.plugins.PluginInfo;
-import com.nickimpact.impactor.logging.ConsoleLogger;
-import com.nickimpact.impactor.logging.SpongeLogger;
-
-import lombok.Getter;
+import java.io.*;
+import java.nio.file.Path;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Getter
-@Plugin(id = BidoofInfo.ID, name = BidoofInfo.NAME, version = BidoofInfo.VERSION,
-    description = BidoofInfo.DESCRIPTION, dependencies = {@Dependency(id = CoreInfo.ID), @Dependency(id = "nucleus")})
+@Plugin(id = BidoofInfo.ID, name = BidoofInfo.NAME, version = BidoofInfo.VERSION, description = BidoofInfo.DESCRIPTION, dependencies = {@Dependency(id = CoreInfo.ID), @Dependency(id = "nucleus")})
 public class BidoofUnleashed extends SpongePlugin {
 
     @Getter
@@ -125,6 +137,10 @@ public class BidoofUnleashed extends SpongePlugin {
 		prettyGson = new GsonBuilder()
 				.registerTypeAdapter(Requirement.class, new RequirementAdapter(this))
 				.registerTypeAdapter(Reward.class, new RewardAdapter(this))
+				.registerTypeAdapter(Evolution.class, new EvolutionTypeAdapter())
+				.registerTypeAdapter(EvoCondition.class, new EvoConditionTypeAdapter())
+				.registerTypeAdapter(Attack.class, new AttackTypeAdapter())
+				.registerTypeAdapter(SpecValue.class, PokemonSpec.SPEC_VALUE_TYPE_ADAPTER)
 				.setPrettyPrinting()
 				.create();
 		Sponge.getServiceManager().setProvider(this, BU3Service.class, (service = new BU3ServiceImpl()));
@@ -164,13 +180,24 @@ public class BidoofUnleashed extends SpongePlugin {
 		    new TokenService();
 
 		    Sponge.getEventManager().registerListeners(this, new ClientListener());
-		    Pixelmon.EVENT_BUS.register(new BattleListener());
+
+		    BattleListener bl = new BattleListener();
+		    Sponge.getEventManager().registerListeners(this, bl);
+		    Pixelmon.EVENT_BUS.register(bl);
 
 		    //commands
 		    new BU3Command(this).register(this);
 		    new CheckBadgeCommand(this).register(this);
 
+		    // Testing
+		    new Customs.TestSpawn(this).register(this);
+		    new Customs.TestCreate(this).register(this);
+
 		    this.storage = StorageFactory.getInstance(this, StorageType.H2);
+		    this.storage.fetchGyms().thenAccept(gyms -> this.dataRegistry.getBattlables().putAll(gyms));
+		    this.storage.fetchE4().thenAccept(e4s -> e4s.forEach((key, value) -> {
+			    this.dataRegistry.getBattlables().put(key, value);
+		    }));
 	    } catch (Exception exc) {
 		    this.error = exc;
 		    disable();
@@ -180,7 +207,12 @@ public class BidoofUnleashed extends SpongePlugin {
 
     @Listener
     public void onServerStart(GameStartedServerEvent e) {
-	    this.storage.fetchGyms().thenAccept(gyms -> gyms.forEach(gym -> this.dataRegistry.getGyms().add(gym)));
+	    //Testing
+	    try {
+		    Customs.readAndInit();
+	    } catch (Exception e1) {
+		    e1.printStackTrace();
+	    }
     }
 
 	@Listener
@@ -281,14 +313,28 @@ public class BidoofUnleashed extends SpongePlugin {
 
 	@Override
 	public void onReload() {
-		// TODO - Fully reload a Gym, including things like level cap and rules. Right now, we basically just
-		// TODO - reload the team pools.
-		for(Gym gym : this.dataRegistry.getGyms()) {
-			try {
-				gym.initialize();
-			} catch (Exception e) {
-				this.logger.error("Unable to reload Gym: " + gym.getName());
+		List<UUID> queued = Lists.newArrayList();
+		for(BU3BattleBase base : this.dataRegistry.getBattlables().values()) {
+			if(base instanceof Gym) {
+				((Gym) base).getQueue().stream().filter(queued::contains).forEach(queued::add);
+			} else {
+				EliteFour e4 = (EliteFour) base;
+				for(E4Stage stage : e4.getStages()) {
+					stage.getQueue().stream().filter(queued::contains).forEach(queued::add);
+				}
+
+				e4.getChampion().getQueue().stream().filter(queued::contains).forEach(queued::add);
 			}
+		}
+
+		this.dataRegistry.getBattlables().clear();
+		this.storage.fetchGyms().thenAccept(gyms -> this.dataRegistry.getBattlables().putAll(gyms));
+		this.storage.fetchE4().thenAccept(e4s -> e4s.forEach((key, value) -> {
+			this.dataRegistry.getBattlables().put(key, value);
+		}));
+
+		for(UUID uuid : queued) {
+			Sponge.getServer().getPlayer(uuid).ifPresent(player -> player.sendMessage(MessageUtils.fetchAndParseMsg(player, MsgConfigKeys.MISC_RELOAD, null, null)));
 		}
 	}
 

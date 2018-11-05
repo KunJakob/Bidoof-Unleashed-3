@@ -74,21 +74,8 @@ public class GiveBadgeCommand extends SpongeCommand {
         if (!gym.getLeaders().contains(player.getUniqueId())) {
             throw new CommandException(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.PLAYER_NOT_LEADER, null, null));
         }
-        List<String> team = new ArrayList<>();
 
-        Optional<PlayerStorage> optStorage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) target);
-        if (!optStorage.isPresent()) {
-            throw new CommandException(Text.of("Storage not found"));
-        }
-
-        PlayerStorage storage = optStorage.get();
-
-        for (NBTTagCompound nbt : storage.partyPokemon) {
-            String name =  nbt.getString(NbtKeys.NAME);
-            team.add(name);
-        }
-
-        Badge badge = gym.getBadge().fill(player.getUniqueId(), team);
+        Badge badge = gym.getBadge().fill(player.getUniqueId());
         PlayerData data = BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(target.getUniqueId());
         data.awardBadge(badge);
         BidoofUnleashed.getInstance().getStorage().updatePlayerData(data);

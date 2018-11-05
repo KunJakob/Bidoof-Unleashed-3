@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.nickimpact.impactor.api.configuration.ConfigKey;
 import com.nickimpact.impactor.api.logger.Logger;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
+import org.apache.commons.lang3.StringUtils;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
@@ -85,5 +86,16 @@ public class MessageUtils {
 				tokens,
 				variables
 		);
+	}
+
+	public static String titlize(String input) {
+		String[] sep = input.split("\\s+");
+		StringBuilder result = new StringBuilder();
+		for(String str : sep) {
+			result.append(str.substring(0, 1).toUpperCase()).append(str.substring(1).toLowerCase()).append(" ");
+		}
+		result.delete(result.length() - 1, result.length());
+
+		return result.toString();
 	}
 }

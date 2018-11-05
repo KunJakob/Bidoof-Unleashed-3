@@ -8,6 +8,7 @@ import gg.psyduck.bidoofunleashed.api.BU3Service;
 import gg.psyduck.bidoofunleashed.api.enums.EnumLeaderType;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
 import gg.psyduck.bidoofunleashed.api.gyms.json.RequirementAdapter;
+import gg.psyduck.bidoofunleashed.e4.EliteFour;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
 import gg.psyduck.bidoofunleashed.players.PlayerData;
 import lombok.Getter;
@@ -19,6 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 @Getter
 public class BU3ServiceImpl implements BU3Service {
@@ -42,7 +44,7 @@ public class BU3ServiceImpl implements BU3Service {
 
 	@Override
 	public List<Gym> getAllGyms() {
-		return BidoofUnleashed.getInstance().getDataRegistry().getGyms();
+		return BidoofUnleashed.getInstance().getDataRegistry().getBattlables().values().stream().filter(base -> base instanceof Gym).map(base -> (Gym) base).collect(Collectors.toList());
 	}
 
 	@Override
@@ -73,18 +75,29 @@ public class BU3ServiceImpl implements BU3Service {
 
 	@Override
 	public void addGym(Gym gym) {
-		BidoofUnleashed.getInstance().getDataRegistry().getGyms().add(gym);
+		BidoofUnleashed.getInstance().getDataRegistry().getBattlables().put(gym.getCategory(), gym);
 		BidoofUnleashed.getInstance().getStorage().addGym(gym);
 	}
 
 	@Override
 	public boolean purgeGym(Gym gym) {
-		if(BidoofUnleashed.getInstance().getDataRegistry().getGyms().contains(gym)) {
-			BidoofUnleashed.getInstance().getDataRegistry().getGyms().remove(gym);
+		if(BidoofUnleashed.getInstance().getDataRegistry().getBattlables().get(gym.getCategory()).contains(gym)) {
+			BidoofUnleashed.getInstance().getDataRegistry().getBattlables().get(gym.getCategory()).remove(gym);
 			BidoofUnleashed.getInstance().getStorage().removeGym(gym);
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public List<EliteFour> getAllEliteFour() {
+		return BidoofUnleashed.getInstance().getDataRegistry().getBattlables().values().stream().filter(base -> base instanceof EliteFour).map(base -> (EliteFour) base).collect(Collectors.toList());
+	}
+
+	@Override
+	public void addE4(EliteFour eliteFour) {
+		BidoofUnleashed.getInstance().getDataRegistry().getBattlables().put(eliteFour.getCategory(), eliteFour);
+		BidoofUnleashed.getInstance().getStorage().addE4(eliteFour);
 	}
 
 	@Override

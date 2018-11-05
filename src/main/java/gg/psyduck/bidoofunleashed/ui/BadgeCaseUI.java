@@ -16,6 +16,7 @@ import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.property.InventoryDimension;
 import org.spongepowered.api.item.inventory.property.InventoryTitle;
+import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextSerializers;
@@ -78,16 +79,12 @@ public class BadgeCaseUI implements PageDisplayable {
 
 		PlayerData pd = BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(this.player.getUniqueId());
 		List<Badge> badges = pd.getBadges();
+		UserStorageService service = Sponge.getServiceManager().provideUnchecked(UserStorageService.class);
 		for(Badge badge : badges) {
 			List<Text> lore = Lists.newArrayList(
 					Text.of(TextColors.GRAY, "Earned: ", TextColors.YELLOW, sdf.format(badge.getObtained())),
-					Text.of(TextColors.GRAY, "Leader: ", TextColors.YELLOW, badge.getLeader()),
-					Text.EMPTY,
-					Text.of(TextColors.GRAY, "Team:")
+					Text.of(TextColors.GRAY, "Leader: ", TextColors.YELLOW, badge.getLeader() == null ? badge.getNpcName() : service.get(badge.getLeader()).get().getName())
 			);
-			for(String member : badge.getTeam()) {
-				lore.add(TextSerializers.FORMATTING_CODE.deserialize(member));
-			}
 
 			ItemStack rep = ItemStack.builder()
 					.itemType(Sponge.getRegistry().getType(ItemType.class, badge.getItemType()).orElse(ItemTypes.BARRIER))

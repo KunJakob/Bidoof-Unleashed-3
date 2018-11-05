@@ -63,9 +63,8 @@ public class EditGymCmd extends SpongeCommand {
 		String spec = args.<String>getOne(SPEC).get();
 
 		try {
-			Gym edit = ExistingGymSpec.parseValue(src, gym, spec);
 			String prior = gym.getName();
-			gym.copy(edit);
+			ExistingGymSpec.parseValue(src, gym, spec);
 			if(gym.getName().equalsIgnoreCase(prior)) {
 				BidoofUnleashed.getInstance().getStorage().updateGym(gym);
 			} else {

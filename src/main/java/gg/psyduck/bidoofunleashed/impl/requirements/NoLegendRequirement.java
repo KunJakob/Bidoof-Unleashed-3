@@ -5,6 +5,7 @@ import com.pixelmonmod.pixelmon.enums.EnumPokemon;
 import com.pixelmonmod.pixelmon.storage.NbtKeys;
 import com.pixelmonmod.pixelmon.storage.PixelmonStorage;
 import com.pixelmonmod.pixelmon.storage.PlayerStorage;
+import gg.psyduck.bidoofunleashed.api.battlables.BU3Battlable;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
@@ -25,13 +26,13 @@ public class NoLegendRequirement implements Requirement {
 	}
 
 	@Override
-	public boolean passes(Gym gym, Player player) throws Exception {
+	public boolean passes(BU3Battlable battlable, Player player) throws Exception {
 		PlayerStorage storage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) player).orElseThrow(() -> new Exception("Critical error accessing pixelmon data for " + player.getName()));
 		return Arrays.stream(storage.partyPokemon).noneMatch(nbt -> EnumPokemon.legendaries.contains(nbt.getString(NbtKeys.NAME)));
 	}
 
 	@Override
-	public void onInvalid(Gym gym, Player player) {
+	public void onInvalid(BU3Battlable battlable, Player player) {
 		player.sendMessage(MessageUtils.fetchAndParseMsg(player, MsgConfigKeys.REQUIREMENT_LEGENDS, null, null));
 	}
 

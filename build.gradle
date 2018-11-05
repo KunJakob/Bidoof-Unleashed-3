@@ -5,6 +5,13 @@ buildscript {
             name = "forge"
             url = "http://files.minecraftforge.net/maven"
         }
+        maven {
+            url = "https://plugins.gradle.org/m2/"
+        }
+        maven {
+            name = 'sponge'
+            url = 'https://repo.spongepowered.org/maven'
+        }
     }
     dependencies {
 		classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
@@ -12,6 +19,7 @@ buildscript {
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'java'
+
 
 repositories {
 	mavenLocal()
@@ -45,7 +53,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 ext {
-    pluginversion = '0.13.5-BETA'
+    pluginversion = '0.14.0-BETA'
     spongeapiversion = '7.1.0-SNAPSHOT'
     completeversion = "S${spongeapiversion.substring(0, 5)}-${pluginversion}"
 }
@@ -60,7 +68,7 @@ minecraft {
 
 dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
-    compile 'org.spongepowered:spongeapi:7.1.0-SNAPSHOT'
+    compile 'org.spongepowered:spongeapi:7.1.0'
     compile 'io.github.nucleuspowered:nucleus-api:1.4.7-SNAPSHOT-S7.0'
     compile 'reforged:server:6.3.4@Pixelmon-1.12.2-6.3.4-server.jar'
 	compile "org.projectlombok:lombok:1.18.0"
@@ -75,7 +83,6 @@ jar {
     archiveName = "Bidoof Unleashed-${completeversion}.jar"
 }
 
-
 processResources
 {
     // replace stuff in mcmod.info, nothing else
@@ -85,7 +92,7 @@ processResources
         // replace version and mcversion
         expand 'version':project.version, 'mcversion':project.minecraft.version
     }
-       
+
     // copy everything else, thats not the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'

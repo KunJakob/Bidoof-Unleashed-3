@@ -36,6 +36,7 @@ public class TempTeamParticipant extends PlayerParticipant {
 				break;
 			}
 		}
+
 		if (!this.bc.simulateMode) {
 			pw.pokemon.catchInPokeball();
 			Optional<EntityPixelmon> newPokemonOptional = this.storage.getAlreadyExists(newPixelmonId, this.player.world);

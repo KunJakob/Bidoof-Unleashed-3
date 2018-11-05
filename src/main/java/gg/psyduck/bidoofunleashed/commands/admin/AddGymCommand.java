@@ -37,7 +37,7 @@ public class AddGymCommand extends SpongeCommand {
     public CommandElement[] getArgs() {
         return new CommandElement[] {
         		GenericArguments.string(NAME),
-        		GenericArguments.remainingJoinedStrings(SPEC)
+        		GenericArguments.optional(GenericArguments.remainingJoinedStrings(SPEC))
         };
     }
 
@@ -60,8 +60,8 @@ public class AddGymCommand extends SpongeCommand {
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 	    try {
 	    	String name = args.<String>getOne(NAME).get();
-		    Gym gym = NewGymSpec.parseValue(src, name, args.<String>getOne(SPEC).get());
-		    if(BidoofUnleashed.getInstance().getDataRegistry().getGyms().stream().anyMatch(g -> g.getName().equalsIgnoreCase(gym.getName()))) {
+		    Gym gym = NewGymSpec.parseValue(src, name, args.<String>getOne(SPEC).orElse(null));
+		    if(BidoofUnleashed.getInstance().getDataRegistry().getBattlables().values().stream().anyMatch(g -> g.getName().equalsIgnoreCase(gym.getName()))) {
 		    	throw new CommandException(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.COMMANDS_ADD_GYM_EXISTS, null, null));
 		    }
 

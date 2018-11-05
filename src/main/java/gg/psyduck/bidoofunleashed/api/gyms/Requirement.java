@@ -1,5 +1,6 @@
 package gg.psyduck.bidoofunleashed.api.gyms;
 
+import gg.psyduck.bidoofunleashed.api.battlables.BU3Battlable;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
 import org.spongepowered.api.entity.living.player.Player;
 
@@ -19,20 +20,20 @@ public interface Requirement {
 	/**
 	 * Specifies whether a player passes a certain requirement.
 	 *
-	 * @param gym The gym specifying the requirement
+	 * @param battlable The gym specifying the requirement
 	 * @param player The player attempting to challenge the gym
 	 * @return True if the player passes, false otherwise
 	 */
-	boolean passes(Gym gym, Player player) throws Exception;
+	boolean passes(BU3Battlable battlable, Player player) throws Exception;
 
 	/**
 	 * A method which should act as a informative bridge to the player, specifying
 	 * why they failed to meet a requirement.
 	 *
-	 * @param gym The gym specifying the requirement
+	 * @param battlable The gym specifying the requirement
 	 * @param player The player attempting to challenge the gym
 	 */
-	void onInvalid(Gym gym, Player player);
+	void onInvalid(BU3Battlable battlable, Player player);
 
 	/**
 	 * Given a argument array, supply the requirement with any needed fields. Most requirements will likely

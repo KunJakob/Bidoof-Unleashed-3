@@ -3,13 +3,17 @@ package gg.psyduck.bidoofunleashed.commands.general;
 import com.google.common.collect.Lists;
 import com.nickimpact.impactor.api.commands.SpongeCommand;
 import com.nickimpact.impactor.api.commands.annotations.Aliases;
+import com.nickimpact.impactor.api.commands.annotations.Permission;
+import com.nickimpact.impactor.api.plugins.IPlugin;
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
+import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import gg.psyduck.bidoofunleashed.commands.BU3Command;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
+import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.HoverAction;
@@ -70,11 +74,44 @@ public class HelpCmd extends SpongeCommand {
 		Text x = Text.builder(cmd.getUsage(), "").onHover(TextActions.showText(cmd.getDescription())).build();
 		result.add(x);
 		for(SpongeCommand child : cmd.getSubCommands()) {
-			if(src.hasPermission(child.getPermission())) {
+			if(!(src instanceof ConsoleSource) && src.hasPermission(this.buildPermission(BidoofUnleashed.getInstance(), child))) {
 				result.addAll(this.getUsage(src, child));
+			} else {
+				result.addAll(this.getUsage(src, child)); // Ignore permission check for console
 			}
 		}
 
 		return result;
+	}
+
+	private String buildPermission(IPlugin plugin, SpongeCommand cmd) {
+		String permission = plugin.getPluginInfo().getID() + ".command.";
+		if (this.getClass().isAnnotationPresent(Permission.class)) {
+			Permission p = cmd.getClass().getAnnotation(Permission.class);
+			if (p.admin()) {
+				permission = permission + "admin.";
+			}
+
+			if (!p.prefix().equals("")) {
+				permission = permission + p.prefix() + ".";
+			}
+
+			if (!p.value().equals("")) {
+				permission = permission + p.value();
+			} else {
+				permission = permission + cmd.getAllAliases().get(0).toLowerCase();
+			}
+
+			permission = permission + ".";
+			if (!p.suffix().equals("")) {
+				permission = permission + p.suffix();
+			} else {
+				permission = permission + "base";
+			}
+		} else {
+			permission = permission + cmd.getAllAliases().get(0).toLowerCase() + ".base";
+		}
+
+		return permission;
 	}
 }

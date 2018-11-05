@@ -12,6 +12,7 @@ import com.pixelmonmod.pixelmon.enums.forms.EnumUnown;
 import com.pixelmonmod.pixelmon.enums.forms.IEnumForm;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import gg.psyduck.bidoofunleashed.api.enums.EnumBattleType;
+import gg.psyduck.bidoofunleashed.api.exceptions.BattleStartException;
 import gg.psyduck.bidoofunleashed.api.pixelmon.specs.BU3PokemonSpec;
 import gg.psyduck.bidoofunleashed.config.ConfigKeys;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
@@ -135,7 +136,14 @@ public class GymPoolUI implements PageDisplayable {
 
 					challenger.sendMessage(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.MISC_CHALLENGE_BEGINNING, tokens, null));
 					leader.sendMessage(MessageUtils.fetchAndParseMsg(leader, MsgConfigKeys.MISC_CHALLENGE_BEGINNING_LEADER_SELECTED, tokens, null));
-					Sponge.getScheduler().createTaskBuilder().execute(() -> this.focus.startBattle(leader, challenger, chosenTeam)).delay(10, TimeUnit.SECONDS).submit(BidoofUnleashed.getInstance());
+					Sponge.getScheduler().createTaskBuilder().execute(() -> {
+						try {
+							this.focus.startBattle(leader, challenger, chosenTeam);
+						} catch (BattleStartException e) {
+							challenger.sendMessage(e.getReason());
+							leader.sendMessage(e.getReason());
+						}
+					}).delay(10, TimeUnit.SECONDS).submit(BidoofUnleashed.getInstance());
 				});
 				lb.slot(conf, 17);
 			} else {
@@ -159,7 +167,14 @@ public class GymPoolUI implements PageDisplayable {
 				List<BU3PokemonSpec> team = TeamSelectors.randomized(this.focus, this.challenger);
 				challenger.sendMessage(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.MISC_CHALLENGE_BEGINNING, tokens, null));
 				leader.sendMessage(MessageUtils.fetchAndParseMsg(leader, MsgConfigKeys.MISC_CHALLENGE_BEGINNING_LEADER_RANDOM, tokens, null));
-				Sponge.getScheduler().createTaskBuilder().execute(() -> this.focus.startBattle(leader, challenger, team)).delay(10, TimeUnit.SECONDS).submit(BidoofUnleashed.getInstance());
+				Sponge.getScheduler().createTaskBuilder().execute(() -> {
+					try {
+						this.focus.startBattle(leader, challenger, chosenTeam);
+					} catch (BattleStartException e) {
+						challenger.sendMessage(e.getReason());
+						leader.sendMessage(e.getReason());
+					}
+				}).delay(10, TimeUnit.SECONDS).submit(BidoofUnleashed.getInstance());
 			});
 			lb.slot(rng, 35);
 		}

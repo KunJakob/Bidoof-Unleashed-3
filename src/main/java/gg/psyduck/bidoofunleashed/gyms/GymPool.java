@@ -21,6 +21,10 @@ public class GymPool {
     }
 
     public GymPool init() {
+    	if(pool == null) {
+    		return this;
+	    }
+
     	this.team = ShowdownImporter.importFromFile(pool);
     	return this;
     }

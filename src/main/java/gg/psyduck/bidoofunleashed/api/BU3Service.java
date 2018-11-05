@@ -2,6 +2,7 @@ package gg.psyduck.bidoofunleashed.api;
 
 import gg.psyduck.bidoofunleashed.api.enums.EnumLeaderType;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
+import gg.psyduck.bidoofunleashed.e4.EliteFour;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
 import gg.psyduck.bidoofunleashed.players.PlayerData;
 
@@ -91,6 +92,10 @@ public interface BU3Service {
 	 * @return <code>true</code> on successful gym deletion, <code>false</code> otherwise
 	 */
 	boolean purgeGym(Gym gym);
+
+	List<EliteFour> getAllEliteFour();
+
+	void addE4(EliteFour eliteFour);
 
 	/**
 	 * Registers a requirement to the system. This method will ensure the game phase is at least before the

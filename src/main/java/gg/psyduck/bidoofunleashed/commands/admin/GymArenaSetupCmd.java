@@ -5,6 +5,7 @@ import com.nickimpact.impactor.api.commands.annotations.Aliases;
 import com.nickimpact.impactor.api.commands.annotations.Permission;
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
+import gg.psyduck.bidoofunleashed.api.battlables.arenas.LocAndRot;
 import gg.psyduck.bidoofunleashed.commands.arguments.GymArg;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
@@ -62,14 +63,14 @@ public class GymArenaSetupCmd extends SpongeCommand {
 		Gym gym = args.<Gym>getOne(GYM).get();
 		ArenaArea area = args.<ArenaArea>getOne(AREA).get();
 		switch(area) {
-			case CHALLEGNER:
-				gym.getArena().setChallenger(new Gym.LocAndRot(player.getWorld().getUniqueId(), player.getPosition(), player.getRotation()));
+			case CHALLENGER:
+				gym.getArena().setChallenger(new LocAndRot(player.getWorld().getUniqueId(), player.getPosition(), player.getRotation()));
 				break;
 			case LEADER:
-				gym.getArena().setLeader(new Gym.LocAndRot(player.getWorld().getUniqueId(), player.getPosition(), player.getRotation()));
+				gym.getArena().setLeader(new LocAndRot(player.getWorld().getUniqueId(), player.getPosition(), player.getRotation()));
 				break;
 			case SPECTATORS:
-				gym.getArena().setSpectators(new Gym.LocAndRot(player.getWorld().getUniqueId(), player.getPosition(), player.getRotation()));
+				gym.getArena().setSpectators(new LocAndRot(player.getWorld().getUniqueId(), player.getPosition(), player.getRotation()));
 				break;
 		}
 
@@ -80,7 +81,7 @@ public class GymArenaSetupCmd extends SpongeCommand {
 	}
 
 	private enum ArenaArea {
-		CHALLEGNER,
+		CHALLENGER,
 		LEADER,
 		SPECTATORS,
 	}

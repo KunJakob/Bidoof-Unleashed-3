@@ -1,11 +1,15 @@
 package gg.psyduck.bidoofunleashed.storage.wrapping;
 
+import com.google.common.collect.Multimap;
+import gg.psyduck.bidoofunleashed.api.battlables.Category;
+import gg.psyduck.bidoofunleashed.e4.EliteFour;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
 import gg.psyduck.bidoofunleashed.players.PlayerData;
 import gg.psyduck.bidoofunleashed.storage.BU3Storage;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -86,7 +90,7 @@ public class PhasedStorage implements BU3Storage {
 	}
 
 	@Override
-	public CompletableFuture<List<Gym>> fetchGyms() {
+	public CompletableFuture<Multimap<Category, Gym>> fetchGyms() {
 		phaser.register();
 		try {
 			return delegate.fetchGyms();
@@ -104,4 +108,44 @@ public class PhasedStorage implements BU3Storage {
 	        phaser.arriveAndDeregister();
         }
     }
+
+	@Override
+	public CompletableFuture<Void> addE4(EliteFour e4) {
+		phaser.register();
+		try {
+			return delegate.addE4(e4);
+		} finally {
+			phaser.arriveAndDeregister();
+		}
+	}
+
+	@Override
+	public CompletableFuture<Void> updateE4(EliteFour e4) {
+		phaser.register();
+		try {
+			return delegate.updateE4(e4);
+		} finally {
+			phaser.arriveAndDeregister();
+		}
+	}
+
+	@Override
+	public CompletableFuture<Map<Category, EliteFour>> fetchE4() {
+		phaser.register();
+		try {
+			return delegate.fetchE4();
+		} finally {
+			phaser.arriveAndDeregister();
+		}
+	}
+
+	@Override
+	public CompletableFuture<Void> removeE4(EliteFour e4) {
+		phaser.register();
+		try {
+			return delegate.removeE4(e4);
+		} finally {
+			phaser.arriveAndDeregister();
+		}
+	}
 }

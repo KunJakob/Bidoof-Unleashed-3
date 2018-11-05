@@ -16,7 +16,7 @@ public class BidoofInfo implements PluginInfo {
 
     public static final String ID = "bu3";
     public static final String NAME = "Bidoof Unleashed 3";
-    public static final String VERSION = "S7.1-0.13.5-BETA";
+    public static final String VERSION = "S7.1-0.14.0-BETA";
     public static final String DESCRIPTION = "Gyms, with a hint of Bidoof";
 
     @Override
@@ -64,7 +64,7 @@ public class BidoofInfo implements PluginInfo {
                 StringUtils.center("&eBidoof Unleashed", 50),
                 StringUtils.center("&eRise of the Duck Edition", 50),
                 StringUtils.center("&aVersion: " + VERSION, 50),
-                StringUtils.center("&aAuthor: NickImpact, Smackzter & RysingDragon", 50), "",
+                StringUtils.center("&aAuthors: NickImpact, Smackzter & RysingDragon", 50), "",
                 StringUtils.center("Now attempting to load internal components...", 50)
         );
 

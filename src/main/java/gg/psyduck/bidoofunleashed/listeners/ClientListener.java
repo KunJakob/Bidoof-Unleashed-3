@@ -1,6 +1,10 @@
 package gg.psyduck.bidoofunleashed.listeners;
 
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
+import gg.psyduck.bidoofunleashed.api.battlables.BU3BattleBase;
+import gg.psyduck.bidoofunleashed.e4.E4Stage;
+import gg.psyduck.bidoofunleashed.e4.EliteFour;
+import gg.psyduck.bidoofunleashed.gyms.Gym;
 import gg.psyduck.bidoofunleashed.players.PlayerData;
 import gg.psyduck.bidoofunleashed.storage.BU3Storage;
 import org.spongepowered.api.entity.living.player.Player;
@@ -30,6 +34,14 @@ public class ClientListener {
 			BidoofUnleashed.getInstance().getDataRegistry().getPlayerData().remove(player.getUniqueId());
 		}
 
-		BidoofUnleashed.getInstance().getDataRegistry().getGyms().stream().filter(gym -> gym.getQueue().contains(player.getUniqueId())).forEach(gym -> gym.getQueue().remove(player.getUniqueId()));
+		for(BU3BattleBase base : BidoofUnleashed.getInstance().getDataRegistry().getBattlables().values()) {
+			if(base instanceof Gym) {
+				((Gym) base).getQueue().remove(player.getUniqueId());
+			} else {
+				for(E4Stage stage : ((EliteFour) base).getStages()) {
+					stage.getQueue().remove(player.getUniqueId());
+				}
+			}
+		}
 	}
 }

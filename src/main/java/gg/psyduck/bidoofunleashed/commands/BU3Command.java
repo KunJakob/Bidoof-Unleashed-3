@@ -4,7 +4,7 @@ import com.nickimpact.impactor.api.commands.SpongeCommand;
 import com.nickimpact.impactor.api.commands.annotations.Aliases;
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
 import gg.psyduck.bidoofunleashed.commands.admin.*;
-import gg.psyduck.bidoofunleashed.commands.general.ChallengeGymCommand;
+import gg.psyduck.bidoofunleashed.commands.general.ChallengeCommand;
 import gg.psyduck.bidoofunleashed.commands.general.HelpCmd;
 import gg.psyduck.bidoofunleashed.commands.leader.AcceptChallenge;
 import gg.psyduck.bidoofunleashed.commands.leader.CloseGymCommand;
@@ -45,10 +45,11 @@ public class BU3Command extends SpongeCommand {
 		return new SpongeCommand[]{
 				new HelpCmd(plugin, this),
 				new AddGymCommand(plugin),
+				new CreateE4Cmd(plugin),
 				new EditGymCmd(plugin),
 				new DeleteGymCommand(plugin),
 				new AddGymLeaderCommand(plugin),
-				new ChallengeGymCommand(plugin),
+				new ChallengeCommand(plugin),
 				new GiveBadgeCommand(plugin),
 				new RemoveBadgeCommand(plugin),
 				new CheckGymPoolCmd(plugin),

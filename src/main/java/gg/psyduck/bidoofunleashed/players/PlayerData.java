@@ -1,7 +1,14 @@
 package gg.psyduck.bidoofunleashed.players;
 
+import com.google.gson.annotations.SerializedName;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
+import gg.psyduck.bidoofunleashed.api.battlables.BU3Battlable;
+import gg.psyduck.bidoofunleashed.api.battlables.BU3BattleBase;
+import gg.psyduck.bidoofunleashed.api.battlables.Category;
+import gg.psyduck.bidoofunleashed.api.cooldowns.Cooldown;
 import gg.psyduck.bidoofunleashed.config.ConfigKeys;
+import gg.psyduck.bidoofunleashed.e4.E4Stage;
+import gg.psyduck.bidoofunleashed.e4.EliteFour;
 import gg.psyduck.bidoofunleashed.gyms.Badge;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
 import lombok.Getter;
@@ -19,9 +26,16 @@ public class PlayerData {
 
 	private List<Badge> badges = new ArrayList<>();
 
+	// Data persisting to Elite Four challenges here
+	@SerializedName("defeated-elite-four")
+	private Boolean[] defeatedElite4 = new Boolean[4];
+	private transient EliteFour currentEliteFour;
+
 	@Setter private Roles role = Roles.NONE;
 
 	private Map<String, Date> cooldowns = new HashMap<>();
+
+	@Setter private transient boolean queued = false;
 
 	private PlayerData(UUID uuid) {
 		this.uuid = uuid;
@@ -43,6 +57,22 @@ public class PlayerData {
 	    return this.badges.stream().anyMatch(b -> b.getName().equals(badge.getName()) && b.getItemType().equals(badge.getItemType()));
     }
 
+	public Optional<Badge> getBadge(Gym gym) {
+		return this.badges.stream().filter(b -> b.getName().equals(gym.getBadge().getName()) && b.getItemType().equals(gym.getBadge().getItemType())).findAny();
+	}
+
+	public Optional<Badge> getBadge(EliteFour e4) {
+		return this.badges.stream().filter(b -> b.getName().equals(e4.getBadge().getName()) && b.getItemType().equals(e4.getBadge().getItemType())).findAny();
+	}
+
+	public Optional<Badge> getBadge(BU3Battlable battlable) {
+		if(battlable instanceof Gym) {
+			return this.getBadge((Gym) battlable);
+		} else {
+			return this.getBadge(((E4Stage) battlable).getBelonging());
+		}
+	}
+
 	public void removeBadge(Badge badge) {
 	    if (this.hasBadge(badge)) {
 	        this.badges.remove(badge);
@@ -53,25 +83,27 @@ public class PlayerData {
 	 * Simply places a cooldown on a gym for this player instance. If a data entry exists, which it shouldn't, it will
 	 * be overwritten.
 	 *
-	 * @param gym The gym to check against
+	 * @param battlable The gym to check against
 	 */
-	public void updateCooldown(Gym gym) {
+	public void updateCooldown(BU3Battlable battlable) {
 		if(this.cooldowns == null) {
 			this.cooldowns = new HashMap<>();
 		}
-		this.cooldowns.put(gym.getName(), Date.from(Instant.now().plus(gym.getCooldown() != 0 ? gym.getCooldown() : BidoofUnleashed.getInstance().getConfig().get(ConfigKeys.DEFAULT_COOLDOWN), ChronoUnit.MINUTES)));
+
+		Cooldown cooler = (Cooldown) battlable;
+		this.cooldowns.put(battlable.getName(), Date.from(Instant.now().plus(cooler.getCooldown() != 0 ? cooler.getCooldown() : BidoofUnleashed.getInstance().getConfig().get(ConfigKeys.DEFAULT_COOLDOWN), ChronoUnit.MINUTES)));
     }
 
 	/**
 	 * Simply removes a cooldown on a gym for this player instance.
 	 *
-	 * @param gym The gym to purge the cooldown for
+	 * @param battlable The gym to purge the cooldown for
 	 */
-	public void purgeCooldown(Gym gym) {
+	public void purgeCooldown(BU3Battlable battlable) {
 		if(this.cooldowns == null) {
 			this.cooldowns = new HashMap<>();
 		}
-		this.cooldowns.remove(gym.getName());
+		this.cooldowns.remove(battlable.getName());
     }
 
 	/**
@@ -79,18 +111,33 @@ public class PlayerData {
 	 * the mapping returns null, we will assume there is no cooldown on this player for that gym, and return true. Otherwise,
 	 * we will run a check against the current time instance versus the time set in the mapping.
 	 *
-	 * @param gym The gym we are checking against
-	 * @return True if no cooldown exists, or the returned cooldown date is before the current system time.
+	 * @param battlable The battlable we are checking against
+	 * @return True if a cooldown exists, and the current time is before the overlap period. False in all other cases.
 	 */
-	public boolean afterCooldownPeriod(Gym gym) {
+	public boolean beforeCooldownPeriod(BU3BattleBase battlable) {
 		if(this.cooldowns == null) {
 			this.cooldowns = new HashMap<>();
 		}
-		Date period = this.cooldowns.get(gym.getName());
+		Date period = this.cooldowns.get(battlable.getName());
 		if(period == null) {
-			return true;
+			return false;
 		}
 
-		return period.before(Date.from(Instant.now()));
+		return Date.from(Instant.now()).before(period);
+    }
+
+    public void setCurrentEliteFour(EliteFour eliteFour) {
+		this.currentEliteFour = eliteFour;
+    }
+
+    public void defeatStage(int stage) {
+		this.defeatedElite4[stage] = true;
+    }
+
+    public void resetDefeatedE4() {
+		this.defeatedElite4 = new Boolean[4];
+		for(int i = 0; i < defeatedElite4.length; i++) {
+			this.defeatedElite4[i] = false;
+		}
     }
 }

@@ -3,10 +3,7 @@ package gg.psyduck.bidoofunleashed.config;
 import com.google.common.collect.ImmutableMap;
 import com.nickimpact.impactor.api.configuration.ConfigKey;
 import com.nickimpact.impactor.api.configuration.IConfigKeys;
-import com.nickimpact.impactor.api.configuration.keys.AbstractKey;
-import com.nickimpact.impactor.api.configuration.keys.EnduringKey;
-import com.nickimpact.impactor.api.configuration.keys.IntegerKey;
-import com.nickimpact.impactor.api.configuration.keys.StringKey;
+import com.nickimpact.impactor.api.configuration.keys.*;
 import com.nickimpact.impactor.api.storage.StorageCredentials;
 
 import java.lang.reflect.Field;
@@ -27,6 +24,8 @@ public class ConfigKeys implements IConfigKeys {
 
 	public static final ConfigKey<Integer> TELEPORT_WAIT = IntegerKey.of("gyms.teleport.wait", 10);
 	public static final ConfigKey<Integer> DEFAULT_COOLDOWN = IntegerKey.of("gyms.defaults.cooldown", 60);
+
+	public static final ConfigKey<Boolean> SAVE_POOLS_ON_DELETE = BooleanKey.of("teams.save-on-delete", true);
 
 	private static Map<String, ConfigKey<?>> KEYS = null;
 

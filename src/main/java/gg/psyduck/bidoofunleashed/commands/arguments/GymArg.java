@@ -24,7 +24,9 @@ public class GymArg extends BaseCommandElement<Gym> {
 	@Override
 	protected Gym parseValue(CommandSource src, CommandArgs args) throws ArgumentParseException {
 		String arg = args.next();
-		return BidoofUnleashed.getInstance().getDataRegistry().getGyms().stream()
+		return BidoofUnleashed.getInstance().getDataRegistry().getBattlables().values().stream()
+				.filter(base -> base instanceof Gym)
+				.map(base -> (Gym) base)
 				.filter(gym -> gym.getName().equalsIgnoreCase(arg))
 				.findAny()
 				.orElseThrow(() -> args.createError(Text.of("Invalid gym specified...")));

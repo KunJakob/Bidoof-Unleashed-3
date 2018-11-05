@@ -1,10 +1,14 @@
 package gg.psyduck.bidoofunleashed.storage;
 
+import com.google.common.collect.Multimap;
 import com.nickimpact.impactor.api.storage.Storage;
+import gg.psyduck.bidoofunleashed.api.battlables.Category;
+import gg.psyduck.bidoofunleashed.e4.EliteFour;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
 import gg.psyduck.bidoofunleashed.players.PlayerData;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -36,7 +40,7 @@ public interface BU3Storage extends Storage {
 	 *
 	 * @return A {@link CompletableFuture}, composed of a List of gyms upon successful completion
 	 */
-	CompletableFuture<List<Gym>> fetchGyms();
+	CompletableFuture<Multimap<Category, Gym>> fetchGyms();
 
     /**
      * Deletes the specified gym from the registered storage. If the gym has already been deleted,
@@ -47,4 +51,12 @@ public interface BU3Storage extends Storage {
      */
 
 	CompletableFuture<Void> removeGym(Gym gym);
+
+	CompletableFuture<Void> addE4(EliteFour e4);
+
+	CompletableFuture<Void> updateE4(EliteFour e4);
+
+	CompletableFuture<Map<Category, EliteFour>> fetchE4();
+
+	CompletableFuture<Void> removeE4(EliteFour e4);
 }
