@@ -1,6 +1,8 @@
 package gg.psyduck.bidoofunleashed.commands.admin;
 
 import com.nickimpact.impactor.api.commands.SpongeCommand;
+import com.nickimpact.impactor.api.commands.annotations.Aliases;
+import com.nickimpact.impactor.api.commands.annotations.Permission;
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
 import gg.psyduck.bidoofunleashed.commands.arguments.E4Arg;
 import gg.psyduck.bidoofunleashed.e4.EliteFour;
@@ -13,6 +15,8 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.text.Text;
 
+@Aliases({"ae4m", "adde4member"})
+@Permission(admin = true)
 public class AddE4Member extends SpongeCommand {
 
 	private static final Text E4 = Text.of("e4");

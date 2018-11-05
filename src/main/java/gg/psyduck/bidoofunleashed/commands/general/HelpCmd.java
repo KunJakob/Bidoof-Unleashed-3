@@ -71,7 +71,7 @@ public class HelpCmd extends SpongeCommand {
 	 */
 	private List<Text> getUsage(CommandSource src, SpongeCommand cmd) {
 		List<Text> result = Lists.newArrayList();
-		Text x = Text.builder(cmd.getUsage(), "").onHover(TextActions.showText(cmd.getDescription())).build();
+		Text x = Text.builder(Text.EMPTY, cmd.getUsage().toPlain()).onHover(TextActions.showText(cmd.getDescription())).build();
 		result.add(x);
 		for(SpongeCommand child : cmd.getSubCommands()) {
 			if(!(src instanceof ConsoleSource) && src.hasPermission(this.buildPermission(BidoofUnleashed.getInstance(), child))) {

@@ -52,7 +52,7 @@ public class CreateE4Cmd extends SpongeCommand {
 
 	@Override
 	public Text getDescription() {
-		return null;
+		return Text.of();
 	}
 
 	@Override
