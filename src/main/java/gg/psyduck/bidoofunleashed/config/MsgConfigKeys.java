@@ -37,6 +37,7 @@ public class MsgConfigKeys implements IConfigKeys {
 	public static final ConfigKey<String> COMMANDS_ARENA_AREA_SETUP = StringKey.of("commands.arena-setup.applied", "{{bu3_prefix}} &7Arena settings updated!");
 	public static final ConfigKey<String> COMMANDS_EDIT_GYM_SUCCESS = StringKey.of("commands.edit-gym.success", "{{bu3_prefix}} &7Gym successfully edited!");
 	public static final ConfigKey<String> COMMANDS_ADD_LEADER = StringKey.of("commands.add-leader.success", "{{bu3_prefix}} &7New gym leader added!");
+	public static final ConfigKey<String> COMMANDS_ADD_POKEMON = StringKey.of("commands.add-spec.success", "{{bu3_prefix}} &7Spec successfully added!");
 
 	public static final ConfigKey<String> REQUIREMENT_GYM = StringKey.of("requirements.gym", "{{bu3_error}} &7Unfortunately, you can't challenge this gym until you've earned the &e{{bu3_badge}}&7...");
 	public static final ConfigKey<String> REQUIREMENT_LEVELCAP = StringKey.of("requirements.level-cap", "{{bu3_error}} &7Unfortunately, a member of your party exceeds the level cap of &e{{bu3_level_cap}}&7...");

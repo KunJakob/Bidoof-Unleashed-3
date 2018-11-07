@@ -60,6 +60,7 @@ public class BU3Command extends SpongeCommand {
 				new AddRequirementCommand(plugin),
 				new GymArenaSetupCmd(plugin),
 				new GymListCommand(plugin),
+				new AddPokemonSpec(plugin),
 		};
 	}
 

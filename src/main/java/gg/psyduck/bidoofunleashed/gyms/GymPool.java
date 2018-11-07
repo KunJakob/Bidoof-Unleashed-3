@@ -6,6 +6,7 @@ import gg.psyduck.bidoofunleashed.api.battlables.ShowdownImporter;
 import lombok.Getter;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
@@ -37,4 +38,14 @@ public class GymPool {
 		    } catch (IOException ignored) {}
 	    }
     }
+
+	public void append(String export) {
+		try {
+			FileWriter fw = new FileWriter(pool, true);
+			fw.append(export);
+			fw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }
