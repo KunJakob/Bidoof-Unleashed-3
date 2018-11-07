@@ -117,10 +117,14 @@ public class Gym implements BU3Battlable, Cooldown {
 			tokens.put("bu3_gym", src -> Optional.of(Text.of(this.getName())));
 			tokens.put("bu3_cooldown_time", src -> Optional.of(Text.of(new Time(duration.getSeconds()).toString())));
 
-			player.sendMessage(MessageUtils.fetchAndParseMsg(player, MsgConfigKeys.MISC_CHALLENGE_COOLDOWN_GYM, tokens, null));
+			player.sendMessages(MessageUtils.fetchAndParseMsgs(player, MsgConfigKeys.MISC_CHALLENGE_COOLDOWN_GYM, tokens, null));
 			return false;
 		}
 		return true;
+	}
+
+	public boolean justArenaWaiting() {
+		return this.name != null && this.badge != null && this.arena != null && !this.arena.isSetup();
 	}
 
 	@Override

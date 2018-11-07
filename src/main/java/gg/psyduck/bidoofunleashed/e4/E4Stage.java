@@ -2,6 +2,7 @@ package gg.psyduck.bidoofunleashed.e4;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.nickimpact.impactor.json.Typing;
 import com.pixelmonmod.pixelmon.battles.controller.BattleControllerBase;
 import com.pixelmonmod.pixelmon.battles.controller.participants.BattleParticipant;
 import com.pixelmonmod.pixelmon.battles.controller.participants.PixelmonWrapper;
@@ -50,7 +51,9 @@ public class E4Stage implements Stage {
 
 	@Setter private transient EliteFour e4;
 
-	private Integer stage;
+	private final UUID uuid;
+
+	private int stage;
 
 	private String name;
 	private Arena arena;
@@ -61,11 +64,12 @@ public class E4Stage implements Stage {
 	protected List<UUID> leaders;
 	protected int npcs = 0;
 
-	public E4Stage(Integer stage) {
+	public E4Stage(int stage) {
 		this(null, stage);
 	}
 
-	public E4Stage(EliteFour e4, Integer stage) {
+	public E4Stage(EliteFour e4, int stage) {
+		this.uuid = UUID.randomUUID();
 		this.e4 = e4;
 
 		this.stage = stage;
@@ -91,7 +95,7 @@ public class E4Stage implements Stage {
 
 	@Override
 	public UUID getUuid() {
-		return this.getBelonging().getUuid();
+		return this.uuid;
 	}
 
 	@Override
@@ -142,7 +146,6 @@ public class E4Stage implements Stage {
 		if(!gbse.isCancelled()) {
 			BattleRegistry.register(new Challenge(leader, challenger, this.getBattleType(challenger)), this);
 			new BattleControllerBase(bpL, new PlayerParticipant((EntityPlayerMP) challenger, first), this.getBattleSettings(this.getBattleType(challenger)).getBattleRules());
-			BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(challenger.getUniqueId()).updateCooldown(this);
 		}
 	}
 
@@ -163,7 +166,6 @@ public class E4Stage implements Stage {
 		if(!gbse.isCancelled()) {
 			BattleRegistry.register(new Challenge((Entity) leader, challenger, this.getBattleType(challenger)), this);
 			new BattleControllerBase(new TempTrainerTeamParticipant(leader, (EntityPlayerMP) challenger, team, this), new PlayerParticipant((EntityPlayerMP) challenger, first), this.getBattleSettings(this.getBattleType(challenger)).getBattleRules());
-			BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(challenger.getUniqueId()).updateCooldown(this);
 		}
 	}
 

@@ -34,6 +34,7 @@ import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
 import gg.psyduck.bidoofunleashed.e4.Champion;
 import gg.psyduck.bidoofunleashed.e4.E4Stage;
 import gg.psyduck.bidoofunleashed.e4.EliteFour;
+import gg.psyduck.bidoofunleashed.e4.Stage;
 import gg.psyduck.bidoofunleashed.gyms.Badge;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
 import gg.psyduck.bidoofunleashed.gyms.temporary.BattleRegistry;
@@ -129,8 +130,8 @@ public class BattleListener {
 				}
 
 				PlayerData pd = BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(player.getUniqueId());
-				if (pd.getCurrentEliteFour() == null && g instanceof E4Stage) {
-					((E4Stage)g).getBelonging().startChallenge(player);
+				if (pd.getCurrentEliteFour() == null && g instanceof Stage) {
+					((Stage)g).getBelonging().startChallenge(player);
 				}
 
 				try {
@@ -175,16 +176,18 @@ public class BattleListener {
 				Map<String, Function<CommandSource, Optional<Text>>> tokens = Maps.newHashMap();
 				tokens.put("bu3_gym", src -> Optional.of(Text.of(c.getValue().getName())));
 				c.getKey().getChallenger().sendMessage(MessageUtils.fetchAndParseMsg(c.getKey().getChallenger(), MsgConfigKeys.BATTLES_FORFEIT, tokens, null));
-				if(c.getValue() instanceof E4Stage) {
+				if(c.getValue() instanceof Stage) {
 					data.resetDefeatedE4();
+					data.updateCooldown(((Stage)c.getValue()).getBelonging());
 				}
 			} else {
 				Sponge.getEventManager().post(new GymBattleEndEvent(c.getKey().getLeader(), c.getKey().getChallenger(), c.getValue(), false));
 				Map<String, Function<CommandSource, Optional<Text>>> tokens = Maps.newHashMap();
 				tokens.put("bu3_gym", src -> Optional.of(Text.of(c.getValue().getName())));
 				c.getKey().getChallenger().sendMessage(MessageUtils.fetchAndParseMsg(c.getKey().getChallenger(), MsgConfigKeys.BATTLES_LOSE_GYM, tokens, null));
-				if(c.getValue() instanceof E4Stage) {
+				if(c.getValue() instanceof Stage) {
 					data.resetDefeatedE4();
+					data.updateCooldown(((Stage)c.getValue()).getBelonging());
 				}
 			}
 

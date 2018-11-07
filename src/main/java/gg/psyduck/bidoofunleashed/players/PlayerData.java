@@ -85,7 +85,7 @@ public class PlayerData {
 	 *
 	 * @param battlable The gym to check against
 	 */
-	public void updateCooldown(BU3Battlable battlable) {
+	public void updateCooldown(BU3BattleBase battlable) {
 		if(this.cooldowns == null) {
 			this.cooldowns = new HashMap<>();
 		}

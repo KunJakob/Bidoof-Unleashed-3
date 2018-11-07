@@ -172,7 +172,7 @@ public class FileDao extends AbstractBU3Dao {
 		for (File category : Objects.requireNonNull(BASE_PATH_GYMS.listFiles())) {
 			File container = new File(category, "e4");
 			container.mkdirs();
-			for(File elite : Objects.requireNonNull(container.listFiles())) {
+			for (File elite : Objects.requireNonNull(container.listFiles())) {
 				for (File spec : Objects.requireNonNull(elite.listFiles((d, s) -> s.toLowerCase().endsWith(".json")))) {
 					EliteFour instance = BidoofUnleashed.prettyGson.fromJson(new FileReader(spec), EliteFour.class).initialize();
 					for (E4Stage stage : instance.getStages()) {
@@ -183,7 +183,6 @@ public class FileDao extends AbstractBU3Dao {
 					e4.put(new Category(category.getName()), instance);
 				}
 			}
-
 		}
 
 		return e4;

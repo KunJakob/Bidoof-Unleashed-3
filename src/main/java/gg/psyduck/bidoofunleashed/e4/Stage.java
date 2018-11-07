@@ -14,7 +14,9 @@ public interface Stage extends BU3Battlable {
 
 	boolean isOpen();
 
-	Integer getStage();
+	int getStage();
 
 	String getPath();
+
+	EliteFour getBelonging();
 }

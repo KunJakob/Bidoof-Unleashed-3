@@ -3,7 +3,6 @@ package gg.psyduck.bidoofunleashed.e4;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.nickimpact.impactor.time.Time;
-import com.pixelmonmod.pixelmon.entities.npcs.NPCTrainer;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import gg.psyduck.bidoofunleashed.api.battlables.BU3BattleBase;
 import gg.psyduck.bidoofunleashed.api.battlables.BattlableBuilder;
@@ -90,7 +89,7 @@ public class EliteFour implements BU3BattleBase<EliteFour>, Cooldown {
 			tokens.put("bu3_e4", src -> Optional.of(Text.of(this.getName())));
 			tokens.put("bu3_cooldown_time", src -> Optional.of(Text.of(new Time(duration.getSeconds()).toString())));
 
-			player.sendMessage(MessageUtils.fetchAndParseMsg(player, MsgConfigKeys.MISC_CHALLENGE_COOLDOWN_E4, tokens, null));
+			player.sendMessages(MessageUtils.fetchAndParseMsgs(player, MsgConfigKeys.MISC_CHALLENGE_COOLDOWN_E4, tokens, null));
 			return false;
 		}
 		return true;
@@ -102,11 +101,13 @@ public class EliteFour implements BU3BattleBase<EliteFour>, Cooldown {
 		PlayerData pd = BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(player.getUniqueId());
 		for(Gym gym : inCategory) {
 			if(pd.getBadges().stream().noneMatch(badge -> gym.getBadge().getName().equals(badge.getName()))) {
-				 return false;
+				player.sendMessage(MessageUtils.fetchAndParseMsg(player, MsgConfigKeys.ERRORS_E4_NOT_ALL_BADGES, null, null));
+				return false;
 			}
 		}
 
-		if(pd.getCurrentEliteFour() != null && !pd.getCurrentEliteFour().equals(this)) {
+		if(pd.getCurrentEliteFour() != null && pd.getCurrentEliteFour() != this) {
+			player.sendMessage(MessageUtils.fetchAndParseMsg(player, MsgConfigKeys.ERRORS_E4_DIFFERING, null, null));
 			return false;
 		}
 

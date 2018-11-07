@@ -6,6 +6,7 @@ import com.nickimpact.impactor.api.configuration.ConfigKey;
 import com.nickimpact.impactor.api.configuration.IConfigKeys;
 import com.nickimpact.impactor.api.configuration.keys.ListKey;
 import com.nickimpact.impactor.api.configuration.keys.StringKey;
+import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -90,24 +91,41 @@ public class MsgConfigKeys implements IConfigKeys {
 
 	public static final ConfigKey<String> UI_GYM_POOL_RANDOM_TEAM = StringKey.of("ui.gym-pool.icons.random-team", "&eSelect a Random Team");
 
-	public static final ConfigKey<String> MISC_CHALLENGE_COOLDOWN_GYM = StringKey.of("misc.challenge.challenger.cooldown.gym", "{{bu3_error}} &7Sorry, but your cooldown for the &a{{bu3_gym}} Gym &7has yet to expire! Time remaining: &e{{bu3_cooldown_time}}");
-	public static final ConfigKey<String> MISC_CHALLENGE_COOLDOWN_E4 = StringKey.of("misc.challenge.challenger.cooldown.e4", "{{bu3_error}} &7Sorry, but your cooldown for the &a{{bu3_e4}} Elite Four &7has yet to expire! Time remaining: &e{{bu3_cooldown_time}}");
+	public static final ConfigKey<List<String>> MISC_CHALLENGE_COOLDOWN_GYM = ListKey.of("misc.challenge.challenger.cooldown.gym", Lists.newArrayList(
+			"&7&m---------------------------------",
+			"&c&lActive Cooldown",
+			"",
+			"&7Attempted Gym: &e{{bu3_gym}}",
+			"&7Time Remaining: &e{{bu3_cooldown_time}}",
+			"&7&m---------------------------------"
+	));
+	public static final ConfigKey<List<String>> MISC_CHALLENGE_COOLDOWN_E4 = ListKey.of("misc.challenge.challenger.cooldown.e4", Lists.newArrayList(
+			"&7&m---------------------------------",
+			"&c&lActive Cooldown",
+			"",
+			"&7Attempted Elite Four: &e{{bu3_e4}}",
+			"&7Time Remaining: &e{{bu3_cooldown_time}}",
+			"&7&m---------------------------------"
+	));
 	public static final ConfigKey<String> MISC_CHALLENGE_BEGINNING = StringKey.of("misc.challenge.challenger.battle-accepted.inform", "{{bu3_prefix}} &7The gym leader is now ready, starting battle in {{bu3_wait}} seconds!");
     public static final ConfigKey<String> MISC_CHALLENGE_BEGINNING_LEADER_RANDOM = StringKey.of("misc.challenge.leader.battle-accepted.random-team", "{{bu3_prefix}} &7Your team was randomly selected, beginning battle in {{bu3_wait}} seconds!");
     public static final ConfigKey<String> MISC_CHALLENGE_BEGINNING_LEADER_SELECTED = StringKey.of("misc.challenge.leader.battle-accepted.selected-team", "{{bu3_prefix}} &7Your team has been applied, starting battle in {{bu3_wait}} seconds!");
 	public static final ConfigKey<String> NEW_CHALLENGER_QUEUED = StringKey.of("misc.challenge.leader.new-challenger", "{{bu3_prefix}} &7A new challenger awaits a battle for the &e{{bu3_gym}} Gym&7!");
 	public static final ConfigKey<String> MISC_GYM_MORE_REQUIRED = StringKey.of("misc.gym-editing.more-required", "{{bu3_prefix}} &7The gym is, however, not yet complete! Please finish it with &e/bu3 editgym {{bu3_gym}}");
+	public static final ConfigKey<String> MISC_GYM_ARENA_REQUIRED = StringKey.of("misc.gym-editing.arena-required", "{{bu3_prefix}} &7The gym now just needs its arena setup! Use &e/bu3 setuparena {{bu3_gym}} <leader|challenger|spectators> to set the locations based on your position!");
 	public static final ConfigKey<String> MISC_RELOAD = StringKey.of("misc.plugin-reload", "{{bu3_prefix}} &7Gym data has been updated, and as such, you will need to requeue your challenge!");
 	public static final ConfigKey<String> MISC_ALREADY_QUEUED = StringKey.of("misc.challenge.challenger.already-queued", "{{bu3_error}} &7You are already queued to challenge another gym...");
 
 	public static final ConfigKey<String> ERRORS_MISSING_PLAYER_STORAGE = StringKey.of("errors.missing-player-storage", "{{bu3_error}} &7A Pixelmon error was encountered, and prevented successful operation...");
-	public static final ConfigKey<String> ERRORS_CANT_CHALLENGE = StringKey.of("errors.cant-challenge", "{{bu3_error}} &7Unfortunately, your challenge could not be fulfilled...");
+	public static final ConfigKey<String> ERRORS_CANT_CHALLENGE = StringKey.of("errors.gym.cant-challenge", "{{bu3_error}} &7Unfortunately, your challenge could not be fulfilled...");
 	public static final ConfigKey<String> ERRORS_NOT_OPEN = StringKey.of("errors.not-open", "{{bu3_error}} &7Unfortunately, your challenge could not be fulfilled as the target is closed...");
 	public static final ConfigKey<String> ERRORS_E4_ALREADY_DEFEATED = StringKey.of("errors.e4.already-defeated", "{{bu3_error}} &7You've already defeated this stage for the E4...");
 	public static final ConfigKey<String> ERRORS_E4_DIFFERING = StringKey.of("errors.e4.differing-e4", "{{bu3_error}} &7You can only challenge E4 members of your current challenge...");
+	public static final ConfigKey<String> ERRORS_CANT_CHALLENGE_CHAMPION = StringKey.of("errors.e4.cant-challenge", "{{bu3_error}} &7You must defeat all E4 members before challenging this member of the elite four...");
+	public static final ConfigKey<String> ERRORS_E4_NOT_ALL_BADGES = StringKey.of("errors.e4.not-all-badges", "{{bu3_error}} &7You must have all the badges for this E4's category before you can challenge it...");
 
 	public static final ConfigKey<String> BATTLES_WIN_GYM = StringKey.of("battles.win", "{{bu3_prefix}} &7Congrats! You've defeated the &e{{bu3_gym}} Gym&7!");
-	public static final ConfigKey<String> BATTLES_WIN_E4 = StringKey.of("battles.win", "{{bu3_prefix}} &7Congrats! You've defeated the &e{{bu3_e4}} E4 stage&7!");
+	public static final ConfigKey<String> BATTLES_WIN_E4 = StringKey.of("battles.win", "{{bu3_prefix}} &7Congrats! You've defeated the &e{{bu3_e4}} stage&7!");
 	public static final ConfigKey<String> BATTLES_WIN_CHAMPION = StringKey.of("battles.win", "{{bu3_prefix}} &7Congrats! You've defeated the &e{{bu3_e4}} Champion&7!");
 	public static final ConfigKey<String> BATTLES_LOSE_GYM = StringKey.of("battles.lose", "{{bu3_prefix}} &7Well shoot! You've lost to the &e{{bu3_gym}} Gym&7...");
 	public static final ConfigKey<String> BATTLES_FORFEIT = StringKey.of("battles.forfeit", "{{bu3_prefix}} &7It seems you decided to forfeit your challenge against the &e{{bu3_gym}} Gym&7...");

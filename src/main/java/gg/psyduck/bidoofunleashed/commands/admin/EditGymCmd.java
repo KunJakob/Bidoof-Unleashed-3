@@ -76,6 +76,10 @@ public class EditGymCmd extends SpongeCommand {
 			tokens.put("bu3_gym", cs -> Optional.of(Text.of(gym.getName())));
 			src.sendMessage(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.COMMANDS_EDIT_GYM_SUCCESS, tokens, null));
 			if(!gym.isReady()) {
+				if(gym.justArenaWaiting()) {
+					src.sendMessages(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.MISC_GYM_ARENA_REQUIRED, tokens, null));
+					return CommandResult.success();
+				}
 				src.sendMessage(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.MISC_GYM_MORE_REQUIRED, tokens, null));
 			}
 		} catch (Exception e) {

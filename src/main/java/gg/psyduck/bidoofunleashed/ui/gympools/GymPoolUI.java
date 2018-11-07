@@ -50,22 +50,29 @@ public class GymPoolUI implements PageDisplayable {
 	private List<BU3PokemonSpec> chosenTeam;
 	private Page display;
 
-	public GymPoolUI(Player leader, Player challenger, Gym gym) {
-		this(leader, challenger, gym, Lists.newArrayList());
+	/** States whether the pool should have its click events for pokemon selection, as well as it's close action */
+	private boolean viewing;
+
+	public GymPoolUI(Player leader, Player challenger, Gym gym, boolean viewing) {
+		this(leader, challenger, gym, Lists.newArrayList(), viewing);
 	}
 
-	GymPoolUI(Player leader, Player challenger, Gym gym, List<BU3PokemonSpec> chosenTeam) {
+	private GymPoolUI(Player leader, Player challenger, Gym gym, List<BU3PokemonSpec> chosenTeam, boolean viewing) {
 		this.leader = leader;
 		this.challenger = challenger;
 		this.focus = gym;
 		this.type = challenger != null ? this.focus.getBattleType(challenger) : EnumBattleType.First;
 		this.chosenTeam = chosenTeam;
 		this.display = this.build().define(this.forge(), InventoryDimension.of(7, 3), 1, 1);
-		this.display.getViews().forEach(ui -> ui.setCloseAction((event, player) -> {
-			if(!event.getCause().getContext().equals(EventContext.empty())) {
-				ui.open(player);
-			}
-		}));
+		this.viewing = viewing;
+
+		if(!viewing) {
+			this.display.getViews().forEach(ui -> ui.setCloseAction((event, player) -> {
+				if (!event.getCause().getContext().equals(EventContext.empty())) {
+					ui.open(player);
+				}
+			}));
+		}
 	}
 
 	@Override
@@ -109,33 +116,69 @@ public class GymPoolUI implements PageDisplayable {
 					.add(Keys.ITEM_LORE, MessageUtils.fetchAndParseMsgs(leader, MsgConfigKeys.EMPTY_GYM_POOL_LORE, null, null))
 					.build()), 22);
 		} else {
-			int index = 45;
-			for(BU3PokemonSpec spec : this.chosenTeam) {
-				ItemStack picture = PixelmonIcons.createPicture(EnumPokemon.getFromNameAnyCase(spec.name), spec.shiny != null ? spec.shiny : false, spec.form != null ? spec.form : -1);
-				picture = PixelmonIcons.applySpecDetails(picture, spec);
-				picture.get(Keys.ITEM_LORE).ifPresent(lore -> lore.addAll(Lists.newArrayList(
-						Text.EMPTY,
-						Text.of(TextColors.RED, "Click to Remove!"))
-				));
-				lb.slot(Icon.from(picture), index++);
+			if(!viewing) {
+				int index = 45;
+				for (BU3PokemonSpec spec : this.chosenTeam) {
+					ItemStack picture = PixelmonIcons.createPicture(EnumPokemon.getFromNameAnyCase(spec.name), spec.shiny != null ? spec.shiny : false, spec.form != null ? spec.form : -1);
+					picture = PixelmonIcons.applySpecDetails(picture, spec);
+					picture.get(Keys.ITEM_LORE).ifPresent(lore -> lore.addAll(Lists.newArrayList(
+							Text.EMPTY,
+							Text.of(TextColors.RED, "Click to Remove!"))
+					));
+					lb.slot(Icon.from(picture), index++);
+				}
 			}
 
 			Map<String, Function<CommandSource, Optional<Text>>> tokens = Maps.newHashMap();
 			tokens.put("bu3_wait", src -> Optional.of(Text.of(BidoofUnleashed.getInstance().getConfig().get(ConfigKeys.TELEPORT_WAIT))));
 
-			if(this.chosenTeam.size() >= this.focus.getBattleSettings(type).getMinPokemon() && this.chosenTeam.size() <= this.focus.getBattleSettings(type).getMaxPokemon()) {
-				ItemStack confirm = ItemStack.builder()
-						.itemType(ItemTypes.DYE)
-						.add(Keys.DISPLAY_NAME, Text.of(TextColors.GREEN, "Begin Battle!"))
-						.add(Keys.DYE_COLOR, DyeColors.LIME)
-						.build();
-				Icon conf = Icon.from(confirm);
-				conf.addListener(clickable -> {
-					// Close display
-					this.display.close(leader);
+			if(!viewing) {
+				if (this.chosenTeam.size() >= this.focus.getBattleSettings(type).getMinPokemon() && this.chosenTeam.size() <= this.focus.getBattleSettings(type).getMaxPokemon()) {
+					ItemStack confirm = ItemStack.builder()
+							.itemType(ItemTypes.DYE)
+							.add(Keys.DISPLAY_NAME, Text.of(TextColors.GREEN, "Begin Battle!"))
+							.add(Keys.DYE_COLOR, DyeColors.LIME)
+							.build();
+					Icon conf = Icon.from(confirm);
+					conf.addListener(clickable -> {
+						// Close display
+						this.display.close(leader);
 
+						challenger.sendMessage(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.MISC_CHALLENGE_BEGINNING, tokens, null));
+						leader.sendMessage(MessageUtils.fetchAndParseMsg(leader, MsgConfigKeys.MISC_CHALLENGE_BEGINNING_LEADER_SELECTED, tokens, null));
+						Sponge.getScheduler().createTaskBuilder().execute(() -> {
+							try {
+								this.focus.startBattle(leader, challenger, chosenTeam);
+							} catch (BattleStartException e) {
+								challenger.sendMessage(e.getReason());
+								leader.sendMessage(e.getReason());
+							}
+						}).delay(10, TimeUnit.SECONDS).submit(BidoofUnleashed.getInstance());
+					});
+					lb.slot(conf, 17);
+				} else {
+					ItemStack confirm = ItemStack.builder()
+							.itemType(ItemTypes.DYE)
+							.add(Keys.DISPLAY_NAME, Text.of(TextColors.GRAY, "Select your team..."))
+							.add(Keys.DYE_COLOR, DyeColors.GRAY)
+							.build();
+					Icon conf = Icon.from(confirm);
+					lb.slots(conf, 17);
+				}
+			}
+
+			if(!viewing) {
+				ItemStack random = ItemStack.builder()
+						.itemType(ItemTypes.DYE)
+						.add(Keys.DISPLAY_NAME, MessageUtils.fetchAndParseMsg(leader, MsgConfigKeys.UI_GYM_POOL_RANDOM_TEAM, null, null))
+						.add(Keys.DYE_COLOR, DyeColors.LIGHT_BLUE)
+						.build();
+				Icon rng = Icon.from(random);
+				rng.addListener(clickable -> {
+					this.display.close(leader);
+					List<BU3PokemonSpec> team = TeamSelectors.randomized(this.focus, this.challenger);
 					challenger.sendMessage(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.MISC_CHALLENGE_BEGINNING, tokens, null));
-					leader.sendMessage(MessageUtils.fetchAndParseMsg(leader, MsgConfigKeys.MISC_CHALLENGE_BEGINNING_LEADER_SELECTED, tokens, null));
+					leader.sendMessage(MessageUtils.fetchAndParseMsg(leader, MsgConfigKeys.MISC_CHALLENGE_BEGINNING_LEADER_RANDOM, tokens, null));
 					Sponge.getScheduler().createTaskBuilder().execute(() -> {
 						try {
 							this.focus.startBattle(leader, challenger, chosenTeam);
@@ -145,38 +188,8 @@ public class GymPoolUI implements PageDisplayable {
 						}
 					}).delay(10, TimeUnit.SECONDS).submit(BidoofUnleashed.getInstance());
 				});
-				lb.slot(conf, 17);
-			} else {
-				ItemStack confirm = ItemStack.builder()
-						.itemType(ItemTypes.DYE)
-						.add(Keys.DISPLAY_NAME, Text.of(TextColors.GRAY, "Select your team..."))
-						.add(Keys.DYE_COLOR, DyeColors.GRAY)
-						.build();
-				Icon conf = Icon.from(confirm);
-				lb.slots(conf, 17);
+				lb.slot(rng, 35);
 			}
-
-			ItemStack random = ItemStack.builder()
-					.itemType(ItemTypes.DYE)
-					.add(Keys.DISPLAY_NAME, MessageUtils.fetchAndParseMsg(leader, MsgConfigKeys.UI_GYM_POOL_RANDOM_TEAM, null, null))
-					.add(Keys.DYE_COLOR, DyeColors.LIGHT_BLUE)
-					.build();
-			Icon rng = Icon.from(random);
-			rng.addListener(clickable -> {
-				this.display.close(leader);
-				List<BU3PokemonSpec> team = TeamSelectors.randomized(this.focus, this.challenger);
-				challenger.sendMessage(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.MISC_CHALLENGE_BEGINNING, tokens, null));
-				leader.sendMessage(MessageUtils.fetchAndParseMsg(leader, MsgConfigKeys.MISC_CHALLENGE_BEGINNING_LEADER_RANDOM, tokens, null));
-				Sponge.getScheduler().createTaskBuilder().execute(() -> {
-					try {
-						this.focus.startBattle(leader, challenger, chosenTeam);
-					} catch (BattleStartException e) {
-						challenger.sendMessage(e.getReason());
-						leader.sendMessage(e.getReason());
-					}
-				}).delay(10, TimeUnit.SECONDS).submit(BidoofUnleashed.getInstance());
-			});
-			lb.slot(rng, 35);
 		}
 
 		return lb.build();
@@ -218,12 +231,15 @@ public class GymPoolUI implements PageDisplayable {
 				lore.add(Text.of(TextColors.GRAY, fName.substring(0, 1).toUpperCase() + fName.substring(1) + ": ", TextColors.YELLOW, fEntry.getValue()));
 			}
 			icon.getDisplay().offer(Keys.ITEM_LORE, lore);
-			icon.addListener(clickable -> {
-				if(this.chosenTeam.size() < this.focus.getBattleSettings(type).getMaxPokemon()) {
-					this.display.close(leader);
-					new SpeciesUI(leader, challenger, focus, chosenTeam, entry.getKey()).open(leader, 1);
-				}
-			});
+
+			if(!viewing) {
+				icon.addListener(clickable -> {
+					if (this.chosenTeam.size() < this.focus.getBattleSettings(type).getMaxPokemon()) {
+						this.display.close(leader);
+						new SpeciesUI(leader, challenger, focus, chosenTeam, entry.getKey()).open(leader, 1);
+					}
+				});
+			}
 
 			results.add(icon);
 		}
