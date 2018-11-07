@@ -89,7 +89,7 @@ public class AcceptChallenge extends SpongeCommand {
 			PlayerData pd = BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(((Player) src).getUniqueId());
 			pd.setQueued(false);
 			next.sendMessage(MessageUtils.fetchAndParseMsg(next, MsgConfigKeys.COMMANDS_ACCEPT_LEADER_SELECTING_TEAM, null, null));
-			new GymPoolUI(player, next, gym).open(player, 1);
+			new GymPoolUI(player, next, gym, false).open(player, 1);
 		} else {
 			throw new CommandException(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.COMMANDS_ACCEPT_NOT_ON_DUTY, null, null));
 		}

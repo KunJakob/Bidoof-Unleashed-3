@@ -109,7 +109,7 @@ class SpeciesUI implements PageDisplayable {
 			icon.addListener(clickable -> {
 				this.chosenTeam.add(spec);
 				this.display.close(leader);
-				new GymPoolUI(leader, challenger, focus, this.chosenTeam).open(leader, 1);
+				new GymPoolUI(leader, challenger, focus, this.chosenTeam, false).open(leader, 1);
 			});
 			results.add(icon);
 		}

@@ -57,7 +57,7 @@ public class GymPoolUI implements PageDisplayable {
 		this(leader, challenger, gym, Lists.newArrayList(), viewing);
 	}
 
-	private GymPoolUI(Player leader, Player challenger, Gym gym, List<BU3PokemonSpec> chosenTeam, boolean viewing) {
+	GymPoolUI(Player leader, Player challenger, Gym gym, List<BU3PokemonSpec> chosenTeam, boolean viewing) {
 		this.leader = leader;
 		this.challenger = challenger;
 		this.focus = gym;

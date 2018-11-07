@@ -53,7 +53,7 @@ public class CheckGymPoolCmd extends SpongeCommand {
 
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-		new GymPoolUI((Player) src, null, args.<Gym>getOne(GYM).get()).open((Player) src, 1);
+		new GymPoolUI((Player) src, null, args.<Gym>getOne(GYM).get(), true).open((Player) src, 1);
 		return CommandResult.success();
 	}
 }
