@@ -12,6 +12,10 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 
+import java.util.List;
+
+import static gg.psyduck.bidoofunleashed.utils.GeneralUtils.search;
+
 public class ClientListener {
 
 	@Listener
@@ -20,8 +24,15 @@ public class ClientListener {
 		if (!BidoofUnleashed.getInstance().getDataRegistry().getPlayerData().containsKey(player.getUniqueId())) {
 			storage.getPlayerData(player.getUniqueId()).thenAccept(optData -> {
 				PlayerData data = optData.orElseGet(() -> PlayerData.createFor(player.getUniqueId()));
-				BidoofUnleashed.getInstance().getDataRegistry().register(player.getUniqueId(), data);
+				BidoofUnleashed.getInstance().getDataRegistry().register(player.getUniqueId(), data.init());
 			});
+		}
+
+		List<BU3BattleBase> leaderOf = search(player.getUniqueId());
+		if(leaderOf.size() > 1) {
+
+		} else {
+			String name = leaderOf.get(0).getName();
 		}
 	}
 

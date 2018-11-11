@@ -107,8 +107,10 @@ public class EliteFour implements BU3BattleBase<EliteFour>, Cooldown {
 		}
 
 		if(pd.getCurrentEliteFour() != null && pd.getCurrentEliteFour() != this) {
-			player.sendMessage(MessageUtils.fetchAndParseMsg(player, MsgConfigKeys.ERRORS_E4_DIFFERING, null, null));
-			return false;
+			if(!pd.getCurrentEliteFour().getName().equalsIgnoreCase(this.getName())) {
+				player.sendMessage(MessageUtils.fetchAndParseMsg(player, MsgConfigKeys.ERRORS_E4_DIFFERING, null, null));
+				return false;
+			}
 		}
 
 		return this.isOpen() && player.hasPermission(this.toPermission("e4") + ".contest") && this.checkCooldown(player);

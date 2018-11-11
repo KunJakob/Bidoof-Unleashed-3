@@ -6,12 +6,14 @@ import com.nickimpact.impactor.api.commands.annotations.Aliases;
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import gg.psyduck.bidoofunleashed.api.battlables.BU3Battlable;
+import gg.psyduck.bidoofunleashed.api.battlables.BU3BattleBase;
 import gg.psyduck.bidoofunleashed.api.enums.EnumLeaderType;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
 import gg.psyduck.bidoofunleashed.commands.arguments.EliteFourOrGymArg;
 import gg.psyduck.bidoofunleashed.commands.arguments.GymArg;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
 import gg.psyduck.bidoofunleashed.e4.E4Stage;
+import gg.psyduck.bidoofunleashed.e4.EliteFour;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
 import gg.psyduck.bidoofunleashed.players.PlayerData;
 import gg.psyduck.bidoofunleashed.utils.MessageUtils;
@@ -21,6 +23,7 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
+import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 
@@ -34,6 +37,7 @@ import java.util.stream.Collectors;
 public class ChallengeCommand extends SpongeCommand {
 
 	private static final Text GYM = Text.of("gym");
+	private static final Text STAGE = Text.of("stage");
 
 	public ChallengeCommand(SpongePlugin plugin) {
 		super(plugin);
@@ -42,7 +46,8 @@ public class ChallengeCommand extends SpongeCommand {
 	@Override
 	public CommandElement[] getArgs() {
 		return new CommandElement[]{
-				new EliteFourOrGymArg(GYM)
+				new EliteFourOrGymArg(GYM),
+				GenericArguments.optional(GenericArguments.integer(STAGE))
 		};
 	}
 
@@ -64,7 +69,19 @@ public class ChallengeCommand extends SpongeCommand {
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 		if(src instanceof Player) {
-			BU3Battlable gym = args.<BU3Battlable>getOne(GYM).get();
+			BU3BattleBase base = args.<BU3BattleBase>getOne(GYM).get();
+			BU3Battlable gym;
+			if(base instanceof Gym) {
+				gym = (Gym) base;
+			} else {
+				Optional<Integer> stage = args.getOne(STAGE);
+				if(stage.isPresent()) {
+					gym = ((EliteFour) base).getStages().get(Math.max(0, Math.min(3, stage.get())));
+				} else {
+					gym = ((EliteFour) base).getStages().get(0);
+				}
+			}
+
 			try {
 				for (Requirement requirement : gym.getBattleSettings(gym.getBattleType((Player) src)).getRequirements()) {
 					if (!requirement.passes(gym, (Player) src)) {

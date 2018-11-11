@@ -130,6 +130,10 @@ public class Champion implements Stage {
 
 	@Override
 	public void startBattle(Player leader, Player challenger, List<BU3PokemonSpec> team) throws BattleStartException {
+		if(this.getBattleSettings(this.getBattleType(challenger)).getPool().getTeam().size() == 0) {
+			throw new BattleStartException(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.COMMANDS_ACCEPT_EMPTY_TEAM_POOL, null, null));
+		}
+
 		PlayerStorage cs = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) challenger).orElseThrow(() -> new BattleStartException(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.ERRORS_MISSING_PLAYER_STORAGE, null, null)));
 
 		PlayerData pd = BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(challenger.getUniqueId());
@@ -153,6 +157,10 @@ public class Champion implements Stage {
 
 	@Override
 	public void startBattle(NPCTrainer leader, Player challenger, List<BU3PokemonSpec> team) throws BattleStartException {
+		if(this.getBattleSettings(this.getBattleType(challenger)).getPool().getTeam().size() == 0) {
+			throw new BattleStartException(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.COMMANDS_ACCEPT_EMPTY_TEAM_POOL, null, null));
+		}
+
 		PlayerStorage cs = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) challenger).orElseThrow(() -> new BattleStartException(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.ERRORS_MISSING_PLAYER_STORAGE, null, null)));
 		PlayerData pd = BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(challenger.getUniqueId());
 
@@ -172,7 +180,7 @@ public class Champion implements Stage {
 	public void onDefeat(Challenge challenge, PlayerData data) {
 		data.resetDefeatedE4();
 		Map<String, Function<CommandSource, Optional<Text>>> tokens = Maps.newHashMap();
-		tokens.put("bu3_e4", src -> Optional.of(Text.of(this.getName())));
+		tokens.put("bu3_category", src -> Optional.of(Text.of(this.getCategory().getId().substring(0, 1).toUpperCase() + this.getCategory().getId().substring(1))));
 		challenge.getChallenger().sendMessage(MessageUtils.fetchAndParseMsg(challenge.getChallenger(), MsgConfigKeys.BATTLES_WIN_CHAMPION, tokens, null));
 	}
 

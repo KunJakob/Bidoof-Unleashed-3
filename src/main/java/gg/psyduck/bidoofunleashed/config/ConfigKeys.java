@@ -13,6 +13,9 @@ import java.util.Map;
 
 public class ConfigKeys implements IConfigKeys {
 
+//	public static final ConfigKey<Boolean> LOGIN_MESSAGES = BooleanKey.of("general.leaders.login-msg", true);
+//	public static final ConfigKey<Boolean> OPEN_GYM_ON_LOGIN = BooleanKey.of("general.leaders.open-on-login", false);
+
 	public static final ConfigKey<String> STORAGE_METHOD = StringKey.of("storage.storage-method", "h2");
 	public static final ConfigKey<String> SQL_TABLE_PREFIX = StringKey.of("storage.data.sql-table-prefix", "bu3_");
 	public static final ConfigKey<StorageCredentials> DATABASE_VALUES = EnduringKey.wrap(AbstractKey.of(c -> new StorageCredentials(

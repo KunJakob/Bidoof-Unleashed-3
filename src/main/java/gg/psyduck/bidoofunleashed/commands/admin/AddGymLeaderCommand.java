@@ -11,11 +11,9 @@ import com.pixelmonmod.pixelmon.entities.npcs.registry.NPCRegistryTrainers;
 import com.pixelmonmod.pixelmon.enums.EnumEncounterMode;
 import com.pixelmonmod.pixelmon.enums.EnumTrainerAI;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
-import gg.psyduck.bidoofunleashed.api.enums.EnumLeaderType;
 import gg.psyduck.bidoofunleashed.commands.arguments.GymArg;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
-import gg.psyduck.bidoofunleashed.players.Roles;
 import gg.psyduck.bidoofunleashed.utils.MessageUtils;
 import net.minecraft.world.World;
 import org.spongepowered.api.Sponge;
@@ -94,7 +92,6 @@ public class AddGymLeaderCommand extends SpongeCommand {
 	        gym.addNPCLeader(npc);
         } else {
         	User user = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(leader).orElseThrow(() -> new CommandException(Text.of("Unable to find a player by that name...")));
-	        BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(user.getUniqueId()).setRole(Roles.LEADER);
 	        gym.addLeader(user.getUniqueId());
         }
 

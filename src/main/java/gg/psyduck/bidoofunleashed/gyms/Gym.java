@@ -159,6 +159,10 @@ public class Gym implements BU3Battlable, Cooldown {
 	 */
 	@Override
 	public void startBattle(Player leader, Player challenger, List<BU3PokemonSpec> team) throws BattleStartException {
+		if(this.getBattleSettings(this.getBattleType(challenger)).getPool().getTeam().size() == 0) {
+			throw new BattleStartException(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.COMMANDS_ACCEPT_EMPTY_TEAM_POOL, null, null));
+		}
+
 		BattleParticipant bpL = new TempTeamParticipant((EntityPlayerMP) leader);
 		bpL.allPokemon = new PixelmonWrapper[team.size()];
 
@@ -184,6 +188,10 @@ public class Gym implements BU3Battlable, Cooldown {
 
 	@Override
 	public void startBattle(NPCTrainer leader, Player challenger, List<BU3PokemonSpec> team) throws BattleStartException {
+		if(this.getBattleSettings(this.getBattleType(challenger)).getPool().getTeam().size() == 0) {
+			throw new BattleStartException(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.COMMANDS_ACCEPT_EMPTY_TEAM_POOL, null, null));
+		}
+
 		EnumBattleType type = this.getBattleType(challenger);
 		EntityPixelmon first = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) challenger).orElseThrow(() -> new BattleStartException(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.ERRORS_MISSING_PLAYER_STORAGE, null, null))).getFirstAblePokemon((World) challenger.getWorld());
 		GymBattleStartEvent gbse = new GymBattleStartEvent((Entity) leader, challenger, this);

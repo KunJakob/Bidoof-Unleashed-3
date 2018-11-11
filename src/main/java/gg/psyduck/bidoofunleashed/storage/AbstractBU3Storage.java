@@ -4,6 +4,7 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Multimap;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import gg.psyduck.bidoofunleashed.api.battlables.Category;
+import gg.psyduck.bidoofunleashed.api.extensions.ThrowingRunnable;
 import gg.psyduck.bidoofunleashed.e4.EliteFour;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
 import gg.psyduck.bidoofunleashed.players.PlayerData;
@@ -51,10 +52,6 @@ public class AbstractBU3Storage implements BU3Storage {
 				throw new CompletionException(e);
 			}
 		}, BidoofUnleashed.getInstance().getAsyncExecutorService());
-	}
-
-	private interface ThrowingRunnable {
-		void run() throws Exception;
 	}
 
 	@Override

@@ -5,7 +5,6 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.nickimpact.impactor.gui.v2.Icon;
 import com.nickimpact.impactor.gui.v2.Layout;
-import com.nickimpact.impactor.gui.v2.UI;
 import com.pixelmonmod.pixelmon.config.PixelmonConfig;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import gg.psyduck.bidoofunleashed.api.battlables.BU3Battlable;
@@ -174,8 +173,8 @@ public class GymListUI {
 		tokens.put("bu3_e4_3_state", src -> Optional.of(pd.getDefeatedElite4()[2] ? Text.of(TextColors.GREEN, "\u2713") : Text.of(TextColors.RED, "\u2718")));
 		tokens.put("bu3_e4_4", src -> Optional.of(Text.of(e4.getStages().get(3).getName())));
 		tokens.put("bu3_e4_4_state", src -> Optional.of(pd.getDefeatedElite4()[3] ? Text.of(TextColors.GREEN, "\u2713") : Text.of(TextColors.RED, "\u2718")));
-		tokens.put("bu3_e4_champion", src -> Optional.of(Text.of(e4.getStages().get(3).getName())));
-		tokens.put("bu3_e4_champion_state", src -> Optional.of(pd.getDefeatedElite4()[3] ? Text.of(TextColors.GREEN, "Available") : Text.of(TextColors.RED, "Unavailable (Beat other stages first)")));
+		tokens.put("bu3_e4_champion", src -> Optional.of(Text.of("Champion")));
+		tokens.put("bu3_e4_champion_state", src -> Optional.of(Arrays.stream(pd.getDefeatedElite4()).allMatch(x -> x) ? Text.of(TextColors.GREEN, "Available") : Text.of(TextColors.RED, "Unavailable")));
 
 		List<Text> lore = MessageUtils.fetchAndParseMsgs(player, MsgConfigKeys.UI_E4_ICON_LORE, tokens, null);
 		ItemStack rep = ItemStack.builder()

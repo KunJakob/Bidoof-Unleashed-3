@@ -76,7 +76,10 @@ public class BattleListener {
 
 	private static final Function<List<EliteFour>, List<BU3Battlable>> fetch = (e4s) -> {
 		List<BU3Battlable> results = Lists.newArrayList();
-		e4s.stream().map(EliteFour::getStages).forEach(results::addAll);
+		e4s.forEach(e4 -> {
+			results.addAll(e4.getStages());
+			results.add(e4.getChampion());
+		});
 		return results;
 	};
 
@@ -208,6 +211,7 @@ public class BattleListener {
 					} else {
 						data.awardBadge(gym.getBadge().fill("NPC"));
 					}
+					data.getBadge(battlable).ifPresent(Badge::incWins);
 				} else if(battlable instanceof Champion){
 					Champion champion = (Champion) battlable;
 					if (challenge.getLeader() instanceof Player) {
@@ -215,11 +219,11 @@ public class BattleListener {
 					} else {
 						data.awardBadge(champion.getBadge().fill("NPC"));
 					}
+					data.getBadge(battlable).ifPresent(Badge::incWins);
 				}
 			});
 		}
 
-		data.getBadge(battlable).ifPresent(Badge::incWins);
 
 		battlable.getBattleSettings(challenge.getBattleType()).getRewards().get(challenge.getChallenger() instanceof Player ? EnumLeaderType.PLAYER : EnumLeaderType.NPC).forEach(reward -> {
 			try {

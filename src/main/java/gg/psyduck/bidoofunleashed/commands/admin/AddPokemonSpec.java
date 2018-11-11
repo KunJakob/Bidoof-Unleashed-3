@@ -68,7 +68,7 @@ public class AddPokemonSpec extends SpongeCommand {
 		BU3PokemonSpec spec = new BU3PokemonSpec(args.<String>getOne(SPEC).get().split(" "));
 		PixelmonData data = new PixelmonData(spec.create((World) Sponge.getServer().getWorlds().iterator().next()));
 		data.pokeball = EnumPokeballs.PokeBall;
-		String export = ImportExportConverter.getExportText(data) + "\n";
+		String export = "\n" + ImportExportConverter.getExportText(data);
 
 		gym.getBattleSettings(settings).getPool().getTeam().add(spec);
 		gym.getBattleSettings(settings).getPool().append(export);

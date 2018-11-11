@@ -40,8 +40,10 @@ public class ShowdownImporter {
 				try {
 					if (line.startsWith("//") || line.startsWith("#")) continue;
 					if (line.trim().length() == 0) {
-						pool.add(build(block.toString()));
-						block = new StringBuilder();
+						if(block.length() != 0) {
+							pool.add(build(block.toString()));
+							block = new StringBuilder();
+						}
 						continue;
 					}
 

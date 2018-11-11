@@ -1,5 +1,6 @@
 package gg.psyduck.bidoofunleashed;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -32,7 +33,6 @@ import gg.psyduck.bidoofunleashed.api.BU3Service;
 import gg.psyduck.bidoofunleashed.api.battlables.BU3BattleBase;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
 import gg.psyduck.bidoofunleashed.api.gyms.json.RequirementAdapter;
-import gg.psyduck.bidoofunleashed.api.pixelmon.custom.Customs;
 import gg.psyduck.bidoofunleashed.api.pixelmon.specs.HeldItemSpec;
 import gg.psyduck.bidoofunleashed.api.pixelmon.specs.MovesetSpec;
 import gg.psyduck.bidoofunleashed.api.pixelmon.specs.NicknameSpec;
@@ -52,6 +52,7 @@ import gg.psyduck.bidoofunleashed.internal.TextParsingUtils;
 import gg.psyduck.bidoofunleashed.internal.nucleus.TokenService;
 import gg.psyduck.bidoofunleashed.listeners.BattleListener;
 import gg.psyduck.bidoofunleashed.listeners.ClientListener;
+import gg.psyduck.bidoofunleashed.players.PlayerData;
 import gg.psyduck.bidoofunleashed.rewards.ChancePokemonReward;
 import gg.psyduck.bidoofunleashed.rewards.ItemReward;
 import gg.psyduck.bidoofunleashed.rewards.PokemonReward;
@@ -68,6 +69,7 @@ import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
+import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.event.service.ChangeServiceProviderEvent;
 import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
@@ -82,10 +84,10 @@ import org.spongepowered.api.text.format.TextColors;
 import java.io.*;
 import java.nio.file.Path;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Getter
@@ -189,10 +191,6 @@ public class BidoofUnleashed extends SpongePlugin {
 		    new BU3Command(this).register(this);
 		    new CheckBadgeCommand(this).register(this);
 
-		    // Testing
-		    new Customs.TestSpawn(this).register(this);
-		    new Customs.TestCreate(this).register(this);
-
 		    this.storage = StorageFactory.getInstance(this, StorageType.H2);
 		    this.storage.fetchGyms().thenAccept(gyms -> this.dataRegistry.getBattlables().putAll(gyms));
 		    this.storage.fetchE4().thenAccept(e4s -> e4s.forEach((key, value) -> {
@@ -207,11 +205,20 @@ public class BidoofUnleashed extends SpongePlugin {
 
     @Listener
     public void onServerStart(GameStartedServerEvent e) {
-	    //Testing
-	    try {
-		    Customs.readAndInit();
-	    } catch (Exception e1) {
-		    e1.printStackTrace();
+	    Sponge.getScheduler().createTaskBuilder().execute(() -> {
+	    	List<PlayerData> data = this.getDataRegistry().getPlayerData().values().stream().filter(PlayerData::isDirty).collect(Collectors.toList());
+	    	for(PlayerData pd : data) {
+	    		this.getStorage().updatePlayerData(pd);
+		    }
+	    }).interval(5, TimeUnit.MINUTES).submit(this);
+    }
+
+    @Listener
+    public void onServerStop(GameStoppingServerEvent e) {
+	    Sponge.getScheduler().getScheduledTasks(this).forEach(Task::cancel);
+	    List<PlayerData> data = ImmutableList.copyOf(this.getDataRegistry().getPlayerData().values().stream().filter(PlayerData::isDirty).collect(Collectors.toList()));
+	    for(PlayerData pd : data) {
+		    this.getStorage().updatePlayerData(pd);
 	    }
     }
 

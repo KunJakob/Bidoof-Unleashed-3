@@ -30,7 +30,7 @@ public class MsgConfigKeys implements IConfigKeys {
 	public static final ConfigKey<String> COMMANDS_ACCEPT_EMPTY_QUEUE = StringKey.of("commands.accept-challenge.leader.empty-queue", "{{bu3_error}} &7No challenges currently await you...");
 	public static final ConfigKey<String> COMMANDS_ACCEPT_EMPTY_TEAM_POOL = StringKey.of("commands.accept-challenge.leader.empty-team-pool", "{{bu3_error}} &7The team pool for the challenger is empty, unable to accept challenge...");
 	public static final ConfigKey<String> COMMANDS_ACCEPT_NOT_ON_DUTY = StringKey.of("commands.accept-challenge.leader.not-active", "{{bu3_error}} &7You aren't currently on duty...");
-    public static final ConfigKey<String> COMMANDS_ADD_REQUIREMENT_SUCCESS = StringKey.of("commands.add-requirement.success", "{{bu3_prefix}} &7You have successfully added the requirement {{bu3_requirement}} to the gym {{bu3_gym} Gym");
+	public static final ConfigKey<String> COMMANDS_ADD_REQUIREMENT_SUCCESS = StringKey.of("commands.add-requirement.success", "{{bu3_prefix}} &7You have successfully added the requirement {{bu3_requirement}} to the gym {{bu3_gym} Gym");
     public static final ConfigKey<String> COMMANDS_ADD_GYM_SUCCESS = StringKey.of("commands.add-gym.success", "{{bu3_prefix}} &7Gym successfully created!");
     public static final ConfigKey<String> COMMANDS_ADD_ELITE_FOUR_SUCCESS = StringKey.of("commands.add-e4.success", "{{bu3_prefix}} &7Elite Four successfully created!");
     public static final ConfigKey<String> COMMANDS_ADD_GYM_EXISTS = StringKey.of("commands.add-gym.error.exists", "{{bu3_error}} &7A gym with that name already exists...");
@@ -125,9 +125,9 @@ public class MsgConfigKeys implements IConfigKeys {
 	public static final ConfigKey<String> ERRORS_CANT_CHALLENGE_CHAMPION = StringKey.of("errors.e4.cant-challenge", "{{bu3_error}} &7You must defeat all E4 members before challenging this member of the elite four...");
 	public static final ConfigKey<String> ERRORS_E4_NOT_ALL_BADGES = StringKey.of("errors.e4.not-all-badges", "{{bu3_error}} &7You must have all the badges for this E4's category before you can challenge it...");
 
-	public static final ConfigKey<String> BATTLES_WIN_GYM = StringKey.of("battles.win", "{{bu3_prefix}} &7Congrats! You've defeated the &e{{bu3_gym}} Gym&7!");
-	public static final ConfigKey<String> BATTLES_WIN_E4 = StringKey.of("battles.win", "{{bu3_prefix}} &7Congrats! You've defeated the &e{{bu3_e4}} stage&7!");
-	public static final ConfigKey<String> BATTLES_WIN_CHAMPION = StringKey.of("battles.win", "{{bu3_prefix}} &7Congrats! You've defeated the &e{{bu3_e4}} Champion&7!");
+	public static final ConfigKey<String> BATTLES_WIN_GYM = StringKey.of("battles.win.gym", "{{bu3_prefix}} &7Congrats! You've defeated the &e{{bu3_gym}} Gym&7!");
+	public static final ConfigKey<String> BATTLES_WIN_E4 = StringKey.of("battles.win.e4", "{{bu3_prefix}} &7Congrats! You've defeated &eStage {{bu3_e4}} &7of the &a{{bu3_category}} category&7!");
+	public static final ConfigKey<String> BATTLES_WIN_CHAMPION = StringKey.of("battles.win.champion", "{{bu3_prefix}} &7Congrats! You've defeated the &e{{bu3_category}} Champion&7!");
 	public static final ConfigKey<String> BATTLES_LOSE_GYM = StringKey.of("battles.lose", "{{bu3_prefix}} &7Well shoot! You've lost to the &e{{bu3_gym}} Gym&7...");
 	public static final ConfigKey<String> BATTLES_FORFEIT = StringKey.of("battles.forfeit", "{{bu3_prefix}} &7It seems you decided to forfeit your challenge against the &e{{bu3_gym}} Gym&7...");
 
