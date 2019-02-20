@@ -2,6 +2,7 @@ package gg.psyduck.bidoofunleashed.api.pixelmon.specs;
 
 import com.google.common.collect.Lists;
 import com.pixelmonmod.pixelmon.api.pokemon.ISpecType;
+import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
 import com.pixelmonmod.pixelmon.api.pokemon.SpecValue;
 import com.pixelmonmod.pixelmon.battles.attacks.Attack;
 import com.pixelmonmod.pixelmon.battles.attacks.AttackBase;
@@ -93,7 +94,9 @@ public class MovesetSpec extends SpecValue<String[]> implements ISpecType {
 			moveset.add(new Attack(AttackBase.getAttackBase(atk).get()));
 		}
 
-		pokemon.setMoveset(moveset);
+		for(int i = 0; i < moveset.attacks.length; i++) {
+			pokemon.getPokemonData().getMoveset().set(i, moveset.get(i));
+		}
 	}
 
 	@Override
@@ -105,13 +108,20 @@ public class MovesetSpec extends SpecValue<String[]> implements ISpecType {
 	}
 
 	@Override
-	public boolean matches(EntityPixelmon pokemon) {
+	public void apply(Pokemon pokemon) {
 		Moveset moveset = new Moveset();
 		for(String atk : this.value) {
 			moveset.add(new Attack(AttackBase.getAttackBase(atk).get()));
 		}
 
-		return pokemon.getMoveset().equals(moveset);
+		for(int i = 0; i < moveset.attacks.length; i++) {
+			pokemon.getMoveset().set(i, moveset.get(i));
+		}
+	}
+
+	@Override
+	public boolean matches(EntityPixelmon pokemon) {
+		return this.matches(pokemon.getPokemonData());
 	}
 
 	@Override
@@ -120,6 +130,20 @@ public class MovesetSpec extends SpecValue<String[]> implements ISpecType {
 		for(String atk : this.value) {
 			int index = AttackBase.getAttackBase(atk).get().attackIndex;
 			if(index != nbt.getInteger(NbtKeys.PIXELMON_MOVE_ID + ai.getAndIncrement())) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	@Override
+	public boolean matches(Pokemon pokemon) {
+		Moveset moveset = pokemon.getMoveset();
+		AtomicInteger ai = new AtomicInteger(0);
+
+		for(String atk : this.value) {
+			if(!moveset.get(ai.getAndIncrement()).baseAttack.getLocalizedName().equalsIgnoreCase(atk)) {
 				return false;
 			}
 		}

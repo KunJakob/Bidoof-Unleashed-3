@@ -11,4 +11,18 @@
       </configuration>
     </facet>
   </component>
+  <component name="McpModuleSettings">
+    <option name="mappingFiles">
+      <set>
+        <option value="C:\Users\nickd\.gradle\caches\minecraft\de\oceanlabs\mcp\mcp_snapshot\20180324\1.12.2\srgs\mcp.exc" />
+        <option value="C:\Users\nickd\.gradle\caches\minecraft\de\oceanlabs\mcp\mcp_snapshot\20180324\1.12.2\srgs\notch-srg.srg" />
+        <option value="C:\Users\nickd\.gradle\caches\minecraft\de\oceanlabs\mcp\mcp_snapshot\20180324\1.12.2\srgs\notch-mcp.srg" />
+        <option value="C:\Users\nickd\.gradle\caches\minecraft\de\oceanlabs\mcp\mcp_snapshot\20180324\1.12.2\srgs\mcp-notch.srg" />
+        <option value="C:\Users\nickd\.gradle\caches\minecraft\de\oceanlabs\mcp\mcp_snapshot\20180324\1.12.2\srgs\srg.exc" />
+        <option value="C:\Users\nickd\.gradle\caches\minecraft\de\oceanlabs\mcp\mcp_snapshot\20180324\1.12.2\srgs\mcp-srg.srg" />
+      </set>
+    </option>
+    <option name="mcpVersion" value="snapshot_20180324" />
+    <option name="minecraftVersion" value="1.12.2" />
+  </component>
 </module>

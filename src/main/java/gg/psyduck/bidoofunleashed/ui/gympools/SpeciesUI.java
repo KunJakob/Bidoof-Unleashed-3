@@ -6,7 +6,7 @@ import com.nickimpact.impactor.gui.v2.Icon;
 import com.nickimpact.impactor.gui.v2.Layout;
 import com.nickimpact.impactor.gui.v2.Page;
 import com.nickimpact.impactor.gui.v2.PageDisplayable;
-import com.pixelmonmod.pixelmon.enums.EnumPokemon;
+import com.pixelmonmod.pixelmon.enums.EnumSpecies;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import gg.psyduck.bidoofunleashed.api.enums.EnumBattleType;
 import gg.psyduck.bidoofunleashed.api.pixelmon.specs.BU3PokemonSpec;
@@ -37,10 +37,10 @@ class SpeciesUI implements PageDisplayable {
 	private Player challenger;
 	private Gym focus;
 	private List<BU3PokemonSpec> chosenTeam;
-	private EnumPokemon species;
+	private EnumSpecies species;
 	private Page display;
 
-	SpeciesUI(Player leader, Player challenger, Gym gym, List<BU3PokemonSpec> chosenTeam, EnumPokemon species) {
+	SpeciesUI(Player leader, Player challenger, Gym gym, List<BU3PokemonSpec> chosenTeam, EnumSpecies species) {
 		this.leader = leader;
 		this.challenger = challenger;
 		this.focus = gym;
@@ -90,8 +90,8 @@ class SpeciesUI implements PageDisplayable {
 
 		int index = 45;
 		for(BU3PokemonSpec spec : this.chosenTeam) {
-			ItemStack picture = PixelmonIcons.createPicture(EnumPokemon.getFromNameAnyCase(spec.name), spec.shiny != null ? spec.shiny : false, spec.form != null ? spec.form : -1);
-			picture = PixelmonIcons.applySpecDetails(picture, spec);
+			ItemStack picture = PixelmonIcons.createPicture(EnumSpecies.getFromNameAnyCase(spec.name), spec.shiny != null ? spec.shiny : false, spec.form != null ? spec.form : -1);
+			PixelmonIcons.applySpecDetails(picture, spec);
 			lb.slot(Icon.from(picture), index++);
 		}
 
@@ -102,8 +102,8 @@ class SpeciesUI implements PageDisplayable {
 		List<BU3PokemonSpec> specs = (challenger == null ? this.focus.getBattleSettings(EnumBattleType.First) : this.focus.getBattleSettings(this.focus.getBattleType(challenger))).getPool().getTeam().stream().filter(spec -> spec.name.equalsIgnoreCase(this.species.name)).collect(Collectors.toList());
 		List<Icon> results = Lists.newArrayList();
 		for(BU3PokemonSpec spec : specs) {
-			ItemStack picture = PixelmonIcons.createPicture(EnumPokemon.getFromNameAnyCase(spec.name), spec.shiny != null ? spec.shiny : false, spec.form != null ? spec.form : -1);
-			picture = PixelmonIcons.applySpecDetails(picture, spec);
+			ItemStack picture = PixelmonIcons.createPicture(EnumSpecies.getFromNameAnyCase(spec.name), spec.shiny != null ? spec.shiny : false, spec.form != null ? spec.form : -1);
+			PixelmonIcons.applySpecDetails(picture, spec);
 
 			Icon icon = Icon.from(picture);
 			icon.addListener(clickable -> {

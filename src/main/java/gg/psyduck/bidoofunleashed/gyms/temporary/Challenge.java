@@ -2,19 +2,15 @@ package gg.psyduck.bidoofunleashed.gyms.temporary;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.pixelmonmod.pixelmon.storage.NbtKeys;
-import com.pixelmonmod.pixelmon.storage.PixelmonStorage;
-import com.pixelmonmod.pixelmon.storage.PlayerStorage;
+import com.pixelmonmod.pixelmon.Pixelmon;
+import com.pixelmonmod.pixelmon.storage.PlayerPartyStorage;
 import gg.psyduck.bidoofunleashed.api.enums.EnumBattleType;
 import lombok.Getter;
-import net.minecraft.entity.player.EntityPlayerMP;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Getter
@@ -45,12 +41,12 @@ public class Challenge {
 	 * @param player The target player to lock
 	 */
 	private void cacheAndLock(Player player) {
-		PlayerStorage storage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) player).orElseThrow(() -> new RuntimeException("Critical error accessing pixelmon data for " + player.getName()));
+		PlayerPartyStorage storage = Pixelmon.storageManager.getParty(player.getUniqueId());
 		List<Boolean> states = Lists.newArrayList();
 
-		Arrays.stream(storage.partyPokemon).filter(Objects::nonNull).forEach(nbt -> {
-			states.add(nbt.getBoolean(NbtKeys.DOES_LEVEL));
-			nbt.setBoolean(NbtKeys.DOES_LEVEL, false);
+		storage.getTeam().forEach(pokemon -> {
+			states.add(pokemon.doesLevel());
+			pokemon.setDoesLevel(false);
 		});
 
 		this.states.put(player, states);
@@ -69,8 +65,8 @@ public class Challenge {
 	 * @param player The target player to unlock
 	 */
 	private void restore(Player player) {
-		PlayerStorage storage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) player).orElseThrow(() -> new RuntimeException("Critical error accessing pixelmon data for " + player.getName()));
+		PlayerPartyStorage storage = Pixelmon.storageManager.getParty(player.getUniqueId());
 		AtomicInteger ai = new AtomicInteger();
-		Arrays.stream(storage.partyPokemon).filter(Objects::nonNull).forEach(nbt -> nbt.setBoolean(NbtKeys.DOES_LEVEL, this.states.get(player).get(ai.getAndIncrement())));
+		storage.getTeam().forEach(pokemon -> pokemon.setDoesLevel(this.states.get(player).get(ai.getAndIncrement())));
 	}
 }

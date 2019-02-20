@@ -36,7 +36,7 @@ public class GymRequirement implements Requirement {
 
 	@Override
 	public boolean passes(BU3Battlable battlable, Player player) {
-		return BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(player.getUniqueId()).getBadges().stream().anyMatch(badge -> badge.getName().equalsIgnoreCase(requirement.getBadge().getName()));
+		return BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(player.getUniqueId()).getBadges().stream().anyMatch(badge -> badge.getIdentifier().equalsIgnoreCase(requirement.getBadge().getName()));
 	}
 
 	@Override

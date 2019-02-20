@@ -1,5 +1,6 @@
 package gg.psyduck.bidoofunleashed.api.pixelmon.specs;
 
+import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
 import com.pixelmonmod.pixelmon.api.pokemon.PokemonSpec;
 import com.pixelmonmod.pixelmon.battles.attacks.Attack;
 import com.pixelmonmod.pixelmon.battles.attacks.AttackBase;
@@ -8,10 +9,9 @@ import com.pixelmonmod.pixelmon.config.PixelmonItemsHeld;
 import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
 import com.pixelmonmod.pixelmon.entities.pixelmon.stats.Moveset;
 import com.pixelmonmod.pixelmon.items.ItemHeld;
-import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import net.minecraft.item.ItemStack;
-import scala.actors.threadpool.Arrays;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -27,23 +27,23 @@ public class BU3PokemonSpec extends PokemonSpec {
 	public BU3PokemonSpec(String... args) {
 		super(args);
 
-		for(int i = 0; i < args.length; i++) {
-			switch (args[i]) {
+		for (String arg : args) {
+			switch (arg) {
 				case "nickname":
-					this.nickname = args[i];
+					this.nickname = arg;
 					break;
 				case "item":
-					this.item = args[i];
+					this.item = arg;
 					break;
 				case "attacks":
-					this.attacks = Arrays.asList(args[i].split(","));
+					this.attacks = Arrays.asList(arg.split(","));
 					break;
 			}
 		}
 	}
 
 	@Override
-	public void apply(EntityPixelmon pokemon) {
+	public void apply(Pokemon pokemon) {
 		super.apply(pokemon);
 
 		if(nickname != null) {
@@ -58,16 +58,15 @@ public class BU3PokemonSpec extends PokemonSpec {
 		}
 
 		if(attacks != null) {
-			Moveset moveset = new Moveset(pokemon);
+			Moveset moveset = new Moveset(pokemon.getMoveset().pokemonLink);
 			for(String attack : attacks) {
 				AttackBase.getAttackBase(attack).map(Attack::new).ifPresent(moveset::add);
 			}
 			if(!moveset.isEmpty()) {
-				pokemon.setMoveset(moveset);
-				pokemon.update(EnumUpdateType.Moveset);
+				for(int i = 0; i < moveset.attacks.length; i++) {
+					pokemon.getMoveset().set(i, moveset.get(i));
+				}
 			}
 		}
-
-		pokemon.update(EnumUpdateType.Stats, EnumUpdateType.Nickname);
 	}
 }

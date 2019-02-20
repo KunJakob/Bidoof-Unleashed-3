@@ -2,14 +2,15 @@ package gg.psyduck.bidoofunleashed.api.battlables;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.pixelmonmod.pixelmon.Pixelmon;
+import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
+import com.pixelmonmod.pixelmon.api.pokemon.PokemonSpec;
 import com.pixelmonmod.pixelmon.battles.controller.participants.BattleParticipant;
 import com.pixelmonmod.pixelmon.battles.controller.participants.PixelmonWrapper;
+import com.pixelmonmod.pixelmon.entities.npcs.NPCChatting;
 import com.pixelmonmod.pixelmon.entities.npcs.NPCTrainer;
-import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
 import com.pixelmonmod.pixelmon.enums.items.EnumPokeballs;
-import com.pixelmonmod.pixelmon.storage.NbtKeys;
-import com.pixelmonmod.pixelmon.storage.PixelmonStorage;
-import com.pixelmonmod.pixelmon.storage.PlayerStorage;
+import com.pixelmonmod.pixelmon.storage.PlayerPartyStorage;
 import gg.psyduck.bidoofunleashed.api.enums.EnumBattleType;
 import gg.psyduck.bidoofunleashed.api.exceptions.BattleStartException;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
@@ -22,11 +23,13 @@ import gg.psyduck.bidoofunleashed.players.PlayerData;
 import gg.psyduck.bidoofunleashed.utils.MessageUtils;
 import net.minecraft.entity.player.EntityPlayerMP;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public interface BU3Battlable extends BU3BattleBase {
 
@@ -40,8 +43,8 @@ public interface BU3Battlable extends BU3BattleBase {
 		@Override
 		public boolean passes(BU3Battlable battlable, Player player) throws Exception {
 			BattleType bt = battlable.getBattleSettings(battlable.getBattleType(player));
-			PlayerStorage storage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) player).orElseThrow(() -> new Exception("Missing player storage data for " + player.getName()));
-			return Arrays.stream(storage.partyPokemon).noneMatch(nbt -> nbt != null && nbt.getInteger(NbtKeys.LEVEL) > bt.getLvlCap());
+			PlayerPartyStorage storage = Pixelmon.storageManager.getParty(player.getUniqueId());
+			return storage.getTeam().stream().noneMatch(pokemon -> pokemon.getLevel() > bt.getLvlCap());
 		}
 
 		@Override
@@ -73,7 +76,7 @@ public interface BU3Battlable extends BU3BattleBase {
 	 * @param challenger The challenger trying to prove their worth
 	 * @param team The team the leader will be battling with
 	 */
-	void startBattle(NPCTrainer leader, Player challenger, List<BU3PokemonSpec> team) throws BattleStartException;
+	void startBattle(NPCChatting leader, Player challenger, List<BU3PokemonSpec> team) throws BattleStartException;
 
 	/**
 	 * Actions to handle when a battlable instance is defeated
@@ -90,7 +93,7 @@ public interface BU3Battlable extends BU3BattleBase {
 
 	boolean removeLeader(UUID uuid);
 
-	void addNPCLeader(NPCTrainer trainer);
+	void addNPCLeader(NPCChatting trainer);
 
 	void removeNPCLeader();
 
@@ -102,19 +105,20 @@ public interface BU3Battlable extends BU3BattleBase {
 
 	List<UUID> getLeaders();
 
-	default void apply(BattleParticipant participant, Player player, List<BU3PokemonSpec> team) {
-		for(int i = 0; i < team.size(); i++) {
-			EntityPixelmon pokemon = team.get(i).create(participant.getWorld());
-			if(team.get(i).level == null) {
-				pokemon.getLvl().setLevel(this.getBattleSettings(this.getBattleType(player)).getLvlCap());
+	default List<Pokemon> convertFromSpecs(Entity focus, Player challenger, List<BU3PokemonSpec> specs) {
+		return specs.stream().map(spec -> {
+			Pokemon pokemon = spec.create();
+			if(spec.level == null) {
+				pokemon.setLevel(this.getBattleSettings(this.getBattleType(challenger)).getLvlCap());
+			} else {
+				pokemon.setLevel(Math.min(pokemon.getLevel(), this.getBattleSettings(this.getBattleType(challenger)).getLvlCap()));
 			}
-			pokemon.loadMoveset();
-			pokemon.caughtBall = EnumPokeballs.PokeBall;
-			pokemon.setOwnerId(player.getUniqueId());
-			pokemon.setPokemonId(participant.getStorage().getNewPokemonID());
-			participant.allPokemon[i] = new PixelmonWrapper(participant, pokemon, i);
-		}
 
-		participant.controlledPokemon = Lists.newArrayList(participant.allPokemon[0]);
+			pokemon.setCaughtBall(EnumPokeballs.PokeBall);
+			if(focus instanceof Player) {
+				pokemon.setOriginalTrainer((EntityPlayerMP) focus);
+			}
+			return pokemon;
+		}).collect(Collectors.toList());
 	}
 }

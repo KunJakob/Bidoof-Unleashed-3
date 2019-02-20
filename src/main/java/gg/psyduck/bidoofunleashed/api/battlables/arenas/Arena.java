@@ -21,7 +21,7 @@ public class Arena {
 	private LocAndRot leader = new LocAndRot();
 
     public boolean isSetup() {
-		return this.challenger != null && this.isProper(this.challenger) && this.leader != null && this.isProper(this.leader);
+		return this.challenger != null && this.isProper(this.challenger) && this.leader != null && this.isProper(this.leader) && this.spectators != null && this.isProper(this.spectators);
 	}
 
 	public boolean isProper(LocAndRot location) {

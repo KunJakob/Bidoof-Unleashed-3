@@ -46,7 +46,7 @@ public class CreateE4Cmd extends SpongeCommand {
 	public CommandElement[] getArgs() {
 		return new CommandElement[] {
 				GenericArguments.string(Text.of("category")),
-				GenericArguments.remainingJoinedStrings(Text.of("spec"))
+				GenericArguments.optional(GenericArguments.remainingJoinedStrings(Text.of("spec")))
 		};
 	}
 

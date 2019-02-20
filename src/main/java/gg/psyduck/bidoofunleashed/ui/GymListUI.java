@@ -17,6 +17,7 @@ import gg.psyduck.bidoofunleashed.e4.E4Stage;
 import gg.psyduck.bidoofunleashed.e4.EliteFour;
 import gg.psyduck.bidoofunleashed.gyms.Badge;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
+import gg.psyduck.bidoofunleashed.players.BadgeReference;
 import gg.psyduck.bidoofunleashed.players.PlayerData;
 import gg.psyduck.bidoofunleashed.utils.MessageUtils;
 import org.spongepowered.api.Sponge;
@@ -98,7 +99,7 @@ public class GymListUI {
 
 		Map<String, Function<CommandSource, Optional<Text>>> tokens = Maps.newHashMap();
 		tokens.put("bu3_gym", src -> Optional.of(Text.of(gym.getName())));
-		tokens.put("bu3_gym_defeated", src -> Optional.of(Text.of(pd.hasBadge(gym.getBadge()) ? pd.getBadge(gym).orElse(new Badge()).getTimesDefeated() : 0)));
+		tokens.put("bu3_gym_defeated", src -> Optional.of(Text.of(pd.getBadge(gym).map(BadgeReference::getTimesDefeated).orElse(0))));
 		tokens.put("bu3_gym_status", src -> Optional.of(gym.isOpen() ? Text.of(TextColors.GREEN, "Open") : Text.of(TextColors.RED, "Closed")));
 		tokens.put("bu3_level_cap", src -> Optional.of(gym.getBattleSettings(gym.getBattleType((Player) src)).getLvlCap() == PixelmonConfig.maxLevel ? Text.of("None") : Text.of(gym.getBattleSettings(gym.getBattleType((Player) src)).getLvlCap())));
 		tokens.put("bu3_can_battle", src -> {
@@ -142,7 +143,7 @@ public class GymListUI {
 
 		Map<String, Function<CommandSource, Optional<Text>>> tokens = Maps.newHashMap();
 		tokens.put("bu3_e4", src -> Optional.of(Text.of(e4.getName())));
-		tokens.put("bu3_e4_defeated", src -> Optional.of(Text.of(pd.hasBadge(e4.getBadge()) ? pd.getBadge(e4).orElse(new Badge()).getTimesDefeated() : 0)));
+		tokens.put("bu3_e4_defeated", src -> Optional.of(Text.of(pd.getBadge(e4).map(BadgeReference::getTimesDefeated).orElse(0))));
 		tokens.put("bu3_e4_status", src -> Optional.of(e4.isOpen() ? Text.of(TextColors.GREEN, "Open") : Text.of(TextColors.RED, "Closed")));
 		tokens.put("bu3_level_cap", src -> {
 			int low = 0;

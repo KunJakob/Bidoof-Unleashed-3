@@ -1,10 +1,14 @@
 package gg.psyduck.bidoofunleashed.commands.leader;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.nickimpact.impactor.api.commands.SpongeCommand;
 import com.nickimpact.impactor.api.commands.annotations.Aliases;
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
+import gg.psyduck.bidoofunleashed.api.exceptions.BattleStartException;
 import gg.psyduck.bidoofunleashed.commands.arguments.GymArg;
+import gg.psyduck.bidoofunleashed.config.ConfigKeys;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
 import gg.psyduck.bidoofunleashed.players.PlayerData;
@@ -20,7 +24,11 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 @Aliases({"acceptchallenge", "accept"})
 public class AcceptChallenge extends SpongeCommand {
@@ -60,14 +68,14 @@ public class AcceptChallenge extends SpongeCommand {
 			throw new CommandException(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.SOURCE_NOT_PLAYER, null, null));
 		}
 
-		Player player = (Player) src;
-		if(GeneralUtils.search(player.getUniqueId()).size() == 0) {
+		Player leader = (Player) src;
+		if(GeneralUtils.search(leader.getUniqueId()).size() == 0) {
 			throw new CommandException(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.PLAYER_NOT_LEADER, null, null));
 		}
 
 		Gym gym = args.<Gym>getOne(GYM).get();
 		if(gym != null) {
-			if(!gym.getLeaders().contains(player.getUniqueId())) {
+			if(!gym.getLeaders().contains(leader.getUniqueId())) {
 				throw new CommandException(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.PLAYER_NOT_LEADER_OF_GYM, null, null));
 			}
 
@@ -76,20 +84,32 @@ public class AcceptChallenge extends SpongeCommand {
 			}
 
 			UUID turn = gym.getQueue().poll();
-			if(gym.getQueue().size() != 0 && player.getUniqueId().equals(turn)) {
+			if(gym.getQueue().size() != 0 && leader.getUniqueId().equals(turn)) {
 				gym.getQueue().add(turn);
 				turn = gym.getQueue().poll();
 			}
 
-			Player next = Sponge.getServer().getPlayer(turn).orElseThrow(() -> new CommandException(Text.of("Something happened finding the next player")));
-			if(gym.getBattleSettings(gym.getBattleType(next)).getPool().getTeam().isEmpty()) {
+			Player challenger = Sponge.getServer().getPlayer(turn).orElseThrow(() -> new CommandException(Text.of("Something happened finding the next player")));
+			if(gym.getBattleSettings(gym.getBattleType(challenger)).getPool().getTeam().isEmpty()) {
 				throw new CommandException(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.COMMANDS_ACCEPT_EMPTY_TEAM_POOL, null, null));
 			}
 
-			PlayerData pd = BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(next.getUniqueId());
+			PlayerData pd = BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(challenger.getUniqueId());
 			pd.setQueued(false);
-			next.sendMessage(MessageUtils.fetchAndParseMsg(next, MsgConfigKeys.COMMANDS_ACCEPT_LEADER_SELECTING_TEAM, null, null));
-			new GymPoolUI(player, next, gym, false).open(player, 1);
+			//challenger.sendMessage(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.COMMANDS_ACCEPT_LEADER_SELECTING_TEAM, null, null));
+			//new GymPoolUI(player, next, gym, false).open(player, 1);
+			Map<String, Function<CommandSource, Optional<Text>>> tokens = Maps.newHashMap();
+			tokens.put("bu3_wait", cs -> Optional.of(Text.of(BidoofUnleashed.getInstance().getConfig().get(ConfigKeys.TELEPORT_WAIT))));
+			challenger.sendMessage(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.MISC_CHALLENGE_BEGINNING, tokens, null));
+			leader.sendMessage(MessageUtils.fetchAndParseMsg(leader, MsgConfigKeys.MISC_CHALLENGE_BEGINNING_LEADER_SELECTED, tokens, null));
+			Sponge.getScheduler().createTaskBuilder().execute(() -> {
+				try {
+					gym.startBattle(leader, challenger, Lists.newArrayList());
+				} catch (BattleStartException e) {
+					challenger.sendMessage(e.getReason());
+					leader.sendMessage(e.getReason());
+				}
+			}).delay(10, TimeUnit.SECONDS).submit(BidoofUnleashed.getInstance());
 		} else {
 			throw new CommandException(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.COMMANDS_ACCEPT_NOT_ON_DUTY, null, null));
 		}

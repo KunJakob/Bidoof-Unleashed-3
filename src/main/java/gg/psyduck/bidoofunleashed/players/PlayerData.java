@@ -6,6 +6,7 @@ import gg.psyduck.bidoofunleashed.api.battlables.BU3Battlable;
 import gg.psyduck.bidoofunleashed.api.battlables.BU3BattleBase;
 import gg.psyduck.bidoofunleashed.api.battlables.Category;
 import gg.psyduck.bidoofunleashed.api.cooldowns.Cooldown;
+import gg.psyduck.bidoofunleashed.api.pixelmon.specs.BU3PokemonSpec;
 import gg.psyduck.bidoofunleashed.api.storage.Storable;
 import gg.psyduck.bidoofunleashed.config.ConfigKeys;
 import gg.psyduck.bidoofunleashed.e4.E4Stage;
@@ -26,7 +27,7 @@ public class PlayerData implements Storable {
 
 	private final UUID uuid;
 
-	private List<Badge> badges = new ArrayList<>();
+	private List<BadgeReference> badges = new ArrayList<>();
 
 	// Data persisting to Elite Four challenges here
 	@SerializedName("defeated-elite-four")
@@ -35,6 +36,7 @@ public class PlayerData implements Storable {
 	private transient EliteFour currentEliteFour;
 
 	private Map<String, Date> cooldowns = new HashMap<>();
+	private Map<String, List<BU3PokemonSpec>> favoriteTeams = new HashMap<>();
 
 	@Setter
 	private transient boolean queued = false;
@@ -63,30 +65,43 @@ public class PlayerData implements Storable {
 				.map(x -> (EliteFour) x)
 				.findAny().orElse(null);
 
+		if(this.favoriteTeams == null) {
+			this.favoriteTeams = new HashMap<>();
+			this.dirty = true;
+		}
+
 		return this;
 	}
 
-	public void awardBadge(Badge badge) {
+	public void awardBadge(BadgeReference badge) {
 		this.badges.add(badge);
 		this.dirty = true;
 	}
 
 	public boolean hasBadge(Badge badge) {
+		if(badge == null) {
+			return false;
+		}
+
+		return this.badges.stream().anyMatch(b -> b.getIdentifier().equals(badge.getName()));
+	}
+
+	public boolean hasBadge(BadgeReference badge) {
 		if (badge == null) {
 			return false;
 		}
-		return this.badges.stream().anyMatch(b -> b.getName().equals(badge.getName()) && b.getItemType().equals(badge.getItemType()));
+		return this.badges.stream().anyMatch(b -> b.getIdentifier().equals(badge.getIdentifier()));
 	}
 
-	public Optional<Badge> getBadge(Gym gym) {
-		return this.badges.stream().filter(b -> b.getName().equals(gym.getBadge().getName()) && b.getItemType().equals(gym.getBadge().getItemType())).findAny();
+	public Optional<BadgeReference> getBadge(Gym gym) {
+		return this.badges.stream().filter(b -> b.getIdentifier().equals(gym.getBadge().getName())).findAny();
 	}
 
-	public Optional<Badge> getBadge(EliteFour e4) {
-		return this.badges.stream().filter(b -> b.getName().equals(e4.getBadge().getName()) && b.getItemType().equals(e4.getBadge().getItemType())).findAny();
+	public Optional<BadgeReference> getBadge(EliteFour e4) {
+		return this.badges.stream().filter(b -> b.getIdentifier().equals(e4.getBadge().getName())).findAny();
 	}
 
-	public Optional<Badge> getBadge(BU3Battlable battlable) {
+	public Optional<BadgeReference> getBadge(BU3Battlable battlable) {
 		if (battlable instanceof Gym) {
 			return this.getBadge((Gym) battlable);
 		} else {
@@ -94,7 +109,7 @@ public class PlayerData implements Storable {
 		}
 	}
 
-	public void removeBadge(Badge badge) {
+	public void removeBadge(BadgeReference badge) {
 		if (this.hasBadge(badge)) {
 			this.badges.remove(badge);
 		}

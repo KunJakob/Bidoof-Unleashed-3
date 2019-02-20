@@ -2,6 +2,7 @@ package gg.psyduck.bidoofunleashed.api.pixelmon.specs;
 
 import com.google.common.collect.Lists;
 import com.pixelmonmod.pixelmon.api.pokemon.ISpecType;
+import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
 import com.pixelmonmod.pixelmon.api.pokemon.SpecValue;
 import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
 import com.pixelmonmod.pixelmon.storage.NbtKeys;
@@ -57,12 +58,17 @@ public class NicknameSpec extends SpecValue<String> implements ISpecType {
 
 	@Override
 	public void apply(EntityPixelmon pokemon) {
-		pokemon.setNickname(this.value);
+		this.apply(pokemon.getPokemonData());
 	}
 
 	@Override
 	public void apply(NBTTagCompound nbt) {
 		nbt.setString(NbtKeys.NICKNAME, this.value);
+	}
+
+	@Override
+	public void apply(Pokemon pokemon) {
+		pokemon.setNickname(this.value);
 	}
 
 	@Override
@@ -73,6 +79,11 @@ public class NicknameSpec extends SpecValue<String> implements ISpecType {
 	@Override
 	public boolean matches(NBTTagCompound nbt) {
 		return nbt.getString(NbtKeys.NICKNAME).equalsIgnoreCase(this.value);
+	}
+
+	@Override
+	public boolean matches(Pokemon pokemon) {
+		return pokemon.getNickname() != null && pokemon.getNickname().equalsIgnoreCase(this.value);
 	}
 
 	@Override

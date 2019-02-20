@@ -76,7 +76,7 @@ public class ChallengeCommand extends SpongeCommand {
 			} else {
 				Optional<Integer> stage = args.getOne(STAGE);
 				if(stage.isPresent()) {
-					gym = ((EliteFour) base).getStages().get(Math.max(0, Math.min(3, stage.get())));
+					gym = ((EliteFour) base).getStages().get(Math.max(0, Math.min(3, stage.get() - 1)));
 				} else {
 					gym = ((EliteFour) base).getStages().get(0);
 				}

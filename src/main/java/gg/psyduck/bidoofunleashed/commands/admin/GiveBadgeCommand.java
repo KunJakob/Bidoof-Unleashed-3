@@ -5,18 +5,14 @@ import com.nickimpact.impactor.api.commands.SpongeCommand;
 import com.nickimpact.impactor.api.commands.annotations.Aliases;
 import com.nickimpact.impactor.api.commands.annotations.Permission;
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
-import com.pixelmonmod.pixelmon.storage.NbtKeys;
-import com.pixelmonmod.pixelmon.storage.PixelmonStorage;
-import com.pixelmonmod.pixelmon.storage.PlayerStorage;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import gg.psyduck.bidoofunleashed.commands.arguments.GymArg;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
 import gg.psyduck.bidoofunleashed.gyms.Badge;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
+import gg.psyduck.bidoofunleashed.players.BadgeReference;
 import gg.psyduck.bidoofunleashed.players.PlayerData;
 import gg.psyduck.bidoofunleashed.utils.MessageUtils;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTTagCompound;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -26,8 +22,8 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.Date;
+import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -75,7 +71,7 @@ public class GiveBadgeCommand extends SpongeCommand {
             throw new CommandException(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.PLAYER_NOT_LEADER, null, null));
         }
 
-        Badge badge = gym.getBadge().fill(player.getUniqueId());
+        BadgeReference badge = new BadgeReference(gym.getBadge().getName(), Date.from(Instant.now()), player.getUniqueId());
         PlayerData data = BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(target.getUniqueId());
         data.awardBadge(badge);
         BidoofUnleashed.getInstance().getStorage().updatePlayerData(data);
@@ -84,7 +80,7 @@ public class GiveBadgeCommand extends SpongeCommand {
         variables.put("player", target.getName());
 
 	    Map<String, Function<CommandSource, Optional<Text>>> tokens = Maps.newHashMap();
-	    tokens.put("bu3_badge", s -> Optional.of(Text.of(badge.getName())));
+	    tokens.put("bu3_badge", s -> Optional.of(Text.of(badge.getIdentifier())));
 
         player.sendMessage(MessageUtils.fetchAndParseMsg(player, MsgConfigKeys.COMMANDS_GIVE_BADGE_LEADER, tokens, variables));
         target.sendMessage(MessageUtils.fetchAndParseMsg(target, MsgConfigKeys.COMMANDS_GIVE_BADGE_CHALLENGER, tokens, variables));

@@ -2,23 +2,22 @@ package gg.psyduck.bidoofunleashed.gyms;
 
 import com.google.common.collect.Maps;
 import com.nickimpact.impactor.time.Time;
-import com.pixelmonmod.pixelmon.battles.controller.participants.PixelmonWrapper;
-import com.pixelmonmod.pixelmon.entities.npcs.NPCTrainer;
-import com.pixelmonmod.pixelmon.storage.PlayerStorage;
+import com.pixelmonmod.pixelmon.Pixelmon;
+import com.pixelmonmod.pixelmon.entities.npcs.NPCChatting;
+import com.pixelmonmod.pixelmon.storage.PlayerPartyStorage;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import gg.psyduck.bidoofunleashed.api.battlables.BattlableBuilder;
 import gg.psyduck.bidoofunleashed.api.battlables.arenas.Arena;
 import gg.psyduck.bidoofunleashed.api.cooldowns.Cooldown;
 import gg.psyduck.bidoofunleashed.api.events.GymBattleStartEvent;
 import gg.psyduck.bidoofunleashed.api.exceptions.BattleStartException;
+import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
+import gg.psyduck.bidoofunleashed.api.pixelmon.participants.ChattingNPCParticipant;
 import gg.psyduck.bidoofunleashed.api.pixelmon.participants.TempTeamParticipant;
-import gg.psyduck.bidoofunleashed.api.pixelmon.participants.TempTrainerTeamParticipant;
 import gg.psyduck.bidoofunleashed.api.pixelmon.specs.BU3PokemonSpec;
 import com.pixelmonmod.pixelmon.battles.controller.BattleControllerBase;
 import com.pixelmonmod.pixelmon.battles.controller.participants.BattleParticipant;
 import com.pixelmonmod.pixelmon.battles.controller.participants.PlayerParticipant;
-import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
-import com.pixelmonmod.pixelmon.storage.PixelmonStorage;
 import gg.psyduck.bidoofunleashed.api.enums.EnumBattleType;
 import gg.psyduck.bidoofunleashed.api.battlables.Category;
 import gg.psyduck.bidoofunleashed.api.battlables.BU3Battlable;
@@ -31,8 +30,8 @@ import gg.psyduck.bidoofunleashed.utils.MessageUtils;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.world.World;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.effect.sound.SoundType;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
@@ -96,7 +95,7 @@ public class Gym implements BU3Battlable, Cooldown {
 	}
 
 	@Override
-	public void addNPCLeader(NPCTrainer npc) {
+	public void addNPCLeader(NPCChatting npc) {
 		this.npcs++;
 		npc.getEntityData().setString("BU3-ID", this.getUuid().toString());
 	}
@@ -108,17 +107,19 @@ public class Gym implements BU3Battlable, Cooldown {
 
 	@Override
 	public boolean checkCooldown(Player player) {
-		PlayerData pd = BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(player.getUniqueId());
-		if(pd.beforeCooldownPeriod(this)) {
-			LocalDateTime till = pd.getCooldowns().get(this.getName()).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-			Duration duration = Duration.between(LocalDateTime.now(), till);
+		if(!player.hasPermission("bu3.cooldowns.bypass")) {
+			PlayerData pd = BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(player.getUniqueId());
+			if (pd.beforeCooldownPeriod(this)) {
+				LocalDateTime till = pd.getCooldowns().get(this.getName()).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+				Duration duration = Duration.between(LocalDateTime.now(), till);
 
-			Map<String, Function<CommandSource, Optional<Text>>> tokens = Maps.newHashMap();
-			tokens.put("bu3_gym", src -> Optional.of(Text.of(this.getName())));
-			tokens.put("bu3_cooldown_time", src -> Optional.of(Text.of(new Time(duration.getSeconds()).toString())));
+				Map<String, Function<CommandSource, Optional<Text>>> tokens = Maps.newHashMap();
+				tokens.put("bu3_gym", src -> Optional.of(Text.of(this.getName())));
+				tokens.put("bu3_cooldown_time", src -> Optional.of(Text.of(new Time(duration.getSeconds()).toString())));
 
-			player.sendMessages(MessageUtils.fetchAndParseMsgs(player, MsgConfigKeys.MISC_CHALLENGE_COOLDOWN_GYM, tokens, null));
-			return false;
+				player.sendMessages(MessageUtils.fetchAndParseMsgs(player, MsgConfigKeys.MISC_CHALLENGE_COOLDOWN_GYM, tokens, null));
+				return false;
+			}
 		}
 		return true;
 	}
@@ -159,47 +160,64 @@ public class Gym implements BU3Battlable, Cooldown {
 	 */
 	@Override
 	public void startBattle(Player leader, Player challenger, List<BU3PokemonSpec> team) throws BattleStartException {
-		if(this.getBattleSettings(this.getBattleType(challenger)).getPool().getTeam().size() == 0) {
-			throw new BattleStartException(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.COMMANDS_ACCEPT_EMPTY_TEAM_POOL, null, null));
+		if(!preBattleChecks(challenger)) {
+			return;
 		}
 
-		BattleParticipant bpL = new TempTeamParticipant((EntityPlayerMP) leader);
-		bpL.allPokemon = new PixelmonWrapper[team.size()];
-
-		this.apply(bpL, leader, team);
+		PlayerPartyStorage ls = Pixelmon.storageManager.getParty(leader.getUniqueId());
+		ls.heal();
+		BattleParticipant bpL = new PlayerParticipant((EntityPlayerMP) leader, ls.getAndSendOutFirstAblePokemon((EntityPlayerMP) leader));
 
 		leader.setLocationAndRotationSafely(new Location<>(leader.getWorld(), arena.getLeader().getPosition()), arena.getLeader().getRotation());
-
 		challenger.setLocationAndRotationSafely(new Location<>(challenger.getWorld(), arena.getChallenger().getPosition()), arena.getChallenger().getRotation());
-		PlayerStorage storage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) challenger).orElse(null);
-		if(storage == null) {
-			throw new BattleStartException(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.ERRORS_MISSING_PLAYER_STORAGE, null, null));
-		}
+		PlayerPartyStorage storage = Pixelmon.storageManager.getParty(challenger.getUniqueId());
+		storage.heal();
 
-		storage.healAllPokemon((World) challenger.getWorld());
-		EntityPixelmon cs = storage.getFirstAblePokemon((World) challenger.getWorld());
 		GymBattleStartEvent gbse = new GymBattleStartEvent(leader, challenger, this);
 		if(!gbse.isCancelled()) {
 			BattleRegistry.register(new Challenge(leader, challenger, this.getBattleType(challenger)), this);
-			new BattleControllerBase(bpL, new PlayerParticipant((EntityPlayerMP) challenger, cs), this.getBattleSettings(this.getBattleType(challenger)).getBattleRules());
+			com.pixelmonmod.pixelmon.battles.BattleRegistry.startBattle(
+					new BattleParticipant[] {bpL},
+					new BattleParticipant[] {new PlayerParticipant((EntityPlayerMP) challenger, storage.getAndSendOutFirstAblePokemon((EntityPlayerMP) challenger))},
+					this.getBattleSettings(this.getBattleType(challenger)).getBattleRules()
+			);
 			BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(challenger.getUniqueId()).updateCooldown(this);
 		}
 	}
 
 	@Override
-	public void startBattle(NPCTrainer leader, Player challenger, List<BU3PokemonSpec> team) throws BattleStartException {
+	public void startBattle(NPCChatting leader, Player challenger, List<BU3PokemonSpec> team) throws BattleStartException {
+		if(!preBattleChecks(challenger)) {
+			return;
+		}
+
+		challenger.setLocationAndRotationSafely(new Location<>(challenger.getWorld(), arena.getChallenger().getPosition()), arena.getChallenger().getRotation());
+
+		EnumBattleType type = this.getBattleType(challenger);
+		PlayerPartyStorage storage = Pixelmon.storageManager.getParty(challenger.getUniqueId());
+		storage.heal();
+
+		challenger.playSound(SoundType.of("custom.anger"), challenger.getPosition(), 2);
+
+		GymBattleStartEvent gbse = new GymBattleStartEvent((Entity) leader, challenger, this);
+		if(!gbse.isCancelled()) {
+			BattleRegistry.register(new Challenge((Entity) leader, challenger, type), this);
+			com.pixelmonmod.pixelmon.battles.BattleRegistry.startBattle(
+					new ChattingNPCParticipant[]{ new ChattingNPCParticipant(leader, this.convertFromSpecs((Entity) leader, challenger, team), 1) },
+					new PlayerParticipant[] {new PlayerParticipant((EntityPlayerMP) challenger, storage.getAndSendOutFirstAblePokemon((EntityPlayerMP) challenger))},
+					this.getBattleSettings(this.getBattleType(challenger)).getBattleRules()
+			);
+			BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(challenger.getUniqueId()).updateCooldown(this);
+		}
+	}
+
+	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
+	private boolean preBattleChecks(Player challenger) throws BattleStartException {
 		if(this.getBattleSettings(this.getBattleType(challenger)).getPool().getTeam().size() == 0) {
 			throw new BattleStartException(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.COMMANDS_ACCEPT_EMPTY_TEAM_POOL, null, null));
 		}
 
-		EnumBattleType type = this.getBattleType(challenger);
-		EntityPixelmon first = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) challenger).orElseThrow(() -> new BattleStartException(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.ERRORS_MISSING_PLAYER_STORAGE, null, null))).getFirstAblePokemon((World) challenger.getWorld());
-		GymBattleStartEvent gbse = new GymBattleStartEvent((Entity) leader, challenger, this);
-		if(!gbse.isCancelled()) {
-			BattleRegistry.register(new Challenge((Entity) leader, challenger, type), this);
-			new BattleControllerBase(new TempTrainerTeamParticipant(leader, (EntityPlayerMP) challenger, team, this), new PlayerParticipant((EntityPlayerMP) challenger, first), this.getBattleSettings(this.getBattleType(challenger)).getBattleRules());
-			BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(challenger.getUniqueId()).updateCooldown(this);
-		}
+		return true;
 	}
 
 	@Override

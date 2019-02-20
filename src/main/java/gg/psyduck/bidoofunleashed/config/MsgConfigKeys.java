@@ -18,7 +18,7 @@ public class MsgConfigKeys implements IConfigKeys {
 
 	public static final ConfigKey<String> STARTUP_STORAGE_PROVIDER = StringKey.of("startup.phase.init.storage.type", "Loading storage provider... [{{storage_type}}]");
 
-	public static final ConfigKey<String> COMMANDS_CHALLENGE_QUEUED = StringKey.of("commands.challenge.queued", "{{bu3_prefix}} &7You've been queued to challenge the &e{{bu3_gym}} Gym&7! Your position: &c{{bu3_queue_position}}");
+	public static final ConfigKey<String> COMMANDS_CHALLENGE_QUEUED = StringKey.of("commands.challenge.queued", "{{bu3_prefix}} &7You've been queued to challenge the &e{{bu3_gym}}&7! Your position: &c{{bu3_queue_position}}");
     public static final ConfigKey<String> COMMANDS_GIVE_BADGE_LEADER = StringKey.of("commands.give-badge.leader", "{{bu3_prefix}} &7You've given the {{bu3_badge}} Badge to {{player}}");
     public static final ConfigKey<String> COMMANDS_GIVE_BADGE_CHALLENGER = StringKey.of("commands.give-badge.challenger", "{{bu3_prefix}} &7You've been given the {{bu3_badge}} Badge!");
     public static final ConfigKey<String> COMMANDS_REMOVE_BADGE_LEADER = StringKey.of("commands.remove-badge.leader", "{{bu3_prefix}} &7You've taken the {{bu3_badge}} Badge from {{player}}");
@@ -43,6 +43,7 @@ public class MsgConfigKeys implements IConfigKeys {
 	public static final ConfigKey<String> REQUIREMENT_LEVELCAP = StringKey.of("requirements.level-cap", "{{bu3_error}} &7Unfortunately, a member of your party exceeds the level cap of &e{{bu3_level_cap}}&7...");
 	public static final ConfigKey<String> REQUIREMENT_EVOLUTION = StringKey.of("requirements.evolution", "{{bu3_error}} &7Unfortunately, a member of your party represents an unnatural evolution...");
 	public static final ConfigKey<String> REQUIREMENT_LEGENDS = StringKey.of("requirements.legends", "{{bu3_error}} &7Unfortunately, a member of your party cannot participate due to the gym's no legendary rule...");
+	public static final ConfigKey<String> REQUIREMENT_MEGAS = StringKey.of("requirements.megas", "{{bu3_error}} &7Unfortunately, a member of your party cannot participate due to the gym's no mega pokemon rule...");
 
 	public static final ConfigKey<String> SOURCE_NOT_PLAYER = StringKey.of("commands.error.src-not-player", "{{bu3_error}} &7You must be a player to use this command!");
     public static final ConfigKey<String> PLAYER_NOT_LEADER = StringKey.of("commands.error.player-not-leader", "{{bu3_error}} &7You must be a gym leader to use this command!");
@@ -111,11 +112,20 @@ public class MsgConfigKeys implements IConfigKeys {
 	public static final ConfigKey<String> MISC_CHALLENGE_BEGINNING = StringKey.of("misc.challenge.challenger.battle-accepted.inform", "{{bu3_prefix}} &7The gym leader is now ready, starting battle in {{bu3_wait}} seconds!");
     public static final ConfigKey<String> MISC_CHALLENGE_BEGINNING_LEADER_RANDOM = StringKey.of("misc.challenge.leader.battle-accepted.random-team", "{{bu3_prefix}} &7Your team was randomly selected, beginning battle in {{bu3_wait}} seconds!");
     public static final ConfigKey<String> MISC_CHALLENGE_BEGINNING_LEADER_SELECTED = StringKey.of("misc.challenge.leader.battle-accepted.selected-team", "{{bu3_prefix}} &7Your team has been applied, starting battle in {{bu3_wait}} seconds!");
-	public static final ConfigKey<String> NEW_CHALLENGER_QUEUED = StringKey.of("misc.challenge.leader.new-challenger", "{{bu3_prefix}} &7A new challenger awaits a battle for the &e{{bu3_gym}} Gym&7!");
+	public static final ConfigKey<String> NEW_CHALLENGER_QUEUED = StringKey.of("misc.challenge.leader.new-challenger", "{{bu3_prefix}} &7A new challenger awaits a battle for the &e{{bu3_gym}}&7!");
 	public static final ConfigKey<String> MISC_GYM_MORE_REQUIRED = StringKey.of("misc.gym-editing.more-required", "{{bu3_prefix}} &7The gym is, however, not yet complete! Please finish it with &e/bu3 editgym {{bu3_gym}}");
 	public static final ConfigKey<String> MISC_GYM_ARENA_REQUIRED = StringKey.of("misc.gym-editing.arena-required", "{{bu3_prefix}} &7The gym now just needs its arena setup! Use &e/bu3 setuparena {{bu3_gym}} <leader|challenger|spectators> to set the locations based on your position!");
 	public static final ConfigKey<String> MISC_RELOAD = StringKey.of("misc.plugin-reload", "{{bu3_prefix}} &7Gym data has been updated, and as such, you will need to requeue your challenge!");
 	public static final ConfigKey<String> MISC_ALREADY_QUEUED = StringKey.of("misc.challenge.challenger.already-queued", "{{bu3_error}} &7You are already queued to challenge another gym...");
+	public static final ConfigKey<List<String>> MISC_LEADER_JOIN_SINGLE = ListKey.of("misc.leader-join.single-gym", Lists.newArrayList(
+			"{{bu3_prefix}} &7A leader for the {{bu3_gym}} Gym, &e{{player}}&7, has logged in!"
+	));
+	public static final ConfigKey<List<String>> MISC_LEADER_JOIN_MULTIPLE = ListKey.of("misc.leader-join.multi-gym", Lists.newArrayList(
+			"{{bu3_prefix}} &7A leader for multiple gyms, &e{{player}}&7, has logged in!"
+	));
+	public static final ConfigKey<List<String>> MISC_LEADER_JOIN_E4 = ListKey.of("misc.leader-join.e4-leader", Lists.newArrayList(
+			"{{bu3_prefix}} &7An E4 member, &e{{player}}&7, has logged in!"
+	));
 
 	public static final ConfigKey<String> ERRORS_MISSING_PLAYER_STORAGE = StringKey.of("errors.missing-player-storage", "{{bu3_error}} &7A Pixelmon error was encountered, and prevented successful operation...");
 	public static final ConfigKey<String> ERRORS_CANT_CHALLENGE = StringKey.of("errors.gym.cant-challenge", "{{bu3_error}} &7Unfortunately, your challenge could not be fulfilled...");
@@ -129,7 +139,9 @@ public class MsgConfigKeys implements IConfigKeys {
 	public static final ConfigKey<String> BATTLES_WIN_E4 = StringKey.of("battles.win.e4", "{{bu3_prefix}} &7Congrats! You've defeated &eStage {{bu3_e4}} &7of the &a{{bu3_category}} category&7!");
 	public static final ConfigKey<String> BATTLES_WIN_CHAMPION = StringKey.of("battles.win.champion", "{{bu3_prefix}} &7Congrats! You've defeated the &e{{bu3_category}} Champion&7!");
 	public static final ConfigKey<String> BATTLES_LOSE_GYM = StringKey.of("battles.lose", "{{bu3_prefix}} &7Well shoot! You've lost to the &e{{bu3_gym}} Gym&7...");
-	public static final ConfigKey<String> BATTLES_FORFEIT = StringKey.of("battles.forfeit", "{{bu3_prefix}} &7It seems you decided to forfeit your challenge against the &e{{bu3_gym}} Gym&7...");
+	public static final ConfigKey<String> BATTLES_FORFEIT = StringKey.of("battles.forfeit", "{{bu3_prefix}} &7The challenge ended in a forfeit...");
+	public static final ConfigKey<String> LEADER_LOSE_BATTLE = StringKey.of("battles.leaders.lose", "{{bu3_prefix}} &7You've lost the battle to challenger &e{{bu3_challenger}}&7...");
+	public static final ConfigKey<String> LEADER_WIN_BATTLE = StringKey.of("battles.leaders.win", "{{bu3_prefix}} &7You've won the battle against challenger &e{{bu3_challenger}}&7...");
 
 	private static Map<String, ConfigKey<?>> KEYS = null;
 

@@ -1,20 +1,16 @@
 package gg.psyduck.bidoofunleashed.impl.requirements;
 
 import com.nickimpact.impactor.json.Typing;
-import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
+import com.pixelmonmod.pixelmon.Pixelmon;
+import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
 import com.pixelmonmod.pixelmon.entities.pixelmon.stats.BaseStats;
 import com.pixelmonmod.pixelmon.entities.pixelmon.stats.evolution.types.LevelingEvolution;
-import com.pixelmonmod.pixelmon.enums.EnumPokemon;
-import com.pixelmonmod.pixelmon.storage.NbtKeys;
-import com.pixelmonmod.pixelmon.storage.PixelmonStorage;
-import com.pixelmonmod.pixelmon.storage.PlayerStorage;
+import com.pixelmonmod.pixelmon.enums.EnumSpecies;
+import com.pixelmonmod.pixelmon.storage.PlayerPartyStorage;
 import gg.psyduck.bidoofunleashed.api.battlables.BU3Battlable;
 import gg.psyduck.bidoofunleashed.api.gyms.Requirement;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
-import gg.psyduck.bidoofunleashed.gyms.Gym;
 import gg.psyduck.bidoofunleashed.utils.MessageUtils;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTTagCompound;
 import org.spongepowered.api.entity.living.player.Player;
 
 import java.util.List;
@@ -32,14 +28,14 @@ public class EvolutionRequirement implements Requirement {
 
 	@Override
 	public boolean passes(BU3Battlable battlable, Player player) throws Exception {
-		PlayerStorage storage = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) player).orElseThrow(() -> new Exception("Missing player storage data for " + player.getName()));
-		for(NBTTagCompound nbt : storage.partyPokemon) {
-			EnumPokemon species = EnumPokemon.getFromNameAnyCase(nbt.getString(NbtKeys.NAME));
-			int level = nbt.getInteger(NbtKeys.LEVEL);
+		PlayerPartyStorage storage = Pixelmon.storageManager.getParty(player.getUniqueId());
+		for(Pokemon pokemon : storage.getTeam()) {
+			EnumSpecies species = pokemon.getSpecies();
+			int level = pokemon.getLevel();
 
-			BaseStats stats = EntityPixelmon.allBaseStats.get(species);
+			BaseStats stats = pokemon.getBaseStats();
 			if(stats.preEvolutions.length > 0) {
-				stats = EntityPixelmon.allBaseStats.get(stats.preEvolutions[0]);
+				stats = stats.preEvolutions[0].getBaseStats();
 				List<LevelingEvolution> evolution = stats.evolutions.stream().filter(evo -> evo instanceof LevelingEvolution)
 						.map(evo -> (LevelingEvolution) evo)
 						.filter(evo -> evo.to.name.equalsIgnoreCase(species.name))

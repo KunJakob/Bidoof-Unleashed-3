@@ -2,14 +2,11 @@ package gg.psyduck.bidoofunleashed.e4;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.pixelmonmod.pixelmon.battles.controller.BattleControllerBase;
+import com.pixelmonmod.pixelmon.Pixelmon;
 import com.pixelmonmod.pixelmon.battles.controller.participants.BattleParticipant;
-import com.pixelmonmod.pixelmon.battles.controller.participants.PixelmonWrapper;
 import com.pixelmonmod.pixelmon.battles.controller.participants.PlayerParticipant;
-import com.pixelmonmod.pixelmon.entities.npcs.NPCTrainer;
-import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
-import com.pixelmonmod.pixelmon.storage.PixelmonStorage;
-import com.pixelmonmod.pixelmon.storage.PlayerStorage;
+import com.pixelmonmod.pixelmon.entities.npcs.NPCChatting;
+import com.pixelmonmod.pixelmon.storage.PlayerPartyStorage;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
 import gg.psyduck.bidoofunleashed.api.battlables.Category;
 import gg.psyduck.bidoofunleashed.api.battlables.arenas.Arena;
@@ -17,8 +14,8 @@ import gg.psyduck.bidoofunleashed.api.battlables.battletypes.BattleType;
 import gg.psyduck.bidoofunleashed.api.enums.EnumBattleType;
 import gg.psyduck.bidoofunleashed.api.events.GymBattleStartEvent;
 import gg.psyduck.bidoofunleashed.api.exceptions.BattleStartException;
+import gg.psyduck.bidoofunleashed.api.pixelmon.participants.ChattingNPCParticipant;
 import gg.psyduck.bidoofunleashed.api.pixelmon.participants.TempTeamParticipant;
-import gg.psyduck.bidoofunleashed.api.pixelmon.participants.TempTrainerTeamParticipant;
 import gg.psyduck.bidoofunleashed.api.pixelmon.specs.BU3PokemonSpec;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
 import gg.psyduck.bidoofunleashed.gyms.Badge;
@@ -28,11 +25,11 @@ import gg.psyduck.bidoofunleashed.players.PlayerData;
 import gg.psyduck.bidoofunleashed.utils.MessageUtils;
 import lombok.Setter;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.world.World;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.world.Location;
 
 import java.io.File;
 import java.util.*;
@@ -134,46 +131,74 @@ public class Champion implements Stage {
 			throw new BattleStartException(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.COMMANDS_ACCEPT_EMPTY_TEAM_POOL, null, null));
 		}
 
-		PlayerStorage cs = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) challenger).orElseThrow(() -> new BattleStartException(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.ERRORS_MISSING_PLAYER_STORAGE, null, null)));
-
+		PlayerPartyStorage cs = this.verify(challenger);
 		PlayerData pd = BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(challenger.getUniqueId());
 
-		if(!pd.getCurrentEliteFour().equals(this.getBelonging())) {
-			throw new BattleStartException(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.ERRORS_E4_DIFFERING, null, null));
+		if(!this.checkRequirements(pd)) {
+			throw new BattleStartException(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.ERRORS_E4_NOT_ALL_BADGES, null, null));
 		}
 
-		BattleParticipant bpL = new TempTeamParticipant((EntityPlayerMP) leader);
-		bpL.allPokemon = new PixelmonWrapper[team.size()];
-		this.apply(bpL, leader, team);
+		PlayerPartyStorage ls = Pixelmon.storageManager.getParty(leader.getUniqueId());
+		ls.heal();
+		BattleParticipant bpL = new PlayerParticipant((EntityPlayerMP) leader, ls.getAndSendOutFirstAblePokemon((EntityPlayerMP) leader));
 
-		cs.healAllPokemon((World) challenger.getWorld());
-		EntityPixelmon first = cs.getFirstAblePokemon((World) challenger.getWorld());
+		leader.setLocationAndRotationSafely(new Location<>(leader.getWorld(), arena.getLeader().getPosition()), arena.getLeader().getRotation());
+		challenger.setLocationAndRotationSafely(new Location<>(challenger.getWorld(), arena.getChallenger().getPosition()), arena.getChallenger().getRotation());
+
+		cs.heal();
 		GymBattleStartEvent gbse = new GymBattleStartEvent(leader, challenger, this);
 		if(!gbse.isCancelled()) {
 			BattleRegistry.register(new Challenge(leader, challenger, this.getBattleType(challenger)), this);
-			new BattleControllerBase(bpL, new PlayerParticipant((EntityPlayerMP) challenger, first), this.getBattleSettings(this.getBattleType(challenger)).getBattleRules());
+			com.pixelmonmod.pixelmon.battles.BattleRegistry.startBattle(
+					new BattleParticipant[] {bpL},
+					new BattleParticipant[] {new PlayerParticipant((EntityPlayerMP) challenger, cs.getAndSendOutFirstAblePokemon((EntityPlayerMP) challenger))},
+					this.getBattleSettings(this.getBattleType(challenger)).getBattleRules()
+			);
 		}
 	}
 
 	@Override
-	public void startBattle(NPCTrainer leader, Player challenger, List<BU3PokemonSpec> team) throws BattleStartException {
+	public void startBattle(NPCChatting leader, Player challenger, List<BU3PokemonSpec> team) throws BattleStartException {
 		if(this.getBattleSettings(this.getBattleType(challenger)).getPool().getTeam().size() == 0) {
 			throw new BattleStartException(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.COMMANDS_ACCEPT_EMPTY_TEAM_POOL, null, null));
 		}
 
-		PlayerStorage cs = PixelmonStorage.pokeBallManager.getPlayerStorage((EntityPlayerMP) challenger).orElseThrow(() -> new BattleStartException(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.ERRORS_MISSING_PLAYER_STORAGE, null, null)));
+		PlayerPartyStorage cs = this.verify(challenger);
 		PlayerData pd = BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(challenger.getUniqueId());
+
+		if(!this.checkRequirements(pd)) {
+			throw new BattleStartException(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.ERRORS_E4_NOT_ALL_BADGES, null, null));
+		}
+
+		challenger.setLocationAndRotationSafely(new Location<>(challenger.getWorld(), arena.getChallenger().getPosition()), arena.getChallenger().getRotation());
+
+		GymBattleStartEvent gbse = new GymBattleStartEvent((Entity) leader, challenger, this);
+		if(!gbse.isCancelled()) {
+			BattleRegistry.register(new Challenge((Entity) leader, challenger, this.getBattleType(challenger)), this);
+			com.pixelmonmod.pixelmon.battles.BattleRegistry.startBattle(
+					new BattleParticipant[] {new ChattingNPCParticipant(leader, this.convertFromSpecs((Entity) leader, challenger, team), 1)},
+					new BattleParticipant[] {new PlayerParticipant((EntityPlayerMP) challenger, cs.getAndSendOutFirstAblePokemon((EntityPlayerMP) challenger))},
+					this.getBattleSettings(this.getBattleType(challenger)).getBattleRules());
+		}
+	}
+
+	private PlayerPartyStorage verify(Player challenger) throws BattleStartException {
+		if(this.getBattleSettings(this.getBattleType(challenger)).getPool().getTeam().size() == 0) {
+			throw new BattleStartException(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.COMMANDS_ACCEPT_EMPTY_TEAM_POOL, null, null));
+		}
+
+		PlayerPartyStorage cs = Pixelmon.storageManager.getParty(challenger.getUniqueId());
+		PlayerData pd = BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(challenger.getUniqueId());
+
+		if(!this.checkRequirements(pd)) {
+			throw new BattleStartException(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.ERRORS_E4_NOT_ALL_BADGES, null, null));
+		}
 
 		if(!pd.getCurrentEliteFour().equals(this.getBelonging())) {
 			throw new BattleStartException(MessageUtils.fetchAndParseMsg(challenger, MsgConfigKeys.ERRORS_E4_DIFFERING, null, null));
 		}
 
-		EntityPixelmon first = cs.getFirstAblePokemon((World) challenger.getWorld());
-		GymBattleStartEvent gbse = new GymBattleStartEvent((Entity) leader, challenger, this);
-		if(!gbse.isCancelled()) {
-			BattleRegistry.register(new Challenge((Entity) leader, challenger, this.getBattleType(challenger)), this);
-			new BattleControllerBase(new TempTrainerTeamParticipant(leader, (EntityPlayerMP) challenger, team, this), new PlayerParticipant((EntityPlayerMP) challenger, first), this.getBattleSettings(this.getBattleType(challenger)).getBattleRules());
-		}
+		return cs;
 	}
 
 	@Override
@@ -213,7 +238,7 @@ public class Champion implements Stage {
 	}
 
 	@Override
-	public void addNPCLeader(NPCTrainer npc) {
+	public void addNPCLeader(NPCChatting npc) {
 		this.npcs++;
 		npc.getEntityData().setString("BU3-ID", this.getUuid().toString());
 	}
@@ -236,6 +261,26 @@ public class Champion implements Stage {
 	@Override
 	public boolean isOpen() {
 		return this.open;
+	}
+
+	@Override
+	public boolean open() {
+		if(this.queue != null && this.arena.isSetup()) {
+			this.open = true;
+			return true;
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean close() {
+		if(!this.open) {
+			return false;
+		}
+
+		this.open = false;
+		return true;
 	}
 
 	@Override

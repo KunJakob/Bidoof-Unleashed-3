@@ -6,8 +6,11 @@ import com.nickimpact.impactor.api.commands.annotations.Aliases;
 import com.nickimpact.impactor.api.commands.annotations.Permission;
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
 import com.pixelmonmod.pixelmon.Pixelmon;
+import com.pixelmonmod.pixelmon.entities.npcs.NPCChatting;
 import com.pixelmonmod.pixelmon.entities.npcs.NPCTrainer;
+import com.pixelmonmod.pixelmon.entities.npcs.registry.GeneralNPCData;
 import com.pixelmonmod.pixelmon.entities.npcs.registry.NPCRegistryTrainers;
+import com.pixelmonmod.pixelmon.entities.npcs.registry.ServerNPCRegistry;
 import com.pixelmonmod.pixelmon.enums.EnumEncounterMode;
 import com.pixelmonmod.pixelmon.enums.EnumTrainerAI;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
@@ -76,18 +79,22 @@ public class AddGymLeaderCommand extends SpongeCommand {
 	        	throw new CommandException(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.SOURCE_NOT_PLAYER, null, null));
 	        }
 
-	        NPCTrainer npc = new NPCTrainer((World) world.orElseGet(((Player) src)::getWorld));
-	        npc.init(NPCRegistryTrainers.Steve);
+	        NPCChatting npc = new NPCChatting((World) world.orElseGet(((Player) src)::getWorld));
+	        GeneralNPCData data = ServerNPCRegistry.villagers.getRandom();
+	        npc.init(data);
+	        npc.initDefaultAI();
+	        npc.setCustomSteveTexture(data.getRandomTexture());
 	        npc.setPosition(
 	        		pos.map(Vector3d::getFloorX).orElseGet(() -> ((Player) src).getLocation().getPosition().getFloorX()) + 0.5,
 			        pos.map(Vector3d::getFloorY).orElseGet(() -> ((Player) src).getLocation().getPosition().getFloorY()),
 			        pos.map(Vector3d::getFloorZ).orElseGet(() -> ((Player) src).getLocation().getPosition().getFloorZ()) + 0.5
 	        );
 	        npc.setAIMode(EnumTrainerAI.StandStill);
+	        npc.setName("NPC Leader");
+	        npc.setCustomNameTag("\u00a7Right Click to Battle");
+	        npc.setAlwaysRenderNameTag(true);
 	        npc.ignoreDespawnCounter = true;
-	        npc.initAI();
-	        npc.setStartRotationYaw(180);
-	        npc.setEncounterMode(EnumEncounterMode.Unlimited);
+	        npc.setRotationYawHead(180);
 	        Pixelmon.proxy.spawnEntitySafely(npc, (World) world.orElseGet(((Player) src)::getWorld));
 	        gym.addNPCLeader(npc);
         } else {

@@ -100,15 +100,13 @@ public class EliteFour implements BU3BattleBase<EliteFour>, Cooldown {
 		List<Gym> inCategory = BidoofUnleashed.getInstance().getDataRegistry().sortedGyms().get(this.category);
 		PlayerData pd = BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(player.getUniqueId());
 		for(Gym gym : inCategory) {
-			if(pd.getBadges().stream().noneMatch(badge -> gym.getBadge().getName().equals(badge.getName()))) {
-				player.sendMessage(MessageUtils.fetchAndParseMsg(player, MsgConfigKeys.ERRORS_E4_NOT_ALL_BADGES, null, null));
+			if(pd.getBadges().stream().noneMatch(badge -> gym.getBadge().getName().equals(badge.getIdentifier()))) {
 				return false;
 			}
 		}
 
 		if(pd.getCurrentEliteFour() != null && pd.getCurrentEliteFour() != this) {
 			if(!pd.getCurrentEliteFour().getName().equalsIgnoreCase(this.getName())) {
-				player.sendMessage(MessageUtils.fetchAndParseMsg(player, MsgConfigKeys.ERRORS_E4_DIFFERING, null, null));
 				return false;
 			}
 		}

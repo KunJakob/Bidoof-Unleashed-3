@@ -2,6 +2,7 @@ package gg.psyduck.bidoofunleashed.api.pixelmon.specs;
 
 import com.google.common.collect.Lists;
 import com.pixelmonmod.pixelmon.api.pokemon.ISpecType;
+import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;
 import com.pixelmonmod.pixelmon.api.pokemon.SpecValue;
 import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
 import com.pixelmonmod.pixelmon.storage.NbtKeys;
@@ -67,7 +68,7 @@ public class HeldItemSpec extends SpecValue<String> implements ISpecType {
 
 	@Override
 	public void apply(EntityPixelmon pokemon) {
-		pokemon.setHeldItem((net.minecraft.item.ItemStack) (Object) ItemStack.builder().itemType(Sponge.getRegistry().getType(ItemType.class, this.value).orElse(ItemTypes.AIR)).build());
+		pokemon.getPokemonData().setHeldItem((net.minecraft.item.ItemStack) (Object) ItemStack.builder().itemType(Sponge.getRegistry().getType(ItemType.class, this.value).orElse(ItemTypes.AIR)).build());
 	}
 
 	@Override
@@ -80,6 +81,11 @@ public class HeldItemSpec extends SpecValue<String> implements ISpecType {
 	}
 
 	@Override
+	public void apply(Pokemon pokemon) {
+		pokemon.setHeldItem((net.minecraft.item.ItemStack) (Object) ItemStack.builder().itemType(Sponge.getRegistry().getType(ItemType.class, this.value).orElse(ItemTypes.AIR)).build());
+	}
+
+	@Override
 	public boolean matches(EntityPixelmon pokemon) {
 		NBTTagCompound nbt = new NBTTagCompound();
 		return this.matches(pokemon.writeToNBT(nbt));
@@ -88,6 +94,11 @@ public class HeldItemSpec extends SpecValue<String> implements ISpecType {
 	@Override
 	public boolean matches(NBTTagCompound nbt) {
 		return nbt.getCompoundTag(NbtKeys.HELD_ITEM_STACK).getString("id").equalsIgnoreCase(this.value);
+	}
+
+	@Override
+	public boolean matches(Pokemon pokemon) {
+		return this.matches(pokemon.writeToNBT(new NBTTagCompound()));
 	}
 
 	@Override

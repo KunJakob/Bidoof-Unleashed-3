@@ -6,8 +6,8 @@ import com.nickimpact.impactor.gui.v2.Icon;
 import com.nickimpact.impactor.gui.v2.Layout;
 import com.nickimpact.impactor.gui.v2.Page;
 import com.nickimpact.impactor.gui.v2.PageDisplayable;
-import com.pixelmonmod.pixelmon.enums.EnumPokemon;
-import com.pixelmonmod.pixelmon.enums.forms.EnumForms;
+import com.pixelmonmod.pixelmon.enums.EnumSpecies;
+import com.pixelmonmod.pixelmon.enums.forms.EnumNoForm;
 import com.pixelmonmod.pixelmon.enums.forms.EnumUnown;
 import com.pixelmonmod.pixelmon.enums.forms.IEnumForm;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
@@ -17,6 +17,7 @@ import gg.psyduck.bidoofunleashed.api.pixelmon.specs.BU3PokemonSpec;
 import gg.psyduck.bidoofunleashed.config.ConfigKeys;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
+import gg.psyduck.bidoofunleashed.players.PlayerData;
 import gg.psyduck.bidoofunleashed.ui.icons.PixelmonIcons;
 import gg.psyduck.bidoofunleashed.utils.MessageUtils;
 import gg.psyduck.bidoofunleashed.utils.TeamSelectors;
@@ -26,6 +27,7 @@ import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.type.DyeColors;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.EventContext;
+import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -119,8 +121,8 @@ public class GymPoolUI implements PageDisplayable {
 			if(!viewing) {
 				int index = 45;
 				for (BU3PokemonSpec spec : this.chosenTeam) {
-					ItemStack picture = PixelmonIcons.createPicture(EnumPokemon.getFromNameAnyCase(spec.name), spec.shiny != null ? spec.shiny : false, spec.form != null ? spec.form : -1);
-					picture = PixelmonIcons.applySpecDetails(picture, spec);
+					ItemStack picture = PixelmonIcons.createPicture(EnumSpecies.getFromNameAnyCase(spec.name), spec.shiny != null ? spec.shiny : false, spec.form != null ? spec.form : -1);
+					PixelmonIcons.applySpecDetails(picture, spec);
 					picture.get(Keys.ITEM_LORE).ifPresent(lore -> lore.addAll(Lists.newArrayList(
 							Text.EMPTY,
 							Text.of(TextColors.RED, "Click to Remove!"))
@@ -168,6 +170,10 @@ public class GymPoolUI implements PageDisplayable {
 			}
 
 			if(!viewing) {
+				lb.slot(addFavoriteIcon(), 26);
+			}
+
+			if(!viewing) {
 				ItemStack random = ItemStack.builder()
 						.itemType(ItemTypes.DYE)
 						.add(Keys.DISPLAY_NAME, MessageUtils.fetchAndParseMsg(leader, MsgConfigKeys.UI_GYM_POOL_RANDOM_TEAM, null, null))
@@ -181,7 +187,7 @@ public class GymPoolUI implements PageDisplayable {
 					leader.sendMessage(MessageUtils.fetchAndParseMsg(leader, MsgConfigKeys.MISC_CHALLENGE_BEGINNING_LEADER_RANDOM, tokens, null));
 					Sponge.getScheduler().createTaskBuilder().execute(() -> {
 						try {
-							this.focus.startBattle(leader, challenger, chosenTeam);
+							this.focus.startBattle(leader, challenger, team);
 						} catch (BattleStartException e) {
 							challenger.sendMessage(e.getReason());
 							leader.sendMessage(e.getReason());
@@ -197,10 +203,10 @@ public class GymPoolUI implements PageDisplayable {
 
 	private List<Icon> forge() {
 		List<BU3PokemonSpec> specs = this.focus.getBattleSettings(type).getPool().getTeam();
-		Map<EnumPokemon, Map<Byte, Integer>> speciesIndex = Maps.newHashMap();
+		Map<EnumSpecies, Map<Byte, Integer>> speciesIndex = Maps.newHashMap();
 		List<Icon> results = Lists.newArrayList();
 		for(BU3PokemonSpec spec : specs) {
-			EnumPokemon species = EnumPokemon.getFromNameAnyCase(spec.name);
+			EnumSpecies species = EnumSpecies.getFromNameAnyCase(spec.name);
 			if(speciesIndex.containsKey(species)) {
 				Map<Byte, Integer> formToAmount = speciesIndex.get(species);
 				byte form = spec.form != null ? spec.form : -1;
@@ -219,7 +225,7 @@ public class GymPoolUI implements PageDisplayable {
 			}
 		}
 
-		for(Map.Entry<EnumPokemon, Map<Byte, Integer>> entry : speciesIndex.entrySet()) {
+		for(Map.Entry<EnumSpecies, Map<Byte, Integer>> entry : speciesIndex.entrySet()) {
 			Icon icon = PixelmonIcons.getPicture(entry.getKey(), false, -1);
 			icon.getDisplay().offer(Keys.DISPLAY_NAME, Text.of(TextColors.DARK_AQUA, entry.getKey().name, " Sets"));
 
@@ -227,7 +233,7 @@ public class GymPoolUI implements PageDisplayable {
 			lore.add(Text.of(TextColors.GREEN, "Form Index:"));
 			for(Map.Entry<Byte, Integer> fEntry : entry.getValue().entrySet()) {
 				IEnumForm form = entry.getKey().getFormEnum(fEntry.getKey());
-				String fName = form == EnumForms.NoForm ? "None" : form instanceof EnumUnown ? form.getSpriteSuffix().substring(1) : form.getFormSuffix().substring(1);
+				String fName = form == EnumNoForm.NoForm ? "None" : form instanceof EnumUnown ? form.getSpriteSuffix().substring(1) : form.getFormSuffix().substring(1);
 				lore.add(Text.of(TextColors.GRAY, fName.substring(0, 1).toUpperCase() + fName.substring(1) + ": ", TextColors.YELLOW, fEntry.getValue()));
 			}
 			icon.getDisplay().offer(Keys.ITEM_LORE, lore);
@@ -245,5 +251,48 @@ public class GymPoolUI implements PageDisplayable {
 		}
 
 		return results;
+	}
+
+	private Icon addFavoriteIcon() {
+		PlayerData pd = BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(this.leader.getUniqueId());
+
+		ItemStack favorite = ItemStack.builder()
+				.itemType(Sponge.getRegistry().getType(ItemType.class, "pixelmon:gs_ball").orElse(ItemTypes.BARRIER))
+				.add(Keys.DISPLAY_NAME, pd.getFavoriteTeams().get(this.focus.getName()) != null || this.chosenTeam.size() > 0 ? Text.of(TextColors.YELLOW, "Use/Set your Favorite Team") : Text.of(TextColors.GRAY, "Select a Team..."))
+				.add(Keys.ITEM_LORE, pd.getFavoriteTeams().get(this.focus.getName()) != null || this.chosenTeam.size() > 0 ?
+						Lists.newArrayList(
+								Text.of(TextColors.GREEN, "Left Click: ", TextColors.GRAY, "Use Favorite"),
+								Text.of(TextColors.GREEN, "Right Click: ", TextColors.GRAY, "Set Favorite")
+						) :
+						Lists.newArrayList()
+				)
+				.build();
+
+		Icon fav = Icon.from(favorite);
+		fav.addListener(clickable -> {
+			if(clickable.getEvent() instanceof ClickInventoryEvent.Primary) {
+				if(pd.getFavoriteTeams().get(this.focus.getName()) != null) {
+					List<BU3PokemonSpec> team = pd.getFavoriteTeams().get(this.focus.getName());
+					int index = 45;
+					for (BU3PokemonSpec spec : team) {
+						ItemStack picture = PixelmonIcons.createPicture(EnumSpecies.getFromNameAnyCase(spec.name), spec.shiny != null ? spec.shiny : false, spec.form != null ? spec.form : -1);
+						PixelmonIcons.applySpecDetails(picture, spec);
+						picture.get(Keys.ITEM_LORE).ifPresent(lore -> lore.addAll(Lists.newArrayList(
+								Text.EMPTY,
+								Text.of(TextColors.RED, "Click to Remove!"))
+						));
+
+						this.chosenTeam.add(spec);
+						this.display.apply(Icon.from(picture), index++);
+					}
+				}
+			} else {
+				if(this.chosenTeam.size() > 0) {
+					pd.getFavoriteTeams().put(this.focus.getName(), Lists.newArrayList(this.chosenTeam));
+				}
+			}
+		});
+
+		return fav;
 	}
 }

@@ -6,7 +6,11 @@ import com.nickimpact.impactor.gui.v2.Layout;
 import com.nickimpact.impactor.gui.v2.Page;
 import com.nickimpact.impactor.gui.v2.PageDisplayable;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
+import gg.psyduck.bidoofunleashed.e4.EliteFour;
+import gg.psyduck.bidoofunleashed.e4.Stage;
 import gg.psyduck.bidoofunleashed.gyms.Badge;
+import gg.psyduck.bidoofunleashed.gyms.Gym;
+import gg.psyduck.bidoofunleashed.players.BadgeReference;
 import gg.psyduck.bidoofunleashed.players.PlayerData;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
@@ -23,6 +27,7 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Optional;
 
 public class BadgeCaseUI implements PageDisplayable {
 
@@ -78,21 +83,40 @@ public class BadgeCaseUI implements PageDisplayable {
 		List<Icon> results = Lists.newArrayList();
 
 		PlayerData pd = BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(this.player.getUniqueId());
-		List<Badge> badges = pd.getBadges();
-		UserStorageService service = Sponge.getServiceManager().provideUnchecked(UserStorageService.class);
-		for(Badge badge : badges) {
+		List<BadgeReference> badges = pd.getBadges();
+		for(BadgeReference badge : badges) {
 			List<Text> lore = Lists.newArrayList(
 					Text.of(TextColors.GRAY, "Earned: ", TextColors.YELLOW, sdf.format(badge.getObtained())),
-					Text.of(TextColors.GRAY, "Leader: ", TextColors.YELLOW, badge.getLeader() == null ? badge.getNpcName() : service.get(badge.getLeader()).get().getName())
+					Text.of(TextColors.GRAY, "Leader: ", TextColors.YELLOW, badge.getLeaderName())
 			);
 
-			ItemStack rep = ItemStack.builder()
-					.itemType(Sponge.getRegistry().getType(ItemType.class, badge.getItemType()).orElse(ItemTypes.BARRIER))
-					.add(Keys.DISPLAY_NAME, Text.of(TextColors.DARK_AQUA, badge.getName(), " Badge"))
-					.add(Keys.ITEM_LORE, lore)
-					.build();
+			Optional<Badge> b = BidoofUnleashed.getInstance().getDataRegistry().getBattlables().values().stream().filter(
+					base -> {
+						if(base instanceof Gym) {
+							return ((Gym) base).getBadge().getName().equalsIgnoreCase(badge.getIdentifier());
+						}
 
-			results.add(new Icon(rep));
+						List<Stage> stages = Lists.newArrayList(((EliteFour) base).getStages());
+						stages.add(((EliteFour) base).getChampion());
+						for(Stage stage : stages) {
+							if(stage.getBadge().getName().equalsIgnoreCase(badge.getIdentifier())) {
+								return true;
+							}
+						}
+
+						return false;
+					}
+			).map(base -> base instanceof Gym ? ((Gym) base).getBadge() : ((EliteFour) base).getChampion().getBadge()).findAny();
+
+			if(b.isPresent()) {
+				ItemStack rep = ItemStack.builder()
+						.itemType(Sponge.getRegistry().getType(ItemType.class, b.get().getItemType()).orElse(ItemTypes.BARRIER))
+						.add(Keys.DISPLAY_NAME, Text.of(TextColors.DARK_AQUA, b.get().getName(), " Badge"))
+						.add(Keys.ITEM_LORE, lore)
+						.build();
+
+				results.add(new Icon(rep));
+			}
 		}
 
 		return results;

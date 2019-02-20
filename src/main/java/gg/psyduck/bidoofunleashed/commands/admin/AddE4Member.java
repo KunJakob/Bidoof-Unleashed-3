@@ -6,8 +6,11 @@ import com.nickimpact.impactor.api.commands.annotations.Aliases;
 import com.nickimpact.impactor.api.commands.annotations.Permission;
 import com.nickimpact.impactor.api.plugins.SpongePlugin;
 import com.pixelmonmod.pixelmon.Pixelmon;
+import com.pixelmonmod.pixelmon.entities.npcs.NPCChatting;
 import com.pixelmonmod.pixelmon.entities.npcs.NPCTrainer;
+import com.pixelmonmod.pixelmon.entities.npcs.registry.GeneralNPCData;
 import com.pixelmonmod.pixelmon.entities.npcs.registry.NPCRegistryTrainers;
+import com.pixelmonmod.pixelmon.entities.npcs.registry.ServerNPCRegistry;
 import com.pixelmonmod.pixelmon.enums.EnumEncounterMode;
 import com.pixelmonmod.pixelmon.enums.EnumTrainerAI;
 import gg.psyduck.bidoofunleashed.BidoofUnleashed;
@@ -77,8 +80,11 @@ public class AddE4Member extends SpongeCommand {
 
 		if(stage.equalsIgnoreCase("champion")) {
 			if(leader.equalsIgnoreCase("npc")) {
-				NPCTrainer npc = new NPCTrainer((World) ((Player) src).getWorld());
-				npc.init(NPCRegistryTrainers.Steve);
+				NPCChatting npc = new NPCChatting((World) ((Player) src).getWorld());
+				GeneralNPCData data = ServerNPCRegistry.villagers.getRandom();
+				npc.init(data);
+				npc.initDefaultAI();
+				npc.setCustomSteveTexture(data.getRandomTexture());
 				npc.setPosition(
 						((Player) src).getLocation().getPosition().getFloorX() + 0.5,
 						((Player) src).getLocation().getPosition().getFloorY(),
@@ -86,9 +92,7 @@ public class AddE4Member extends SpongeCommand {
 				);
 				npc.setAIMode(EnumTrainerAI.StandStill);
 				npc.ignoreDespawnCounter = true;
-				npc.initAI();
-				npc.setStartRotationYaw(180);
-				npc.setEncounterMode(EnumEncounterMode.Unlimited);
+				npc.setRotationYawHead(180);
 				Pixelmon.proxy.spawnEntitySafely(npc, (World) ((Player) src).getWorld());
 				e4.getChampion().addNPCLeader(npc);
 			} else {
@@ -99,8 +103,11 @@ public class AddE4Member extends SpongeCommand {
 			int s = Integer.parseInt(stage);
 			E4Stage st = e4.getStages().get(s - 1);
 			if(leader.equalsIgnoreCase("npc")) {
-				NPCTrainer npc = new NPCTrainer((World) ((Player) src).getWorld());
-				npc.init(NPCRegistryTrainers.Steve);
+				NPCChatting npc = new NPCChatting((World) ((Player) src).getWorld());
+				GeneralNPCData data = ServerNPCRegistry.villagers.getRandom();
+				npc.init(data);
+				npc.initDefaultAI();
+				npc.setCustomSteveTexture(data.getRandomTexture());
 				npc.setPosition(
 						((Player) src).getLocation().getPosition().getFloorX() + 0.5,
 						((Player) src).getLocation().getPosition().getFloorY(),
@@ -108,9 +115,7 @@ public class AddE4Member extends SpongeCommand {
 				);
 				npc.setAIMode(EnumTrainerAI.StandStill);
 				npc.ignoreDespawnCounter = true;
-				npc.initAI();
-				npc.setStartRotationYaw(180);
-				npc.setEncounterMode(EnumEncounterMode.Unlimited);
+				npc.setRotationYawHead(180);
 				Pixelmon.proxy.spawnEntitySafely(npc, (World) ((Player) src).getWorld());
 				st.addNPCLeader(npc);
 			} else {

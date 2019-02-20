@@ -33,7 +33,7 @@ public class CheckBadgeCommand extends SpongeCommand {
 
     @Override
     public Text getUsage() {
-        return Text.of("/badges");
+        return Text.of("/bu3 badges");
     }
 
     @Override

@@ -2,13 +2,11 @@ package gg.psyduck.bidoofunleashed.ui.icons;
 
 import com.google.common.collect.Lists;
 import com.nickimpact.impactor.gui.v2.Icon;
-import com.pixelmonmod.pixelmon.comm.PixelmonData;
-import com.pixelmonmod.pixelmon.comm.PixelmonMovesetData;
 import com.pixelmonmod.pixelmon.config.PixelmonItems;
 import com.pixelmonmod.pixelmon.entities.pixelmon.stats.Gender;
 import com.pixelmonmod.pixelmon.enums.EnumNature;
-import com.pixelmonmod.pixelmon.enums.EnumPokemon;
-import com.pixelmonmod.pixelmon.enums.forms.EnumForms;
+import com.pixelmonmod.pixelmon.enums.EnumSpecies;
+import com.pixelmonmod.pixelmon.enums.forms.EnumNoForm;
 import com.pixelmonmod.pixelmon.enums.forms.IEnumForm;
 import com.pixelmonmod.pixelmon.storage.NbtKeys;
 import com.pixelmonmod.pixelmon.util.helpers.SpriteHelper;
@@ -26,11 +24,11 @@ import java.util.List;
 
 public class PixelmonIcons {
 
-	public static Icon getPicture(EnumPokemon spec, boolean shiny, int form) {
+	public static Icon getPicture(EnumSpecies spec, boolean shiny, int form) {
 		return new Icon(createPicture(spec, shiny, form));
 	}
 
-	public static ItemStack createPicture(EnumPokemon pokemon, boolean shiny, int form) {
+	public static ItemStack createPicture(EnumSpecies pokemon, boolean shiny, int form) {
 		net.minecraft.item.ItemStack nativeItem = new net.minecraft.item.ItemStack(PixelmonItems.itemPixelmonSprite);
 		NBTTagCompound nbt = new NBTTagCompound();
 		String idValue = String.format("%03d", pokemon.getNationalPokedexInteger());
@@ -45,7 +43,7 @@ public class PixelmonIcons {
 		return (ItemStack) (Object) nativeItem;
 	}
 
-	public static ItemStack applySpecDetails(ItemStack picture, BU3PokemonSpec spec) {
+	public static void applySpecDetails(ItemStack picture, BU3PokemonSpec spec) {
 		Text level = spec.level != null ? Text.of(TextColors.GRAY, " | ", TextColors.GREEN, "Lvl ", spec.level) : Text.EMPTY;
 		picture.offer(Keys.DISPLAY_NAME, Text.of(TextColors.DARK_AQUA, spec.name, level));
 		List<Text> lore = Lists.newArrayList();
@@ -57,8 +55,8 @@ public class PixelmonIcons {
 			lore.add(Text.of(TextColors.GRAY, "Gender: ", TextColors.YELLOW, Gender.getGender(spec.gender)));
 		}
 		if (spec.form != null) {
-			IEnumForm ef = EnumPokemon.getFromNameAnyCase(spec.name).getFormEnum(spec.form);
-			if (ef != EnumForms.NoForm) {
+			IEnumForm ef = EnumSpecies.getFromNameAnyCase(spec.name).getFormEnum(spec.form);
+			if (ef != EnumNoForm.NoForm) {
 				String form = ef.getFormSuffix().substring(1);
 				lore.add(Text.of(TextColors.GRAY, "Form: ", TextColors.YELLOW, form.substring(0, 1).toUpperCase() + form.substring(1)));
 			}
@@ -162,6 +160,5 @@ public class PixelmonIcons {
 		}
 
 		picture.offer(Keys.ITEM_LORE, lore);
-		return picture;
 	}
 }

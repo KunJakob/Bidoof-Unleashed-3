@@ -10,6 +10,7 @@ import gg.psyduck.bidoofunleashed.commands.arguments.GymArg;
 import gg.psyduck.bidoofunleashed.config.MsgConfigKeys;
 import gg.psyduck.bidoofunleashed.gyms.Badge;
 import gg.psyduck.bidoofunleashed.gyms.Gym;
+import gg.psyduck.bidoofunleashed.players.BadgeReference;
 import gg.psyduck.bidoofunleashed.utils.MessageUtils;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -67,8 +68,8 @@ public class RemoveBadgeCommand extends SpongeCommand {
             throw new CommandException(MessageUtils.fetchAndParseMsg(src, MsgConfigKeys.PLAYER_NOT_LEADER, null, null));
         }
 
-        Optional<Badge> optBadge = BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(target.getUniqueId()).getBadges()
-                .stream().filter(b -> b.getName().equals(gym.getBadge().getName()) && b.getItemType().equals(gym.getBadge().getItemType())).findFirst();
+        Optional<BadgeReference> optBadge = BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(target.getUniqueId()).getBadges()
+                .stream().filter(b -> b.getIdentifier().equals(gym.getBadge().getName())).findFirst();
 
         Map<String, Object> variables = Maps.newHashMap();
         variables.put("player", target.getName());
@@ -78,12 +79,12 @@ public class RemoveBadgeCommand extends SpongeCommand {
         }
 
 	    Map<String, Function<CommandSource, Optional<Text>>> tokens = Maps.newHashMap();
-	    tokens.put("bu3_badge", s -> Optional.of(Text.of(optBadge.get().getName())));
+	    tokens.put("bu3_badge", s -> Optional.of(Text.of(optBadge.get().getIdentifier())));
 
         BidoofUnleashed.getInstance().getDataRegistry().getPlayerData(target.getUniqueId()).removeBadge(optBadge.get());
 
-        player.sendMessage(MessageUtils.fetchAndParseMsg(player, MsgConfigKeys.COMMANDS_REMOVE_BADGE_LEADER, null, variables));
-        target.sendMessage(MessageUtils.fetchAndParseMsg(target, MsgConfigKeys.COMMANDS_REMOVE_BADGE_CHALLENGER, null, variables));
+        player.sendMessage(MessageUtils.fetchAndParseMsg(player, MsgConfigKeys.COMMANDS_REMOVE_BADGE_LEADER, tokens, variables));
+        target.sendMessage(MessageUtils.fetchAndParseMsg(target, MsgConfigKeys.COMMANDS_REMOVE_BADGE_CHALLENGER, tokens, variables));
         return CommandResult.success();
     }
 }

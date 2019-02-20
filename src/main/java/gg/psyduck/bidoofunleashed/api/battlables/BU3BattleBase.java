@@ -1,6 +1,5 @@
 package gg.psyduck.bidoofunleashed.api.battlables;
 
-import com.pixelmonmod.pixelmon.entities.npcs.NPCTrainer;
 import org.spongepowered.api.entity.living.player.Player;
 
 import java.util.UUID;

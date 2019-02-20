@@ -48,6 +48,7 @@ import gg.psyduck.bidoofunleashed.impl.BU3ServiceImpl;
 import gg.psyduck.bidoofunleashed.impl.requirements.EvolutionRequirement;
 import gg.psyduck.bidoofunleashed.impl.requirements.GymRequirement;
 import gg.psyduck.bidoofunleashed.impl.requirements.NoLegendRequirement;
+import gg.psyduck.bidoofunleashed.impl.requirements.NoMegaRequirement;
 import gg.psyduck.bidoofunleashed.internal.TextParsingUtils;
 import gg.psyduck.bidoofunleashed.internal.nucleus.TokenService;
 import gg.psyduck.bidoofunleashed.listeners.BattleListener;
@@ -161,6 +162,7 @@ public class BidoofUnleashed extends SpongePlugin {
 	    try {
 		    this.service.registerRequirement(GymRequirement.class);
 		    this.service.registerRequirement(NoLegendRequirement.class);
+		    this.service.registerRequirement(NoMegaRequirement.class);
 		    this.service.registerRequirement(EvolutionRequirement.class);
 
 		    RewardAdapter.rewardRegistry.register(PokemonReward.class);
@@ -209,6 +211,7 @@ public class BidoofUnleashed extends SpongePlugin {
 	    	List<PlayerData> data = this.getDataRegistry().getPlayerData().values().stream().filter(PlayerData::isDirty).collect(Collectors.toList());
 	    	for(PlayerData pd : data) {
 	    		this.getStorage().updatePlayerData(pd);
+	    		pd.clean();
 		    }
 	    }).interval(5, TimeUnit.MINUTES).submit(this);
     }
